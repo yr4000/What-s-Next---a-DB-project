@@ -1,0 +1,117 @@
+<html>
+<head>
+<style>
+body {
+	background-color: mediumblue;
+}
+input, select {
+	font-size : 12pt;
+	margin-right : 2px;
+}
+#map {
+	padding-top: 5px;
+	height: 500px;
+}
+#start-event {
+	background: lightskyblue;
+	text-align:left;
+	padding-top:5px;
+	margin: 5px;
+}
+#start-restaruant {
+	background:dodgerblue;
+	text-align:right;
+	padding-top:5px;
+	margin: 5px;
+}
+.options {
+	width: 100%;
+}
+.option td {
+	padding: 20px;
+	font-size: 16pt;
+}
+.name {
+	width: 40%;
+}
+.type {
+	width: 20%;
+}
+.rating {
+	width: 10%;
+}
+.location {
+	width: 25%;
+}
+.choose {
+	width: 5%;
+}
+</style>
+</head>
+<body>
+<div style="width: 1400px; margin: auto; text-align:center; background: white;">
+	<h1>What'sNextNYC</h1>
+	<div id="start-event" style="">
+		<span><h2>Start at a Event</h2></span>
+		<span id="">
+			<input type="text" value="Event Name">
+			<input type="datetime" value="14/12/2016 12:25">
+			<select>
+				<option>Manhattan</option>
+				<option>-SoHo</option>
+				<option>-Greenwich Village</option>
+				<option>-NoHo</option>
+				<option>-Tribeca</option>
+				<option>Brooklyn</option>
+				<option>-Wiliamsburg</option>
+			</select>
+			<input type="submit" value="search"></span>
+	</div>
+	<div id="start-restaruant">
+		<span><h2>Start at a Restaruant</h2></span>
+		<span>
+			<input type="text" value="Restaruant Name">
+			<input type="datetime" value="14/12/2016 12:25">
+			<select>
+				<option>Manhattan</option>
+				<option>-SoHo</option>
+				<option>-Greenwich Village</option>
+				<option>-NoHo</option>
+				<option>-Tribeca</option>
+				<option>Brooklyn</option>
+				<option>-Wiliamsburg</option>
+			</select>
+			<input type="submit" value="search">
+		</span>
+	</div>
+    <div id="map"></div>
+	<table class="options">
+	<tr class="option">
+		<td class="name">Taboon</td>
+		<td class="type">Meditreanean</td>
+		<td class="rating">7.6</td>
+		<td class="location">Hell's Kitchen</td>
+		<td class="choose"><b>&gt;&gt;</b></td>
+	</tr>
+	</table>
+	</div>
+	<script>
+      function initMap() {
+        // Create a map object and specify the DOM element for display.
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 40.728, lng: -73.994}, //40.728333, -73.994167
+          scrollwheel: false,
+          zoom: 12,
+		  styles: {
+				featureType: "poi",
+				stylers: [
+				  { visibility: "off" }
+				]
+			  }
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWjLmus3tD8KBTbgDdwadQmWZHldu0P4&callback=initMap"
+    async defer></script>
+</body>
+</html>
