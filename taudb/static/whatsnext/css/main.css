@@ -1,0 +1,67 @@
+body {
+	background-color: mediumblue;
+}
+input, select {
+	font-size : 12pt;
+	margin-right : 2px;
+}
+#map {
+	padding-top: 5px;
+	height: 500px;
+}
+
+#main {
+    width: 1400px;
+    margin: auto;
+    text-align:center;
+    background: white;
+    display: block;
+}
+
+.starter {
+    font-size : 20pt;
+    padding : 10px;
+}
+#hotel {
+	background: lightskyblue;
+	text-align:left;
+	padding-top:5px;
+	margin: 5px;
+    display: block;
+}
+#hotel #search-hotel {
+	display: none;
+}
+
+#restaurant {
+	background:dodgerblue;
+	text-align:right;
+	padding-top:5px;
+	margin: 5px;
+    display: block;
+}
+#restaurant #search-restaurant {
+	display: none;
+}
+.options {
+	width: 100%;
+}
+.option td {
+	padding: 20px;
+	font-size: 16pt;
+}
+.name {
+	width: 40%;
+}
+.type {
+	width: 20%;
+}
+.rating {
+	width: 10%;
+}
+.location {
+	width: 25%;
+}
+.choose {
+	width: 5%;
+}
