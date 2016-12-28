@@ -1,4 +1,7 @@
-# taken from: https://www.doogal.co.uk/london_stations.php
+import london_coordinates.py
+import MySQLdb
+import math
+
 
 coordinates = [(51.531952, 0.003738),
                (51.490784, 0.120286),
@@ -8,7 +11,7 @@ coordinates = [(51.531952, 0.003738),
                (51.356239, -0.032651),
                (51.379808, -0.073199),
                (51.435816, 0.126459),
-               (51.514342, -0.075613)
+               (51.514342, -0.075613),
                 (51.531952, 0.003738),
                (51.490784, 0.120286),
                (51.516887, -0.267676),
@@ -649,3 +652,49 @@ coordinates = [(51.531952, 0.003738),
                (51.489907, 0.069208),
                (51.491108, 0.054627),
                (51.381105, -0.245561)]
+
+TABLE_NAME = "test_coordinates"
+RESOLUTION = 10000
+
+def writeToTable():
+    sqlInsert = "INSERT INTO " + TABLE_NAME + " VALUES "
+    temp = [0,0]
+    for coor in coordinates:
+        temp[0],temp[1] = coor[0]*RESOLUTION, coor[1]*RESOLUTION
+        tempTup = (temp[0],temp[1])
+        sqlInsert = sqlInsert + str(tempTup) + " ,"
+    sqlInsert = sqlInsert[:-2]
+    sqlInsert+=";"
+    #connect to database
+    #after that need to send the string and excute it
+    return sqlInsert
+
+# for details:
+# http://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
+
+#returns the distance between 2 points in km
+def GPSDistance(p1,p2):
+    R = 6371 #earth's radious in km
+    lat1, lat2, lon1, lon2 = p1[0], p2[0], p1[1], p2[1]
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    lat1 = math.radians(lat1)
+    lat2 = math.radians(lat2)
+
+    a = math.sin(dlat/2)**2 + (math.sin(dlon/2)**2)*math.cos(lat1)*math.cos(lat2)
+    c = 2*math.atan2(math.sqrt(a),math.sqrt(1-a))
+    d = R*c #this is the distance
+    return d
+
+# works good comparing to this site:
+# http://boulter.com/gps/distance/?from=51.531952%2C+0.003738&to=51.516887%2C+-0.267676&units=k
+
+#according to:
+# http://www.nhc.noaa.gov/gccalc.shtml
+#for latitude: the second digit from the dot is 1.1 km for each count 1 (up or down)
+#in longitude: the second digit from the dot is 0.69 km for each count 1 (up or down)
+
+#gets a latitude,longtitude ans d distance, and returns the langtitudes and longtitudes
+#in order to create a square area sizes 2dist*2dist arround the point
+def getPointsFromDistanceKmAndPoint(latitude,longitude,dist):
+    return (latitude+dist/(111),longitude+dist/(69),latitude-dist/(111),longitude-dist/(69))
