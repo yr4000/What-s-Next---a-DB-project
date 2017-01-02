@@ -20,5 +20,6 @@ from whatsnext import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^json/', views.json),
-    url(r'^$', views.homepage)
+    url(r'^$', views.homepage),
+    url(r'^hotels/', views.get_hotels)
 ]
