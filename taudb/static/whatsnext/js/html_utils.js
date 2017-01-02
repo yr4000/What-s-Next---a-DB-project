@@ -6,33 +6,16 @@ $(document).ready(function () {
 });
 
 function openNav() {
-    document.getElementById("myNav").style.height = "100%";
+    $("#myNav").show();
 }
 
 function closeNav() {
-    document.getElementById("myNav").style.height = "0%";
+    $("#myNav").hide();
+    $(".nav").show();
 }
 
 function addLocationRow(location) {
 
 }
 
-function getHotels() {
-    var url = "/hotels/";
 
-    $.getJSON(url,
-        "",
-        function(response)
-        {
-            console.log(response);
-            for (var key in response) {
-                hotel = response[key];
-                console.log(hotel); 
-                addMarker(new google.maps.LatLng(hotel.latitude, hotel.longitude), hotel["name"]);
-            }
-        },
-        'json')
-    .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to fetch Hotels");
-    });
-}

@@ -30,6 +30,20 @@ input, select {
     transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
 }
 
+.nav {
+    height: 94%;
+    width: 400px;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 2%;
+    top: 2%;
+    background-color: white;
+    background-color: rgba(255, 255, 255, 0.85);
+    overflow-x: hidden; /* Disable horizontal scroll */
+    box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
+    display: none;
+}
+
 /* Position the content inside the overlay */
 .overlay-content {
     position: relative;
