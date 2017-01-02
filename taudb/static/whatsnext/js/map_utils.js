@@ -9,8 +9,8 @@ function initMap() {
         scrollwheel: true,
         draggable: true,
         zoom: enumZoomLevels.City,
+        disableDefaultUI: true,
         backgroundColor: "#2B2B2B",
-
         styles: [
             {
                 "elementType": "geometry",

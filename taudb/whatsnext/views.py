@@ -16,7 +16,7 @@ def json(request):
 
 def homepage(request):
     contexts = {
-        'neighbourhoods': get_neighbourhoods()
+        'categories': ['Hotel', 'Restaraunt']
     }
     return render(request, 'whatsnext/index.html', context=contexts)
 
@@ -47,4 +47,3 @@ def get_hotels(request):
         hotels[place["id"]] = hotel
 
     return JsonResponse(hotels, status=201)
-
