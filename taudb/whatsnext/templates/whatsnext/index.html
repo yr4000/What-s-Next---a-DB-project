@@ -14,13 +14,19 @@
 
 		<!-- Overlay content -->
 		<div class="overlay-content">
-		<select>
-            <option value="NULL">Start with...</option>
-			{% for cat in categories %}
-			<option value="{{ cat }}">{{ cat }}</option>
-			{% endfor %}
-		</select>&nbsp;<input type="text" name="place_name" size="12" placeholder="A place called..."><br><br>
-		OR <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Around Here V</a>
+			<span id="overlayTitle">
+				What's Next?!
+			</span><br><br>
+			<select>
+				<option value="NULL">Start with...</option>
+				{% for cat in categories %}
+				<option value="{{ cat }}">{{ cat }}</option>
+				{% endfor %}
+			</select>
+			&nbsp;
+			<input type="text" name="place_name" size="12" placeholder="Location name"><br><br>
+			OR
+			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Mark Your Location On The Map</a>
 		</div>
 
 	</div>
