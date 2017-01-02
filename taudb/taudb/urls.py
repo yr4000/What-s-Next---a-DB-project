@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^json/', views.json),
     url(r'^$', views.homepage),
+    url(r'^freeSearch', views.search_by_word),
     url(r'^hotels/', views.get_hotels)
 ]

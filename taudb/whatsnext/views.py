@@ -16,7 +16,7 @@ def json(request):
 
 def homepage(request):
     contexts = {
-        'categories': ['Hotel', 'Restaraunt']
+        'neighbourhoods': get_neighbourhoods()
     }
     return render(request, 'whatsnext/index.html', context=contexts)
 
@@ -47,3 +47,32 @@ def get_hotels(request):
         hotels[place["id"]] = hotel
 
     return JsonResponse(hotels, status=201)
+
+
+def search_by_word(request):
+    places = dict()
+
+    conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305)
+    cur = conn.cursor(mdb.cursors.DictCursor)
+
+    '''
+    Get places whom contain the word in the request
+
+    need to change "In%" to some parameter that the function gets......
+    '''
+    cur.execute('Select * From places where places.name like "In%" LIMIT 10')
+
+    rows = cur.fetchall()
+    for row in rows:
+        place = dict()
+        place["id"] = row["id"]
+        place["google_id"] = row["google_id"]
+        place["rating"] = row["rating"]
+        place["vicinity"] = row["vicinity"]
+        place["name"] = row["name"]
+        place["latitude"] = row["latitude"]
+        place["longitude"] = row["longitude"]
+        places[row["id"]] = place
+
+    return JsonResponse(places, status=201)
+
