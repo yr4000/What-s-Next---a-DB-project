@@ -28,7 +28,8 @@ conn = mdb.connect(host='127.0.0.1', port=11211, user='DbMysql06', passwd='DbMys
 
 category_mapping = {'lodging': '1',
                     'restaurant': '2',
-                    'bar': '3'}
+                    'bar': '3',
+                    'museum': '4'}
 
 
 def run_google_maps_migration():
@@ -40,7 +41,7 @@ def run_specific_coordinates(latitude, longitude):
     print 'starting with coordinates: {lat},{long}'.format(lat=latitude, long=longitude)
 
     radius = 1000
-    place_type = 'restaurant'
+    place_type = 'museum'
     next_page_token = None
     places_added_total = 0
     mappings_added_total = 0

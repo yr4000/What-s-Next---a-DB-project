@@ -24,6 +24,8 @@ CREATE TABLE categories (
 
 INSERT INTO categories (`name`) VALUES ('lodging');
 INSERT INTO categories (`name`) VALUES ('restaurant');
+INSERT INTO categories (`name`) VALUES ('bar');
+INSERT INTO categories (`name`) VALUES ('museum');
 
 
 CREATE TABLE places_categories (
@@ -35,17 +37,5 @@ CREATE TABLE places_categories (
     CONSTRAINT `fgn_category_id` FOREIGN KEY (`category_id`) REFERENCES categories (`id`),
 	UNIQUE KEY `place_id_category_id` (`place_id`,`category_id`)
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
-
-
-SELECT 
-    places.id, places.google_id, categories.id, categories.name
-FROM
-    places
-        INNER JOIN
-    places_categories ON places.id = places_categories.place_id
-        INNER JOIN
-    categories ON places_categories.category_id = categories.id
-WHERE
-    places_categories.category_id=2;
 
         
