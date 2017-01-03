@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from whatsnext import views
+from whatsnext import views,tests #TODO why is it marked red?
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^json/', views.json),
     url(r'^$', views.homepage),
     url(r'^freeSearch', views.search_by_word),
-    url(r'^hotels/', views.get_hotels)
-]
+    url(r'^hotels/', views.get_hotels),
+    url(r'^yair_test/', tests.yair_test),
+    ]
