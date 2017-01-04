@@ -2,6 +2,21 @@
  * Created by Alonmeytal on 02/01/2017.
  */
 
+// Send CSRF cookie with every non-safe method
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+    		var csrftoken = $.cookie('csrftoken');
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
 function getHotels() {
     var url = "/hotels/";
 
@@ -11,7 +26,7 @@ function getHotels() {
         {
             console.log(response);
             for (var key in response) {
-                hotel = response[key];
+                var hotel = response[key];
                 console.log(hotel);
                 addMarker(new google.maps.LatLng(hotel.latitude, hotel.longitude), hotel["name"]);
             }
@@ -25,16 +40,21 @@ function getHotels() {
 /**
  * Created by DrorBrunman on 04/01/2017.
  */
-function full_text_search() {
+function searchByFullText(word,category) {
     var url = "/fullTextSearch/";
 
-    $.getJSON(url,
-        "",
+    var search_values = {
+        word: word,
+        category: category
+    };
+
+    $.post(url,
+        JSON.stringify(search_values),
         function(response)
         {
             console.log(response);
             for (var key in response) {
-                place = response[key];
+                var place = response[key];
                 console.log(place);
                 addMarker(new google.maps.LatLng(place.latitude, place.longitude), place["name"]);
             }

@@ -1,21 +1,20 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.templatetags.static import static
+# Generic packages import
+import json
+# DB packeages import
 import MySQLdb as mdb
+# Django packages import
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse, Http404
+# Internal packages import
 from geo_utils import *
-from query import get_neighbourhoods
 
-#Globals:
+# Globals
 RESOLUTION = 10000
 BARS_VIEW = "places" #TODO replace when time comes
 
 
-def get_points_by_center_and_distance(latitude,longitude,dist):
+def get_points_by_center_and_distance(latitude, longitude, dist):
     return latitude-dist/111.0, latitude+dist/111.0, longitude-dist/69.0, longitude+dist/69.0
-
-
-def json(request):
-    return HttpResponse("{'Alon':'Itzhaki'}")
 
 
 def homepage(request):
@@ -54,10 +53,15 @@ def get_hotels(request):
 
 
 def search_by_word(request):
+    if request.is_ajax() is False:
+        raise Http404
+
+    request_json = json.loads(request.body)
+
     places = dict()
 
-    word_to_search = "Holiday" # TODO : change to parameter from request
-    category_for_search = 3 # TODO : change to parameter from request
+    word_to_search = request_json["word"]  # Holiday" TODO : change to parameter from request
+    category_for_search = request_json["category"]  # 3 sTODO : change to parameter from request
 
     conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305)
     cur = conn.cursor(mdb.cursors.DictCursor)
