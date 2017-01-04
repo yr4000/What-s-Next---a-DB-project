@@ -57,13 +57,20 @@ def search_by_word(request):
     places = dict()
 
     cur = connectorToDB()
+   #     return eval("(" + arg1 + ")")
+
+    #wordToSearch = eval_json(request.responseText)
+    word_to_search = "In" # TODO : change to parameter from request
+
+    conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305)
+    cur = conn.cursor(mdb.cursors.DictCursor)
 
     '''
     Get places whom contain the word in the request
 
-    need to change "In%" to some parameter that the function gets......
+    need to change some_var to some parameter that the function gets......
     '''
-    cur.execute('Select * From places where places.name like "In%" LIMIT 10')
+    cur.execute('Select * From places Where MATCH(places.name) AGAINST("+%s" IN BOOLEAN MODE) LIMIT 10' % word_to_search)
 
     rows = cur.fetchall()
     for row in rows:
