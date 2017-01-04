@@ -26,7 +26,7 @@ function getHotels() {
  * Created by DrorBrunman on 04/01/2017.
  */
 function full_text_search() {
-    var url = "/textSearch/";
+    var url = "/fullTextSearch/";
 
     $.getJSON(url,
         "",

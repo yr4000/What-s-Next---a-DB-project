@@ -56,10 +56,6 @@ def get_hotels(request):
 def search_by_word(request):
     places = dict()
 
-    cur = connectorToDB()
-   #     return eval("(" + arg1 + ")")
-
-    #wordToSearch = eval_json(request.responseText)
     word_to_search = "In" # TODO : change to parameter from request
 
     conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305)
