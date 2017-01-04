@@ -56,7 +56,8 @@ def get_hotels(request):
 def search_by_word(request):
     places = dict()
 
-    word_to_search = "In" # TODO : change to parameter from request
+    word_to_search = "Holiday" # TODO : change to parameter from request
+    category_for_search = 3 # TODO : change to parameter from request
 
     conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305)
     cur = conn.cursor(mdb.cursors.DictCursor)
@@ -66,7 +67,13 @@ def search_by_word(request):
 
     need to change some_var to some parameter that the function gets......
     '''
-    cur.execute('Select * From places Where MATCH(places.name) AGAINST("+%s" IN BOOLEAN MODE) LIMIT 10' % word_to_search)
+    query = 'SELECT * FROM places, places_categories WHERE places_categories.place_id = places.id ' \
+            'AND places_categories.category_id = {category} AND places.name like "%{name}%"' \
+            ' LIMIT 20'.format(category=category_for_search, name=word_to_search)
+
+    cur.execute(query)
+
+    #cur.execute('Select * From places Where MATCH(places.name) AGAINST("+%s" IN BOOLEAN MODE) LIMIT 10' % word_to_search)
 
     rows = cur.fetchall()
     for row in rows:
@@ -81,6 +88,8 @@ def search_by_word(request):
         places[row["id"]] = place
 
     return JsonResponse(places, status=201)
+
+
 '''
 returns places (e.g hotels, bars, attractions etc...).
 pre: latitude, lingitude are NOT modifide (i.e in the desirable resolution), and dist is in Km.
