@@ -7,6 +7,11 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, Http404
 # Internal packages import
 from geo_utils import *
+from query import get_neighbourhoods
+from utils.google_maps_access import fetch_reviews_from_google
+from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
+from utils.exceptions import NotFoundInDb
+from utils.data_access import get_place_by_place_id, get_place_reviews
 
 # Globals
 RESOLUTION = 10000
@@ -169,3 +174,33 @@ def pub_crawl(latitude,longitude,numOfBars = 4):
     #TODO: print the points to map and a route if possible
     return HttpResponse(str(trackPoints))
     #return trackPoints
+
+
+def get_place_details(request):
+
+    if 'place_id' not in request.GET:
+        return JsonResponse(MISSING_QUERY_PARAMS, status=400)
+
+    # get required query parameter place_id
+    place_id = request.GET['place_id']
+    if not place_id:
+        return JsonResponse(INVALID_QUERY_PARAMS, status=400)
+
+    # fetch place from db
+    try:
+        place = get_place_by_place_id(place_id=place_id)
+    except NotFoundInDb:
+        return JsonResponse({'error': 'place with specified id does not exist'}, status=404)
+
+    # fetch reviews for place from db
+    reviews = get_place_reviews(place=place)
+    if not reviews:
+        # fetch reviews for place from Google Places API, and store in db
+        reviews = fetch_reviews_from_google(place=place)
+
+    # convert reviews to dictionaries so they can be serialized
+    reviews_dicts = list()
+    for review in reviews:
+        reviews_dicts.append(review.to_json())
+
+    return JsonResponse({'place': place.to_json(), 'reviews': reviews_dicts}, status=200)

@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^fullTextSearch', views.search_by_word),
     url(r'^hotels/', views.get_hotels),
     url(r'^yair_test/', tests.yair_test),
-]
+    url(r'^place/details', views.get_place_details),
+    ]

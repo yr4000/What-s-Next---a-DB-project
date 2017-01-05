@@ -2,8 +2,9 @@ import urllib
 import json
 from london_coordinates import coordinates
 import MySQLdb as mdb
-from taudb.whatsnext.models.place import Place
+from whatsnext.models import Place
 from time import sleep
+from taudb.taudb.settings import GOOGLE_API_KEY
 
 KEY_NEXT_PAGE_TOKEN = 'next_page_token'
 KEY_RESULTS = 'results'
@@ -16,7 +17,8 @@ KEY_LOCATION = 'location'
 KEY_LATITUDE = 'lat'
 KEY_LONGITUDE = 'lng'
 
-GOOGLE_API_KEY = 'AIzaSyCGnmhFJarg4hMWmtJF37V1NaINNXGpzBU'
+# TODO: moves this script to the google_maps_access module
+
 HOST = 'https://maps.googleapis.com'
 API = '/maps/api/place/search/json'
 
@@ -29,7 +31,8 @@ conn = mdb.connect(host='127.0.0.1', port=11211, user='DbMysql06', passwd='DbMys
 category_mapping = {'lodging': '1',
                     'restaurant': '2',
                     'bar': '3',
-                    'museum': '4'}
+                    'museum': '4',
+                    'art_gallery': '4'}
 
 
 def run_google_maps_migration():
@@ -41,7 +44,7 @@ def run_specific_coordinates(latitude, longitude):
     print 'starting with coordinates: {lat},{long}'.format(lat=latitude, long=longitude)
 
     radius = 1000
-    place_type = 'museum'
+    place_type = 'art_gallery'
     next_page_token = None
     places_added_total = 0
     mappings_added_total = 0
@@ -65,6 +68,8 @@ def run_specific_coordinates(latitude, longitude):
 
         # process Google Places API response
         json_response = json.load(urllib.urlopen(url))
+
+        check_response_status(json_response)
 
         if KEY_NEXT_PAGE_TOKEN in json_response:
             next_page_token = json_response[KEY_NEXT_PAGE_TOKEN]
@@ -93,6 +98,15 @@ def run_specific_coordinates(latitude, longitude):
     print 'done with coordinates: {lat},{long}. added {num_p} places and {num_m} mappings'.format(
         lat=latitude, long=longitude, num_p=places_added_total, num_m=mappings_added_total)
     print
+
+
+# TODO: once moved this script to google_maps_access - remove this method as it's duplicate
+def check_response_status(json_response):
+    if 'status' not in json_response:
+        raise Exception('got invalid response with no status')
+    status = json_response['status']
+    if status not in ('OK', 'ZERO_RESULTS'):
+        raise Exception('response status was bad: {status}'.format(status=status))
 
 
 def write_data_to_db(place, category):
@@ -168,7 +182,7 @@ def convert_to_places_list(json_response):
         except KeyError:
             vicinity = None
 
-        new_place = Place(id=None, google_id=google_id, name=name, rating=rating,
+        new_place = Place(place_id=None, google_id=google_id, name=name, rating=rating,
                           vicinity=vicinity, latitude=latitude, longitude=longitude)
 
         new_places.append(new_place)
