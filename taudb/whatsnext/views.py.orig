@@ -1,25 +1,21 @@
-# Generic packages import
-import json
-# DB packeages import
-import MySQLdb as mdb
-# Django packages import
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, Http404
-# Internal packages import
+from django.http import HttpResponse, JsonResponse
+from django.templatetags.static import static
+import MySQLdb as mdb
 from geo_utils import *
 from query import get_neighbourhoods
-from utils.google_maps_access import fetch_reviews_from_google
-from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
-from utils.exceptions import NotFoundInDb
-from utils.data_access import get_place_by_place_id, get_place_reviews
 
-# Globals
+#Globals:
 RESOLUTION = 10000
 BARS_VIEW = "places" #TODO replace when time comes
 
 
-def get_points_by_center_and_distance(latitude, longitude, dist):
+def get_points_by_center_and_distance(latitude,longitude,dist):
     return latitude-dist/111.0, latitude+dist/111.0, longitude-dist/69.0, longitude+dist/69.0
+
+
+def json(request):
+    return HttpResponse("{'Alon':'Itzhaki'}")
 
 
 def homepage(request):
@@ -58,15 +54,14 @@ def get_hotels(request):
 
 
 def search_by_word(request):
-    if request.is_ajax() is False:
-        raise Http404
-
-    request_json = json.loads(request.body)
-
     places = dict()
 
-    word_to_search = request_json["word"]
-    category_for_search = request_json["category"]
+<<<<<<< HEAD
+    word_to_search = "In" # TODO : change to parameter from request
+=======
+    word_to_search = "Holiday" # TODO : change to parameter from request
+    category_for_search = 3 # TODO : change to parameter from request
+>>>>>>> fixed the fulltext query, added search by specific category also
 
     conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305)
     cur = conn.cursor(mdb.cursors.DictCursor)
@@ -172,33 +167,3 @@ def pub_crawl(latitude,longitude,numOfBars = 4):
     #TODO: print the points to map and a route if possible
     return HttpResponse(str(trackPoints))
     #return trackPoints
-
-
-def get_place_details(request):
-
-    if 'place_id' not in request.GET:
-        return JsonResponse(MISSING_QUERY_PARAMS, status=400)
-
-    # get required query parameter place_id
-    place_id = request.GET['place_id']
-    if not place_id:
-        return JsonResponse(INVALID_QUERY_PARAMS, status=400)
-
-    # fetch place from db
-    try:
-        place = get_place_by_place_id(place_id=place_id)
-    except NotFoundInDb:
-        return JsonResponse({'error': 'place with specified id does not exist'}, status=404)
-
-    # fetch reviews for place from db
-    reviews = get_place_reviews(place=place)
-    if not reviews:
-        # fetch reviews for place from Google Places API, and store in db
-        reviews = fetch_reviews_from_google(place=place)
-
-    # convert reviews to dictionaries so they can be serialized
-    reviews_dicts = list()
-    for review in reviews:
-        reviews_dicts.append(review.to_json())
-
-    return JsonResponse({'place': place.to_json(), 'reviews': reviews_dicts}, status=200)
