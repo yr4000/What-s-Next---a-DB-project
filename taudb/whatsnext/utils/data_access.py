@@ -1,14 +1,13 @@
-from ..geo_utils import connectorToDB
+from db_utils import init_db_connection, init_db_cursor
 from whatsnext.models import Review, Place
 from exceptions import NotFoundInDb
-import MySQLdb as mdb
 
 
 def get_place_by_place_id(place_id):
     if not place_id:
         raise ValueError('id argument must be not None')
 
-    cur = connectorToDB()
+    cur = init_db_cursor()
 
     query = 'SELECT' \
             '   places.id AS place_id, ' \
@@ -45,7 +44,7 @@ def get_place_reviews(place):
     if not place:
         raise ValueError('place argument must be not None')
 
-    cur = connectorToDB()
+    cur = init_db_cursor()
 
     query = 'SELECT' \
             '   reviews.id as review_id, ' \
@@ -78,8 +77,8 @@ def insert_review_to_db(review):
         raise ValueError('id argument must be not None')
 
     # TODO: should use an object to obtain the connection and cursor
-    conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=11211)
-    cur = conn.cursor(mdb.cursors.DictCursor)
+    conn = init_db_connection()
+    cur = init_db_cursor()
 
     # TODO: check what happens if review.date is None
     cur.execute('INSERT INTO reviews (`place_id`, `author`, `rating`, `text`, `date`) '
@@ -90,4 +89,3 @@ def insert_review_to_db(review):
 
     review.review_id = cur.lastrowid
     cur.close()
-

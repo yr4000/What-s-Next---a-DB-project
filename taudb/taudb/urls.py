@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from whatsnext import views,tests #TODO why is it marked red?
+from whatsnext import views, tests
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

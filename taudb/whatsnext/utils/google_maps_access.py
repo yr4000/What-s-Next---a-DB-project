@@ -1,7 +1,7 @@
 import json
 import urllib
 
-from taudb.settings import GOOGLE_API_KEY
+from django.conf import settings
 from whatsnext.models import Review
 from whatsnext.utils.data_access import insert_review_to_db
 import datetime
@@ -19,7 +19,7 @@ KEY_TIME = 'time'
 def fetch_reviews_from_google(place):
     url = '{host}{api}?key={api_key}&placeid={google_id}&language=en'.format(
         host=HOST,
-        api_key=GOOGLE_API_KEY,
+        api_key=settings.GOOGLE_API_KEY,
         api='/maps/api/place/details/json',
         google_id=place.google_id)
 

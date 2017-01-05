@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import platform
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -111,6 +112,15 @@ USE_L10N = True
 USE_TZ = True
 
 GOOGLE_API_KEY = 'AIzaSyCGnmhFJarg4hMWmtJF37V1NaINNXGpzBU'
+
+DB_ALL = "DbMysql06"
+
+if platform.system() == 'Linux':
+    DB_HOST = "mysqlsrv.cs.tau.ac.il"
+    DB_PORT = 3306
+elif platform.system() == 'Windows':
+    DB_HOST = "127.0.0.1"
+    DB_PORT = 3305
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
