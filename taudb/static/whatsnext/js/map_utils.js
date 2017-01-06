@@ -8,8 +8,12 @@ function initMap() {
         center: DEFAULT_MAP_CENTER,
         scrollwheel: true,
         draggable: true,
-        zoom: enumZoomLevels.City,
-        disableDefaultUI: true,
+        zoom: enumZoomLevels.Districts,
+        minZoom: enumZoomLevels.City,
+        maxZoom: enumZoomLevels.Buildings,
+        scaleControl: true,
+        streetViewControl: false,
+        mapTypeControl: false,
         backgroundColor: "#2B2B2B",
         styles: [
             {
@@ -253,6 +257,28 @@ function initMap() {
         }
         lastMapClickLocation = createMarker(position, "Clicked here", false, enumMarkerColors.Current);
     });
+
+    // init bounds of the desired area
+    var allowedBounds = new google.maps.LatLngBounds(
+        // TODO: get the most accurate boundaries
+        new google.maps.LatLng(51.2813, -0.6174), // bottom left boundary
+        new google.maps.LatLng(51.7556, 0.3331) // top right boundary
+    );
+    // init last valid center in the map
+    var lastValidCenter = map.getCenter();
+
+    // listener that allows smooth panning, while constricting to London boundaries
+    google.maps.event.addListener(map, 'center_changed', function() {
+        if (allowedBounds.contains(map.getCenter())) {
+            // still within valid bounds - save last valid position
+            lastValidCenter = map.getCenter();
+            return;
+        }
+        console.log("out of bounds: " +  map.getCenter());
+        // not valid anymore - return to last valid position
+        map.panTo(lastValidCenter);
+    });
+
 }
 
 function createMarker(LatLang, title, center, color) {

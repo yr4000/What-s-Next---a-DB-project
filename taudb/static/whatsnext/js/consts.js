@@ -2,7 +2,8 @@
  * Created by Alonmeytal on 24/12/2016.
  */
 var enumZoomLevels = {
-    City : 10,
+    City : 11,
+    Districts : 13,
     Streets : 15,
     Buildings : 20
 };
