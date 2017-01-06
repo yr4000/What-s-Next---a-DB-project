@@ -121,6 +121,9 @@ if platform.system() == 'Linux':
 elif platform.system() == 'Windows':
     DB_HOST = "127.0.0.1"
     DB_PORT = 3305
+elif platform.system() == 'Darwin':
+    DB_HOST = "127.0.0.1"
+    DB_PORT = 3305
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
