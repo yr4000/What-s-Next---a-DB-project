@@ -1,0 +1,51 @@
+Main Flow:
+
+----- (A1) -----
+INPUT:
+user chooses a location on the map + distance + specific category
+OUTPUT:
+1. data pane displays a list of places from that category
+2. markers appear on the map for each place
+3. display top places that are NOT from within the search list results
+4. [bonus] a slider/input field that allows the user to conveniently change radius and search again
+
+----- (A2): Alternative for A1 -----
+INPUT:
+user searches a place by name
+OUTPUT:
+1. data pane displays a list of places fitting that name
+
+
+----- (B) -----
+INPUT:
+user chooses a specific place X from the list
+OUTPUT:
+1. map markers of other places are removed
+2. data pane displays details of X: name, rating, address, reviews
+3. data pane displays statistics of amount of places near X for each category
+4. [bonus] markers appear on the map for each place near X, in different colors for each category
+
+
+----- (C) -----
+INPUT:
+user chooses the next category
+OUTPUT:
+1. markers appear on the map for that category only + the original markers past chosen places
+2. data pane displays amount of places (including reviews)
+3. display top places that are NOT from within the search list results
+
+
+----- (D): Bonus -----
+INPUT:
+user signals to the planning is finished
+OUTPUT:
+1. data pane displays the list of choices
+2. map shows markers and routes between all choices
+
+
+
+NOTES:
+1. The flow should be A->B->C->A->...->D (D can only be reached once, and is the final stage)
+2. We HAVE to make sure that are a lot of "picks" before we delivery date.
+3. Zoom of map should always fit to display all places
+4. User should be able to choose in each category whether to start from (A1) or (A2)
