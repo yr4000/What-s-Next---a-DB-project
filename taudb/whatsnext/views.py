@@ -16,6 +16,7 @@ from utils.data_access import get_place_by_place_id, get_place_reviews
 # Globals
 RESOLUTION = 10000
 BARS_VIEW = "places"  # TODO replace when time comes
+BASE_TABLE = "places"
 
 
 def get_points_by_center_and_distance(latitude, longitude, dist):
@@ -97,7 +98,7 @@ def search_by_word(request):
 # returns places (e.g hotels, bars, attractions etc...).
 # pre: latitude, longitude are NOT modified (i.e in the desirable resolution), and dist is in Km.
 # post: a json string with the desired request
-def search_places_by_point(latitude,longitude,dist,table = "",columns = ""):
+def search_places_by_point(latitude,longitude,dist,table = BASE_TABLE ,columns = "*"):
     hotels = {}
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, dist)
     # write the query
@@ -110,6 +111,7 @@ def search_places_by_point(latitude,longitude,dist,table = "",columns = ""):
     rows = execute_query(query)
     for row in rows:
         # TODO: there might be a problem with the names of the hotels: 'unicodeDecodeError: 'utf8' codec can't decode..'
+        # TODO: return all the information we want
         '''
         #here i tried to solve the decoding problem
         for element in row:
@@ -195,3 +197,26 @@ def get_place_details(request):
         reviews_dicts.append(review.to_json())
 
     return JsonResponse({'place': place.to_json(), 'reviews': reviews_dicts}, status=200)
+
+
+#TODO: create the tables
+def find_popular_search(places_id_list):
+    #create an sql query to search if that search exists
+    places_str = ""
+    for i in range(len(places_id_list)):
+        places_str  = places_str + " place_id = " + str(places_id_list[i]) + " AND "
+    places_str = places_str[:-5] #remove the last add
+    find_search_query = "SELECT search_id FROM searches_places WHERE" + places_str
+    find_popular_query = "SELECT popularity FROM searches WHERE search_id = {" + find_search_query + "}"
+    popularity_rate = execute_query(find_popular_query)
+    #if it does, update
+    if(popularity_rate > 0):
+        return #TODO complete
+    #else insert it
+    else:
+        return #TODO complete
+
+
+def fetch_popular_routes():
+    #this function will return our top searches.
+    return
