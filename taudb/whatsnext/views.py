@@ -11,7 +11,7 @@ from utils.geo_utils import *
 from utils.google_maps_access import fetch_reviews_from_google
 from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
-from utils.data_access import get_place_by_place_id, get_place_reviews
+from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics
 
 # Globals
 RESOLUTION = 10000
@@ -225,3 +225,22 @@ def find_popular_search(places_id_list):
 def fetch_popular_routes():
     #this function will return our top searches.
     return
+
+
+def calc_categories_statistics(request):
+    if 'latitude' not in request.GET or 'longitude' not in request.GET or 'distance' not in request.GET:
+        return JsonResponse(MISSING_QUERY_PARAMS, status=400)
+
+    # get required query parameters latitude, longitude, distance
+    latitude = request.GET['latitude']
+    longitude = request.GET['longitude']
+    distance = request.GET['distance']
+    if not longitude or not latitude or not distance:
+        return JsonResponse(INVALID_QUERY_PARAMS, status=400)
+
+    top, right, bottom, left = get_boundaries_by_center_and_distance(longitude, latitude, distance)
+
+    statistics = get_categories_statistics(top, right, bottom, left)
+
+    return JsonResponse(statistics, status=200)
+

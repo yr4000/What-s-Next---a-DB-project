@@ -37,6 +37,7 @@ in longitude: the second digit from the dot is 0.69 km for each count 1 (up or d
 # in order to create a square area sizes 2dist*2dist around the point
 # TODO this function is not precise, but maybe for us is good enough. need to check according to map or improve
 # TODO also, consider modify the function to receive a modified long and lat, and not floats
+# TODO: Yair - need to fix this to accept distance in meters and fit the way the locations are saved in db
 def get_boundaries_by_center_and_distance(latitude, longitude, dist):
     top = latitude + dist / 111
     right = longitude + dist / 69

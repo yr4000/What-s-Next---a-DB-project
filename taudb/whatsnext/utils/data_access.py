@@ -46,19 +46,19 @@ def get_place_reviews(place):
 
     cur = init_db_cursor()
 
-    query = 'SELECT' \
-            '   reviews.id as review_id, ' \
-            '   reviews.place_id, ' \
-            '   reviews.author, ' \
-            '   reviews.rating, ' \
-            '   reviews.text, ' \
-            '   reviews.date ' \
-            'FROM' \
-            '   reviews ' \
-            'WHERE' \
-            '   reviews.place_id = {place_id}'.format(place_id=place.place_id)
+    query = 'SELECT                      '\
+            '   reviews.id as review_id, '\
+            '   reviews.place_id,        '\
+            '   reviews.author,          '\
+            '   reviews.rating,          '\
+            '   reviews.text,            '\
+            '   reviews.date             '\
+            'FROM                        '\
+            '   reviews                  '\
+            'WHERE                       '\
+            '   reviews.place_id = %s    '
 
-    cur.execute(query)
+    cur.execute(query, (place.place_id,))
 
     records = cur.fetchall()
 
@@ -74,7 +74,7 @@ def get_place_reviews(place):
 
 def insert_review_to_db(review):
     if not review:
-        raise ValueError('id argument must be not None')
+        raise ValueError('review argument must be not None')
 
     # TODO: should use an object to obtain the connection and cursor
     conn = init_db_connection()
@@ -89,3 +89,54 @@ def insert_review_to_db(review):
 
     review.review_id = cur.lastrowid
     cur.close()
+
+
+def get_categories_statistics(top, right, bottom, left):
+    if not top or not right or not bottom or not left:
+        raise ValueError('location arguments must be not None')
+
+    cur = init_db_cursor()
+
+    query = 'SELECT                                                                ' \
+            '    categories.name AS category_name,                                 ' \
+            '    COUNT(places_v2.id) AS places_amount,                             ' \
+            '    ROUND(AVG(places_rated.rating), 2) AS rating_average              ' \
+            'FROM                                                                  ' \
+            '    places_v2                                                         ' \
+            '        JOIN                                                          ' \
+            '    places_categories ON places_v2.id = places_categories.place_id    ' \
+            '        JOIN                                                          ' \
+            '    categories ON places_categories.category_id = categories.id       ' \
+            '        JOIN                                                          ' \
+            '    (SELECT                                                           ' \
+            '        places_v2.id, places_v2.rating                                ' \
+            '    FROM                                                              ' \
+            '        places_v2                                                     ' \
+            '    WHERE                                                             ' \
+            '        rating > 0) AS places_rated ON places_v2.id = places_rated.id ' \
+            'WHERE                                                                 ' \
+            '    latitude BETWEEN %s AND %s                                        ' \
+            '        AND longitude BETWEEN %s AND %s                               ' \
+            'GROUP BY categories.name                                              ' \
+            'HAVING places_amount > 0;                                             '
+
+    cur.execute(query, (bottom, top, left, right))
+
+    records = cur.fetchall()
+
+    statistics = list()
+    for record in records:
+        category_name = record['category_name']
+        place_amount = record['place_amount']
+        rating_average = record['rating_average']
+
+        statistics.append({'category_name': category_name,
+                           'place_amount': place_amount,
+                           'rating_average': rating_average})
+
+    cur.close()
+
+    return statistics
+
+
+

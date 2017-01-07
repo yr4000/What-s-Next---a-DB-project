@@ -46,6 +46,7 @@ def check_response_status(json_response):
         raise Exception('response status was bad: {status}'.format(status=status))
 
 
+# TODO: itzhaki also fetch the overall rating of the place to update it
 def convert_to_reviews_list(json_response):
     new_reviews = list()
 

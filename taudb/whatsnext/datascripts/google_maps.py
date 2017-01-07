@@ -175,7 +175,7 @@ def convert_to_places_list(json_response):
         try:
             rating = place[KEY_RATING]
         except KeyError:
-            rating = 0
+            rating = 0  # TODO: change default value to None
 
         try:
             vicinity = place[KEY_VICINITY]
