@@ -19,42 +19,16 @@ BARS_VIEW = "places"  # TODO replace when time comes
 BASE_TABLE = "places"
 
 
-def get_points_by_center_and_distance(latitude, longitude, dist):
-    return latitude-dist/111.0, latitude+dist/111.0, longitude-dist/69.0, longitude+dist/69.0
-
-
 def homepage(request):
+    categories = []
+    categories_results = execute_query("SELECT * FROM categories")
+    for category in categories_results:
+        categories.append(category["name"].capitalize())
+
     contexts = {
-        'categories': ['Hotel', 'Restaraunt']
+        'categories': categories
     }
     return render(request, 'whatsnext/index.html', context=contexts)
-
-
-def get_hotels(request):
-    hotels = dict()
-
-    cur = init_db_cursor()
-
-    '''
-    Get Hotels around the coordinates below.
-    latitude = 51.533033
-    longitude = -0.136822
-    boundaries = get_points_by_center_and_distance(latitude, longitude, 5.0)
-
-    cur.execute('SELECT * FROM places WHERE latitude BETWEEN %f AND %f AND longitude BETWEEN %f AND %f LIMIT 100',
-                boundaries)
-    '''
-    cur.execute('SELECT * FROM places LIMIT 100')
-
-    rows = cur.fetchall()
-    for place in rows:
-        hotel = dict()
-        hotel["name"] = place["name"]
-        hotel["latitude"] = place["latitude"]
-        hotel["longitude"] = place["longitude"]
-        hotels[place["id"]] = hotel
-
-    return JsonResponse(hotels, status=201)
 
 
 def search_by_word(request):
@@ -66,14 +40,14 @@ def search_by_word(request):
     places = dict()
 
     word_to_search = request_json["word"]
-    category_for_search = request_json["category"]
+    category_for_search = request_json["category"].lower()
 
     cur = init_db_cursor()
 
     # Get places whom contain the word in the request
-    query = 'SELECT * FROM places, places_categories WHERE places_categories.place_id = places.id ' \
-            'AND places_categories.category_id = {category} AND places.name like "%{name}%"' \
-            ' LIMIT 20'.format(category=category_for_search, name=word_to_search)
+    query = 'SELECT * FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
+            'JOIN categories ON places_categories.category_id = categories.id WHERE  categories.name = "{category}" AND' \
+            ' places.name like "%{name}%" LIMIT 20'.format(category=category_for_search, name=word_to_search)
 
     cur.execute(query)
 
@@ -95,10 +69,11 @@ def search_by_word(request):
     return JsonResponse(places, status=201)
 
 
+# TODO Yair, delete this view once you understand why the other one is more of a view rather then a function.
 # returns places (e.g hotels, bars, attractions etc...).
 # pre: latitude, longitude are NOT modified (i.e in the desirable resolution), and dist is in Km.
 # post: a json string with the desired request
-def search_places_by_point(latitude,longitude,dist,table = BASE_TABLE ,columns = "*"):
+def search_places_by_points(latitude,longitude,dist,table = BASE_TABLE ,columns = "*"):
     hotels = {}
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, dist)
     # write the query
@@ -124,8 +99,43 @@ def search_places_by_point(latitude,longitude,dist,table = BASE_TABLE ,columns =
         hotels[row["id"]] = hotel
     # return result:
     n = len(hotels)  # for debug TODO remember to delete
-    return JsonResponse(hotels, status=201)
+    return JsonResponse(hotels, status=200)
 
+
+def search_places_by_point(request):
+    if request.is_ajax() is False:
+        raise Http404
+
+    request_json = json.loads(request.body)
+
+    latitude = request_json["latitude"]
+    longitude = request_json["longitude"]
+    distance = request_json["distance"]
+    category = request_json["category"].lower()
+
+    top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
+
+    query = 'SELECT * FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
+            'JOIN categories ON places_categories.category_id = categories.id WHERE categories.name = "' + category + \
+            '" AND latitude BETWEEN ' + str(bottom) + ' AND ' + str(top) + ' AND ' \
+            'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' LIMIT 50'
+
+    print "executing query : " + query
+
+    places = dict()
+    rows = execute_query(query)
+    for result in rows:
+        place = dict()
+        place["id"] = result["id"]
+        place["google_id"] = result["google_id"]
+        place["name"] = result["name"]
+        place["longitude"] = result["longitude"]
+        place["latitude"] = result["latitude"]
+        place["rating"] = result["rating"]
+        place["vicinity"] = result["vicinity"]
+        places[place["id"]] = place
+
+    return JsonResponse(places, status=200)
 
 # returns a shortest pub crawl track from a starting point, according to number of bars
 # pre: latitude and longitude are NOT modified

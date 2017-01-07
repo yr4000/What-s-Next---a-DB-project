@@ -37,6 +37,33 @@ function getHotels() {
     });
 }
 
+function searchAroundMarker(latitude, longitude) {
+    var url = "/place/get_around_marker/";
+
+    var search_values = {
+        latitude: latitude,
+        longitude: longitude,
+        distance: searchDistance,
+        category: searchCatergory
+    };
+
+    $.post(url,
+        JSON.stringify(search_values),
+        function(response)
+        {
+            console.log(response);
+            for (var key in response) {
+                var place = response[key];
+                console.log(place);
+                addMarker(new google.maps.LatLng(place.latitude, place.longitude), place["name"]);
+            }
+        },
+        'json')
+    .fail(function(jgXHR, textStatus, errorThrown) {
+         console.log("Failed to search by marker");
+    });
+}
+
 /**
  * Created by DrorBrunman on 04/01/2017.
  */

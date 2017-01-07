@@ -282,6 +282,11 @@ function initMap() {
 }
 
 function createMarker(LatLang, title, center, color) {
+    if (markForSearch) {
+        map.setCenter(LatLang); // Center around marker.
+        searchAroundMarker(LatLang.lat(),LatLang.lng());
+        markForSearch = false;
+    }
     if (center) {
         map.setCenter(LatLang);
     }

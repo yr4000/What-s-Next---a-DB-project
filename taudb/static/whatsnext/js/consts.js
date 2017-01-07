@@ -16,3 +16,6 @@ var enumMarkerColors = {
 
 
 var DEFAULT_MAP_CENTER = {lat: 51.509865, lng: -0.118092};
+
+var DEFAULT_SEARCH_DISTANCE = 5;
+var DEFAULT_SEARCH_CATEGORY = "lodging";

@@ -9,3 +9,12 @@ var markersArray = new Array();
 
 // Holds the marker placed where the user last clicked on the map.
 var lastMapClickLocation = null;
+
+// If the setting a Marker should "find places"
+var markForSearch = false;
+
+// Search Category (Holds first default search value
+var searchCatergory = DEFAULT_SEARCH_CATEGORY;
+
+// Default Distance for search
+var searchDistance = DEFAULT_SEARCH_DISTANCE;

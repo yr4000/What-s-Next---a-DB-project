@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.homepage),
     url(r'^fullTextSearch', views.search_by_word),
-    url(r'^hotels/', views.get_hotels),
-    url(r'^yair_test/', tests.yair_test),
+    url(r'^yair_test/', tests.yair_test),  # TODO Yair delete once you're done testing.
     url(r'^place/details', views.get_place_details),
+    url(r'^place/get_around_marker/', views.search_places_by_point)
     ]

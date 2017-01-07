@@ -17,16 +17,16 @@
 			<span id="overlayTitle">
 				What's Next?!
 			</span><br><br>
-			<select>
+			<select id="nav-search-category">
 				<option value="NULL">Start with...</option>
 				{% for cat in categories %}
 				<option value="{{ cat }}">{{ cat }}</option>
 				{% endfor %}
 			</select>
 			&nbsp;
-			<input type="text" name="place_name" size="12" placeholder="Location name"><br><br>
+			<input type="text" id="place-name" size="12" placeholder="Location name"><br><br>
 			OR
-			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">Mark Your Location On The Map</a>
+			<a href="javascript:void(0)" class="closebtn" onclick="markForSearch()">Mark Your Location On The Map</a>
 		</div>
 
 	</div>
