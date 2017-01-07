@@ -180,12 +180,7 @@ def pub_crawl(latitude,longitude,numOfBars = 4):
     # return trackPoints
 
 
-def get_place_details(request):
-    if 'place_id' not in request.GET:
-        return JsonResponse(MISSING_QUERY_PARAMS, status=400)
-
-    # get required query parameter place_id
-    place_id = request.GET['place_id']
+def get_place_details(request, place_id):
     if not place_id:
         return JsonResponse(INVALID_QUERY_PARAMS, status=400)
 

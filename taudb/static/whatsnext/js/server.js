@@ -17,26 +17,6 @@ $.ajaxSetup({
     }
 });
 
-function getHotels() {
-    var url = "/hotels/";
-
-    $.getJSON(url,
-        "",
-        function(response)
-        {
-            console.log(response);
-            for (var key in response) {
-                var hotel = response[key];
-                console.log(hotel);
-                addMarker(new google.maps.LatLng(hotel.latitude, hotel.longitude), hotel["name"]);
-            }
-        },
-        'json')
-    .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to fetch Hotels");
-    });
-}
-
 function searchAroundMarker(latitude, longitude) {
     var url = "/place/get_around_marker/";
 
@@ -44,7 +24,7 @@ function searchAroundMarker(latitude, longitude) {
         latitude: latitude,
         longitude: longitude,
         distance: searchDistance,
-        category: searchCatergory
+        category: searchCategory
     };
 
     $.post(url,
@@ -55,7 +35,8 @@ function searchAroundMarker(latitude, longitude) {
             for (var key in response) {
                 var place = response[key];
                 console.log(place);
-                addMarker(new google.maps.LatLng(place.latitude, place.longitude), place["name"]);
+                addMarker(new google.maps.LatLng(place.latitude, place.longitude), place["name"], place["id"]);
+                addLocationRow(place);
             }
         },
         'json')
@@ -83,11 +64,26 @@ function searchByFullText(word,category) {
             for (var key in response) {
                 var place = response[key];
                 console.log(place);
-                addMarker(new google.maps.LatLng(place.latitude, place.longitude), place["name"]);
+                addMarker(new google.maps.LatLng(place.latitude, place.longitude), place["name"], place["id"]);
+                addLocationRow(place);
             }
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
          console.log("Failed to run full text search");
+    });
+}
+
+function getPlaceDetails(place_id) {
+    var url="/place/" + place_id + "/details/";
+
+    $.getJSON(url,
+    "",
+    function(response) {
+        console.log(response);
+    },
+        'json')
+    .fail(function(jgXHR, textStatus, errorThrown) {
+         console.log("Failed to fetch Hotels");
     });
 }

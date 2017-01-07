@@ -14,7 +14,7 @@ var lastMapClickLocation = null;
 var markForSearch = false;
 
 // Search Category (Holds first default search value
-var searchCatergory = DEFAULT_SEARCH_CATEGORY;
+var searchCategory = DEFAULT_SEARCH_CATEGORY;
 
 // Default Distance for search
 var searchDistance = DEFAULT_SEARCH_DISTANCE;

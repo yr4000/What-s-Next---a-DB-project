@@ -12,29 +12,37 @@
 <body>
     <div id="map"></div>
 	<div id="myNav" class="overlay">
-
-		<!-- Overlay content -->
 		<div class="overlay-content">
 			<span id="overlayTitle">
 				What's Next?!
 			</span><br><br>
-			<select id="nav-search-category">
+			<select id="overlay-search-category">
 				<option value="NULL">Start with...</option>
 				{% for cat in categories %}
 				<option value="{{ cat }}">{{ cat }}</option>
 				{% endfor %}
 			</select>
 			&nbsp;
-			<input type="text" id="place-name" size="12" placeholder="Location name"><br><br>
+			<input type="text" id="overlay-place-name" size="12" placeholder="Location name"><br><br>
 			OR
 			<a href="javascript:void(0)" class="closebtn" onclick="markForSearch()">Mark Your Location On The Map</a>
 		</div>
 
 	</div>
     <div class="nav">
-        <div style="width: 100%; border-bottom: dashed 1px black;">Search</div>
+        <div style="display:none;">
+			<select id="search-category">
+				<option value="default">Start with...</option>
+				{% for cat in categories %}
+				<option value="{{ cat }}">{{ cat }}</option>
+				{% endfor %}
+			</select>&nbsp;
+			<input type="text" id="place-name" size="12" placeholder="Location name">
+		</div>
         <div>Place</div>
-        <div>Places (Results)</div>
+        <div>
+			<table id="results"></table>
+		</div>
     </div>
     <script src="{% static 'whatsnext/js/jquery.min.js' %}" type="text/javascript"></script>
 	<script src="{% static 'whatsnext/js/jquery.cookie.js' %}" type="text/javascript"></script>

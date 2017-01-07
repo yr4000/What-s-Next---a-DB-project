@@ -281,19 +281,24 @@ function initMap() {
 
 }
 
-function createMarker(LatLang, title, center, color) {
+function createMarker(LatLong, title, place_id, center, color) {
     if (markForSearch) {
-        map.setCenter(LatLang); // Center around marker.
-        searchAroundMarker(LatLang.lat(),LatLang.lng());
+        map.setCenter(LatLong); // Center around marker.
+        searchAroundMarker(LatLong.lat(),LatLong.lng());
         markForSearch = false;
     }
     if (center) {
-        map.setCenter(LatLang);
+        map.setCenter(LatLong);
     }
     var m = new google.maps.Marker({
-        position: LatLang,
+        position: LatLong,
         map: map,
         title:title
+    });
+
+    m.addListener("click", function() {
+        map.setCenter(LatLong);
+        getPlaceDetails(place_id);
     });
 
     return m;
