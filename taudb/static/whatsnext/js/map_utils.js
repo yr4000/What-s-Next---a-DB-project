@@ -14,8 +14,17 @@ function initMap() {
         scaleControl: true,
         streetViewControl: false,
         mapTypeControl: false,
+        clickableIcons: false,
         backgroundColor: "#2B2B2B",
         styles: [
+            {
+                "elementType": "labels.icon",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
             {
                 "elementType": "geometry",
                 "stylers": [
@@ -78,14 +87,6 @@ function initMap() {
             },
             {
                 "featureType": "poi",
-                "stylers": [
-                    {
-                        "visibility": "off"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi",
                 "elementType": "geometry",
                 "stylers": [
                     {
@@ -99,14 +100,6 @@ function initMap() {
                 "stylers": [
                     {
                         "color": "#93817c"
-                    }
-                ]
-            },
-            {
-                "featureType": "poi.park",
-                "stylers": [
-                    {
-                        "visibility": "on"
                     }
                 ]
             },
