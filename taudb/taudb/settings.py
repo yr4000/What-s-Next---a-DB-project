@@ -118,10 +118,7 @@ DB_ALL = "DbMysql06"
 if platform.system() == 'Linux':
     DB_HOST = "mysqlsrv.cs.tau.ac.il"
     DB_PORT = 3306
-elif platform.system() == 'Windows':
-    DB_HOST = "127.0.0.1"
-    DB_PORT = 3305
-elif platform.system() == 'Darwin':
+elif platform.system() == 'Windows' or platform.system() == 'Darwin':
     DB_HOST = "127.0.0.1"
     DB_PORT = 3305
 
