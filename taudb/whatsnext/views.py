@@ -112,6 +112,10 @@ def search_places_by_points(latitude,longitude,dist,table = BASE_TABLE ,columns 
     return JsonResponse(hotels, status=200)
 
 
+'''
+input: latitude, longitude, distnce, category
+output: a square sized distance**2 with all the places from that category in it's range
+'''
 def search_places_by_point(request):
     if request.is_ajax() is False:
         raise Http404
@@ -147,44 +151,68 @@ def search_places_by_point(request):
 
     return JsonResponse(places, status=200)
 
-# returns a shortest pub crawl track from a starting point, according to number of bars
-# pre: latitude and longitude are NOT modified
+
+'''
+ returns a shortest pub crawl track from a starting point, according to number of bars
+ pre: latitude and longitude are NOT modified
+'''
 # TODO: consider save bar's name since there might be a couple of places in the same spot
-def pub_crawl(latitude,longitude,numOfBars = 4):
-    trackPoints = [[0, 0] for i in range(numOfBars)]
-    trackPoints[0][0], trackPoints[0][1] = latitude, longitude  # initialize the first point in the track
+def pub_crawl(request):
+    if request.is_ajax() is False:
+        raise Http404
+
+    request_json = json.loads(request.body)
+
+    latitude = 51.5363312,-0.0046230 #request_json["latitude"]
+    longitude = 51.5363312,-0.0046230 #request_json["longitude"]
+    numOfBars = 4 #should be replaced later with len(categories)
+    categories = request_json["categories"]
+
+    trackPoints = [[0, 0,""] for i in range(numOfBars)]
+    trackPoints[0][0], trackPoints[0][1], trackPoints[0][2] = latitude, longitude, "You are here" # initialize the first point in the track
+
     for i in range(1,numOfBars):
         currMinDist = -1
-        closestPoint = [0, 0]
-        # return all bars in range of 0.5 km TODO what if there aren't?
-        top, right, buttom, left = get_boundaries_by_center_and_distance(latitude,longitude,0.5)
+        closestPoint = [0, 0,""]
+        # return all bars in range of 0.5 km
+        top, right, bottom, left = get_boundaries_by_center_and_distance(latitude,longitude,0.5)
         excludeLats = [trackPoints[x][0] for x in range(i)]  # we don't want the same point to appear in the track twice
         excludeLongs = [trackPoints[x][1] for x in range(i)]
-        query = "SELECT latitude, longitude FROM " + BARS_VIEW \
+        #TODO this query is for tests
+        query = "SELECT latitude, longitude, name FROM " + BARS_VIEW \
                 + " WHERE latitude <= " + str(top) \
                 + " AND longitude <= " + str(right) \
-                + " AND latitude >= " + str(buttom) \
+                + " AND latitude >= " + str(bottom) \
                 + " AND longitude >= " + str(left)
+        '''
+        query = 'SELECT * FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
+                'JOIN categories ON places_categories.category_id = categories.id WHERE categories.name = "' + categories[i] + \
+                '" AND latitude BETWEEN ' + str(bottom) + ' AND ' + str(top) + ' AND ' \
+                    'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' LIMIT 50'
+        '''
                 #+ " AND latitude NOT IN (" + excludeLats[1:len(excludeLats)-1]+")" \
                 #+ " AND longitude NOT IN (" + excludeLongs[1:len(excludeLongs)-1]+")"
         for x in range(i):
             query = query + " AND latitude != " + str(excludeLats[x]) \
                             + " AND longitude != " + str(excludeLongs[x])
-        #TODO: maybe it is better to use the query only once? the problem is that it's might not be correct (we always stay in the same square)
         rows = execute_query(query)
+        if len(rows) == 0:
+            break
+
         # for each point in range look for the closest one.
         # we save the min distance at currMinDist and it's point at closestPoint
         for j in range(len(rows)):
             currPoint = (latitude,longitude)
-            tempP = (rows[j]["latitude"],rows[j]["longitude"])
+            tempP = (rows[j]["latitude"],rows[j]["longitude"],)
             tempDist = gps_distance(currPoint,tempP)
             if currMinDist == -1 or currMinDist > tempDist:
                 currMinDist = tempDist
-                closestPoint[0], closestPoint[1] = rows[j]["latitude"], rows[j]["longitude"]
+                closestPoint[0], closestPoint[1], closestPoint[2] = rows[j]["latitude"], rows[j]["longitude"], rows[j]["name"]
         # add the current point to an array
-        trackPoints[i][0], trackPoints[i][1] = closestPoint[0], closestPoint[1]
+        trackPoints[i][0], trackPoints[i][1], trackPoints[i][2] = closestPoint[0], closestPoint[1], closestPoint[2]
         latitude, longitude = closestPoint[0] , closestPoint[1]  # update the current point to be the closest we found
-        # calculate again with the point found
+        # calculate again with the point found (returns to the start of the loop
+
     #TODO: print the points to map and a route if possible
     return HttpResponse(str(trackPoints))
     # return trackPoints

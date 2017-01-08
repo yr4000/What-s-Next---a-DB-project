@@ -19,3 +19,13 @@ def execute_query(query):
     cursor = init_db_cursor()
     cursor.execute(query)
     return cursor.fetchall()
+
+#returns a query string of a view according to relevant parameters
+def create_view_from_parameters(tables_list,columns_list = "*"):
+    query = "SELECT"
+    for i in range(len(columns_list)):
+        query += " " + columns_list[i] + ", "
+    query += " FROM"
+    for i in range(len(tables_list)):
+        query += " " + tables_list[i] + ", "
+    return query
