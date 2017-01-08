@@ -49,7 +49,7 @@ function searchAroundMarker(latitude, longitude) {
  * Created by DrorBrunman on 04/01/2017.
  */
 function searchByFullText(word,category) {
-    var url = "/fullTextSearch/";
+    var url = "/searchByFullText/";
 
     var search_values = {
         word: word,

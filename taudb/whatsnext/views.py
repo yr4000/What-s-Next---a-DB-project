@@ -31,7 +31,7 @@ def homepage(request):
     return render(request, 'whatsnext/index.html', context=contexts)
 
 
-def search_by_word(request):
+def search_by_name(request):
     if request.is_ajax() is False:
         raise Http404
 
@@ -39,20 +39,33 @@ def search_by_word(request):
 
     places = dict()
 
-    word_to_search = request_json["word"]
-    category_for_search = request_json["category"].lower()
+    # word_to_search = request_json["word"]
+    # category_for_search = request_json["category"]
+    word_to_search = 'Fish'
+    category_for_search = 1
+    limit_for_query = 20
 
     cur = init_db_cursor()
 
     # Get places whom contain the word in the request
-    query = 'SELECT * FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
-            'JOIN categories ON places_categories.category_id = categories.id WHERE  categories.name = "{category}" AND' \
-            ' places.name like "%{name}%" LIMIT 20'.format(category=category_for_search, name=word_to_search)
+    if 1 <= category_for_search <= 4:
+        # search by the word and by category also
+        query = 'Select full_text_results.id, full_text_results.google_id, full_text_results.name,' \
+                'full_text_results.rating, full_text_results.vicinity,' \
+                'full_text_results.latitude, full_text_results.longitude ' \
+                'From (Select * From places_v2 ' \
+                '      Where Match(places_v2.name) ' \
+                '      Against("+{name}" in boolean mode)) As full_text_results' \
+                'Inner join places_categories ON full_text_results.id = places_categories.place_id ' \
+                'Where places_categories.category_id = {category} LIMIT {limit}'\
+                .format(name=word_to_search, category=category_for_search, limit=limit_for_query)
+    else:
+        # search only by the word
+        query = 'Select * From places_v2 ' \
+                'Where Match(places_v2.name) ' \
+                'Against("+{name}" in boolean mode)'.format(name=word_to_search)
 
     cur.execute(query)
-
-    # cur.execute('Select * From places Where MATCH(places.name)
-    # AGAINST("+%s" IN BOOLEAN MODE) LIMIT 10' % word_to_search)
 
     rows = cur.fetchall()
     for row in rows:
