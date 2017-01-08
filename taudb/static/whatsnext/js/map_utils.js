@@ -276,12 +276,12 @@ function initMap() {
 
 function createMarker(LatLong, title, place_id, center, color) {
     if (markForSearch) {
-        map.setCenter(LatLong); // Center around marker.
+        map.panTo(LatLong); // Center around marker.
         searchAroundMarker(LatLong.lat(),LatLong.lng());
         markForSearch = false;
     }
     if (center) {
-        map.setCenter(LatLong);
+        map.panTo(LatLong);
     }
     var m = new google.maps.Marker({
         position: LatLong,
@@ -290,7 +290,7 @@ function createMarker(LatLong, title, place_id, center, color) {
     });
 
     m.addListener("click", function() {
-        map.setCenter(LatLong);
+        map.panTo(LatLong);
         getPlaceDetails(place_id);
     });
 
