@@ -39,33 +39,30 @@ def search_by_name(request):
 
     places = dict()
 
-    # word_to_search = request_json["word"]
-    # category_for_search = request_json["category"]
-    word_to_search = 'Fish'
-    category_for_search = 1
+    word_to_search = request_json["word"]
+    category_for_search = request_json["category"]
     limit_for_query = 20
 
     cur = init_db_cursor()
 
     # Get places whom contain the word in the request
     if 1 <= category_for_search <= 4:
-        # search by the word and by category also
-        query = 'Select full_text_results.id, full_text_results.google_id, full_text_results.name,' \
-                'full_text_results.rating, full_text_results.vicinity,' \
+        # search by the word and by the category also
+        query = 'Select full_text_results.id, full_text_results.google_id, full_text_results.name, ' \
+                'full_text_results.rating, full_text_results.vicinity, ' \
                 'full_text_results.latitude, full_text_results.longitude ' \
                 'From (Select * From places_v2 ' \
                 '      Where Match(places_v2.name) ' \
-                '      Against("+{name}" in boolean mode)) As full_text_results' \
+                '      Against("+%s" in boolean mode)) As full_text_results ' \
                 'Inner join places_categories ON full_text_results.id = places_categories.place_id ' \
-                'Where places_categories.category_id = {category} LIMIT {limit}'\
-                .format(name=word_to_search, category=category_for_search, limit=limit_for_query)
+                'Where places_categories.category_id = %s LIMIT %s'
+        cur.execute(query, (word_to_search, category_for_search, limit_for_query))
     else:
         # search only by the word
         query = 'Select * From places_v2 ' \
                 'Where Match(places_v2.name) ' \
-                'Against("+{name}" in boolean mode)'.format(name=word_to_search)
-
-    cur.execute(query)
+                'Against("+%s" in boolean mode)'
+        cur.execute(query, (word_to_search, ))
 
     rows = cur.fetchall()
     for row in rows:
