@@ -9,13 +9,18 @@ var enumZoomLevels = {
 };
 
 var enumMarkerColors = {
-    Restaurant : "RED",
-    Hotel : "BLUE",
-    Current : "GREEN"
+    Restaurant : "red/red_Marker",
+    Lodging : "blue/blue_Marker",
+    Bar : "purple/purple_Marker",
+    Museum : "orange/orange_Marker",
+    Current : "green/green_Marker"
 };
+
 
 
 var DEFAULT_MAP_CENTER = {lat: 51.509865, lng: -0.118092};
 
 var DEFAULT_SEARCH_DISTANCE = 5;
-var DEFAULT_SEARCH_CATEGORY = "lodging";
+var DEFAULT_SEARCH_CATEGORY = "Lodging";
+
+var DEFAULT_RESULTS_AMOUNT = 20;

@@ -248,7 +248,7 @@ function initMap() {
         if (lastMapClickLocation) {
             removeMarker(lastMapClickLocation);
         }
-        lastMapClickLocation = createMarker(position, "Clicked here", false, enumMarkerColors.Current);
+        lastMapClickLocation = createMarker(position, "Clicked here", "-1", true, enumMarkerColors.Current, 0);
     });
 
     // init bounds of the desired area
@@ -274,7 +274,7 @@ function initMap() {
 
 }
 
-function createMarker(LatLong, title, place_id, center, color) {
+function createMarker(LatLong, title, place_id, center, color, index) {
     if (markForSearch) {
         map.panTo(LatLong); // Center around marker.
         searchAroundMarker(LatLong.lat(),LatLong.lng());
@@ -286,9 +286,9 @@ function createMarker(LatLong, title, place_id, center, color) {
     var m = new google.maps.Marker({
         position: LatLong,
         map: map,
+        icon: iconFolderPath + color + String.fromCharCode((index % 26) + 65) + ".png",
         title:title
     });
-
     m.addListener("click", function() {
         map.panTo(LatLong);
         getPlaceDetails(place_id);
@@ -297,8 +297,8 @@ function createMarker(LatLong, title, place_id, center, color) {
     return m;
 }
 
-function addMarker(LatLang, title, center, color) {
-    markersArray.push(createMarker(LatLang, title, center, color));
+function addMarker(LatLong, title, place_id, center, color, index) {
+    markersArray.push(createMarker(LatLong, title, place_id, center, color, index));
 }
 
 function removeMarker(marker) {

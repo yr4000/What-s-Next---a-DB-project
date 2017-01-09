@@ -45,7 +45,7 @@ function closeNavForSearch() {
 }
 
 
-function addLocationRow(location) {
+function addLocationRow(location, type, index) {
     var resultsTable = document.getElementById("results");
 
     var placeRow = resultsTable.insertRow(0);
@@ -53,9 +53,14 @@ function addLocationRow(location) {
     var markerCell = placeRow.insertCell(i++);
     markerCell.className = "marker-cell";
     markerCell.rowSpan = 2;
+    markerCell.innerHTML = '<img src="' + iconFolderPath + enumMarkerColors[type] +
+        String.fromCharCode((index % 26) + 65) + '.png">';
     var titleCell = placeRow.insertCell(i++);
     titleCell.innerText = location.name;
     titleCell.className = "place-title";
+    placeRow.onclick = function() {
+      getPlaceDetails(location.id);
+    };
 
     placeRow = resultsTable.insertRow(1);
     i = 0;

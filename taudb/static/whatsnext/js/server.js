@@ -24,7 +24,9 @@ function searchAroundMarker(latitude, longitude) {
         latitude: latitude,
         longitude: longitude,
         distance: searchDistance,
-        category: searchCategory
+        category: searchCategory,
+        limit: DEFAULT_RESULTS_AMOUNT,
+        page: 0
     };
 
     $.post(url,
@@ -32,11 +34,12 @@ function searchAroundMarker(latitude, longitude) {
         function(response)
         {
             console.log(response);
+            var i = 0;
             for (var key in response) {
                 var place = response[key];
-                console.log(place);
-                addMarker(new google.maps.LatLng(place.latitude, place.longitude), place["name"], place["id"]);
-                addLocationRow(place);
+                addMarker(new google.maps.LatLng(place.latitude, place.longitude),
+                          place["name"], place["id"], true, enumMarkerColors[searchCategory], i++);
+                addLocationRow(place, searchCategory, i);
             }
         },
         'json')
@@ -53,19 +56,21 @@ function searchByFullText(word,category) {
 
     var search_values = {
         word: word,
-        category: category
+        category: category,
+        limit: DEFAULT_RESULTS_AMOUNT,
+        page:0
     };
 
     $.post(url,
         JSON.stringify(search_values),
         function(response)
         {
-            console.log(response);
+            var i = 0;
             for (var key in response) {
                 var place = response[key];
-                console.log(place);
-                addMarker(new google.maps.LatLng(place.latitude, place.longitude), place["name"], place["id"]);
-                addLocationRow(place);
+                addMarker(new google.maps.LatLng(place.latitude, place.longitude),
+                          place["name"], place["id"], false, enumMarkerColors[category], i++);
+                addLocationRow(place, category, i);
             }
         },
         'json')
