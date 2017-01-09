@@ -48,7 +48,7 @@ function closeNavForSearch() {
 function addLocationRow(location, type, index) {
     var resultsTable = document.getElementById("results");
 
-    var placeRow = resultsTable.insertRow(0);
+    var placeRow = resultsTable.insertRow(-1);
     var i = 0;
     var markerCell = placeRow.insertCell(i++);
     markerCell.className = "marker-cell";
@@ -62,7 +62,7 @@ function addLocationRow(location, type, index) {
       getPlaceDetails(location.id);
     };
 
-    placeRow = resultsTable.insertRow(1);
+    placeRow = resultsTable.insertRow(-1);
     i = 0;
     var addressCell = placeRow.insertCell(i++);
     addressCell.innerText = location.vicinity;

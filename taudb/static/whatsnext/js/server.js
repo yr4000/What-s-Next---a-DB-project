@@ -38,8 +38,9 @@ function searchAroundMarker(latitude, longitude) {
             for (var key in response) {
                 var place = response[key];
                 addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                          place["name"], place["id"], true, enumMarkerColors[searchCategory], i++);
+                          place["name"], place["id"], true, enumMarkerColors[searchCategory], i);
                 addLocationRow(place, searchCategory, i);
+                i++;
             }
         },
         'json')
@@ -69,8 +70,9 @@ function searchByFullText(word,category) {
             for (var key in response) {
                 var place = response[key];
                 addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                          place["name"], place["id"], false, enumMarkerColors[category], i++);
+                          place["name"], place["id"], false, enumMarkerColors[category], i);
                 addLocationRow(place, category, i);
+                i++;
             }
         },
         'json')

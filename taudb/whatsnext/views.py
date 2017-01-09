@@ -41,7 +41,7 @@ def search_by_name(request):
 
     word_to_search = request_json["word"]
     category_for_search = request_json["category"]
-    limit_for_query = 20
+    limit_for_query = request_json["limit"]
 
     cur = init_db_cursor()
 
@@ -112,10 +112,8 @@ def search_places_by_points(latitude,longitude,dist,table = BASE_TABLE ,columns 
     return JsonResponse(hotels, status=200)
 
 
-'''
-input: latitude, longitude, distnce, category
-output: a square sized distance**2 with all the places from that category in it's range
-'''
+# input : latitude, longitude, distance, category
+# output : a square sized distance**2 with all the places from that category in it's range
 def search_places_by_point(request):
     if request.is_ajax() is False:
         raise Http404
@@ -126,13 +124,14 @@ def search_places_by_point(request):
     longitude = request_json["longitude"]
     distance = request_json["distance"]
     category = request_json["category"].lower()
+    limit = request_json["limit"]
 
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
 
     query = 'SELECT * FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
             'JOIN categories ON places_categories.category_id = categories.id WHERE categories.name = "' + category + \
             '" AND latitude BETWEEN ' + str(bottom) + ' AND ' + str(top) + ' AND ' \
-            'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' LIMIT 50'
+            'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' LIMIT ' + str(limit)
 
     print "executing query : " + query
 
