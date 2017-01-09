@@ -72,8 +72,8 @@ def search_by_name(request):
         place["rating"] = row["rating"]
         place["vicinity"] = row["vicinity"]
         place["name"] = row["name"]
-        place["latitude"] = row["latitude"]
-        place["longitude"] = row["longitude"]
+        place["latitude"] = (row["latitude"] / 10000) + 51
+        place["longitude"] = (row["longitude"] / 10000)
         places[row["id"]] = place
 
     return JsonResponse(places, status=201)
