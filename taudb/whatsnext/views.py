@@ -40,6 +40,8 @@ def search_by_name(request):
 
     places = dict()
 
+    categories = ['Lodging', 'Bar', 'Restaurant', 'Museum']
+
     word_to_search = request_json["word"]
     category_for_search = request_json["category"]
     limit_for_query = request_json["limit"]
@@ -47,7 +49,7 @@ def search_by_name(request):
     cur = init_db_cursor()
 
     # Get places whom contain the word in the request
-    if 1 <= category_for_search <= 4:
+    if category_for_search in categories:
         # search by the word and by the category also
         query = 'Select full_text_results.id, full_text_results.google_id, full_text_results.name, ' \
                 'full_text_results.rating, full_text_results.vicinity, ' \
@@ -56,7 +58,9 @@ def search_by_name(request):
                 '      Where Match(places_v2.name) ' \
                 '      Against("+%s" in boolean mode)) As full_text_results ' \
                 'Inner join places_categories ON full_text_results.id = places_categories.place_id ' \
-                'Where places_categories.category_id = %s LIMIT %s'
+                'Inner join categories ON categories.id = places_categories.category_id ' \
+                'Where categories.name = %s' \
+                'LIMIT %s'
         cur.execute(query, (word_to_search, category_for_search, limit_for_query))
     else:
         # search only by the word
@@ -73,8 +77,8 @@ def search_by_name(request):
         place["rating"] = row["rating"]
         place["vicinity"] = row["vicinity"]
         place["name"] = row["name"]
-        place["latitude"] = (row["latitude"] / 10000) + 51
-        place["longitude"] = (row["longitude"] / 10000)
+        place["latitude"] = (row["latitude"] / 10000.0) + 51
+        place["longitude"] = (row["longitude"] / 10000.0)
         places[row["id"]] = place
 
     return JsonResponse(places, status=201)
