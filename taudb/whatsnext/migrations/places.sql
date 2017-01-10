@@ -80,4 +80,25 @@ CREATE TABLE places_categories_v2 (
 	UNIQUE KEY `place_id_category_id` (`place_id`,`category_id`)
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
-        
+
+CREATE TABLE search_popularity
+(
+	search_id INT NOT NULL AUTO_INCREMENT,
+  po0pularity INT NOT NULL,
+  CHECK (popularity>0),
+  PRIMARY KEY (search_id)
+)
+
+
+CREATE TABLE searches_places
+(
+	search_id INT NOT NULL,
+    place_id INT NOT NULL
+)
+
+# TODO remember to delete those values
+INSERT INTO search_popularity
+VALUES (1,5)
+
+INSERT INTO searches_places
+VALUES (1,1)

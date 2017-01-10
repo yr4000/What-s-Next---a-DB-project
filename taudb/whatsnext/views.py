@@ -8,6 +8,7 @@ from django.http import HttpResponse, JsonResponse, Http404
 # Internal packages import
 from utils.db_utils import *
 from utils.geo_utils import *
+from utils.data_access import *
 from utils.google_maps_access import fetch_reviews_from_google
 from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
@@ -126,12 +127,16 @@ def search_places_by_point(request):
     category = request_json["category"].lower()
     limit = request_json["limit"]
 
+    #returns a 4*distance**2 square around the selected point.
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
 
-    query = 'SELECT * FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
+    #returns the #limit'th places closest to the point, based on oclidian distance.
+    #(since we search in relatively small areai oclidian distance is sufficient).
+    query = 'SELECT *,(POWER(latitude - '+str(latitude)+',2) + POWER(longitude - '+str(longitude)+',2)) AS distance' \
+            ' FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
             'JOIN categories ON places_categories.category_id = categories.id WHERE categories.name = "' + category + \
             '" AND latitude BETWEEN ' + str(bottom) + ' AND ' + str(top) + ' AND ' \
-            'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' LIMIT ' + str(limit)
+            'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' ORDER BY distance ASC ' + ' LIMIT ' + str(limit)
 
     print "executing query : " + query
 
@@ -241,26 +246,27 @@ def get_place_details(request, place_id):
     return JsonResponse({'place': place.to_json(), 'reviews': reviews_dicts}, status=200)
 
 
-#TODO: create the tables
+#TODO there should be a text box who autocomplete whenever the user starts a search
 def find_popular_search(places_id_list):
     #create an sql query to search if that search exists
     places_str = ""
-    for i in range(len(places_id_list)):
-        places_str  = places_str + " place_id = " + str(places_id_list[i]) + " AND "
-    places_str = places_str[:-5] #remove the last add
-    find_search_query = "SELECT search_id FROM searches_places WHERE" + places_str
-    find_popular_query = "SELECT popularity FROM searches WHERE search_id = {" + find_search_query + "}"
+    search_id = find_search_id_query(places_id_list)
+    find_popular_query = "SELECT sp.popularity FROM ("+ search_id+ ") AS S_ID, search_popularity AS sp " \
+                          "WHERE S_ID.search_id = sp.search_id"
     popularity_rate = execute_query(find_popular_query)
-    #if it does, update
-    if(popularity_rate > 0):
-        return #TODO complete
-    #else insert it
+    if popularity_rate:
+        return popularity_rate
+
+
+#TODO should be called whenever a search is being made
+def update_popular_search(places_id_list):
+    search_id = execute_query(find_search_id_query(places_id_list))
+    if not search_id: #if there is not search like that, insert it to search_popularity
+         execute_query("INSERT INTO search_popularity(popularity) VALUES (1)")
+         #TODO add insert to searches_places!
     else:
-        return #TODO complete
-
-
-def fetch_popular_routes():
-    #this function will return our top searches.
+        execute_query("UPDATE search_popularity SET popularity = ")
+        #TODO complete
     return
 
 
