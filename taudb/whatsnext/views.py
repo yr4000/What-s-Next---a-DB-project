@@ -102,10 +102,8 @@ def search_places_by_point(request):
     return JsonResponse(places, status=200)
 
 
-'''
- returns a shortest pub crawl track from a starting point, according to number of bars
- pre: latitude and longitude are NOT modified
-'''
+# returns a shortest pub crawl track from a starting point, according to number of bars
+# pre: latitude and longitude are NOT modified
 # TODO: consider save bar's name since there might be a couple of places in the same spot
 def pub_crawl(request):
     if request.is_ajax() is False:
@@ -113,59 +111,67 @@ def pub_crawl(request):
 
     request_json = json.loads(request.body)
 
-    latitude = 51.5363312,-0.0046230 #request_json["latitude"]
-    longitude = 51.5363312,-0.0046230 #request_json["longitude"]
-    numOfBars = 4 #should be replaced later with len(categories)
+    latitude = 51.5363312, -0.0046230  # request_json["latitude"]
+    longitude = 51.5363312, -0.0046230  # request_json["longitude"]
+    num_of_bars = 4  # should be replaced later with len(categories)
     categories = request_json["categories"]
 
-    trackPoints = [[0, 0,""] for i in range(numOfBars)]
-    trackPoints[0][0], trackPoints[0][1], trackPoints[0][2] = latitude, longitude, "You are here" # initialize the first point in the track
+    track_points = [[0, 0, ""] for i in range(num_of_bars)]
+    # initialize the first point in the track
+    track_points[0][0], track_points[0][1], track_points[0][2] = latitude, longitude, "You are here"
 
-    for i in range(1,numOfBars):
-        currMinDist = -1
-        closestPoint = [0, 0,""]
+    for i in range(1,num_of_bars):
+        curr_min_dist = -1
+        closest_point = [0, 0, ""]
         # return all bars in range of 0.5 km
-        top, right, bottom, left = get_boundaries_by_center_and_distance(latitude,longitude,0.5)
-        excludeLats = [trackPoints[x][0] for x in range(i)]  # we don't want the same point to appear in the track twice
-        excludeLongs = [trackPoints[x][1] for x in range(i)]
-        #TODO this query is for tests
+        top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, 0.5)
+        # we don't want the same point to appear in the track twice
+        exclude_lats = [track_points[x][0] for x in range(i)]
+        exclude_longs = [track_points[x][1] for x in range(i)]
+        # TODO: this query is for tests
         query = "SELECT latitude, longitude, name FROM places "\
                 + " WHERE latitude <= " + str(top) \
                 + " AND longitude <= " + str(right) \
                 + " AND latitude >= " + str(bottom) \
                 + " AND longitude >= " + str(left)
-        '''
-        query = 'SELECT * FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
-                'JOIN categories ON places_categories.category_id = categories.id WHERE categories.name = "' + categories[i] + \
-                '" AND latitude BETWEEN ' + str(bottom) + ' AND ' + str(top) + ' AND ' \
-                    'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' LIMIT 50'
-        '''
-                #+ " AND latitude NOT IN (" + excludeLats[1:len(excludeLats)-1]+")" \
-                #+ " AND longitude NOT IN (" + excludeLongs[1:len(excludeLongs)-1]+")"
+
+        # query = 'SELECT * FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
+        #         'JOIN categories ON places_categories.category_id = categories.id WHERE categories.name = "' + categories[i] + \
+        #         '" AND latitude BETWEEN ' + str(bottom) + ' AND ' + str(top) + ' AND ' \
+        #             'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' LIMIT 50'
+        # + " AND latitude NOT IN (" + exclude_lats[1:len(exclude_lats)-1]+")" \
+        # + " AND longitude NOT IN (" + exclude_longs[1:len(exclude_longs)-1]+")"
+
         for x in range(i):
-            query = query + " AND latitude != " + str(excludeLats[x]) \
-                            + " AND longitude != " + str(excludeLongs[x])
+            query = query + " AND latitude != " + str(exclude_lats[x]) \
+                            + " AND longitude != " + str(exclude_longs[x])
         rows = execute_query(query)
         if len(rows) == 0:
             break
 
         # for each point in range look for the closest one.
-        # we save the min distance at currMinDist and it's point at closestPoint
+        # we save the min distance at curr_min_dist and it's point at closest_point
         for j in range(len(rows)):
-            currPoint = (latitude,longitude)
-            tempP = (rows[j]["latitude"],rows[j]["longitude"],)
-            tempDist = gps_distance(currPoint,tempP)
-            if currMinDist == -1 or currMinDist > tempDist:
-                currMinDist = tempDist
-                closestPoint[0], closestPoint[1], closestPoint[2] = rows[j]["latitude"], rows[j]["longitude"], rows[j]["name"]
+            curr_point = (latitude, longitude)
+            temp_p = (rows[j]["latitude"], rows[j]["longitude"],)
+            temp_dist = gps_distance(curr_point, temp_p)
+            if curr_min_dist == -1 or curr_min_dist > temp_dist:
+                curr_min_dist = temp_dist
+                closest_point[0] = rows[j]["latitude"]
+                closest_point[1] = rows[j]["longitude"]
+                closest_point[2] = rows[j]["name"]
+
         # add the current point to an array
-        trackPoints[i][0], trackPoints[i][1], trackPoints[i][2] = closestPoint[0], closestPoint[1], closestPoint[2]
-        latitude, longitude = closestPoint[0] , closestPoint[1]  # update the current point to be the closest we found
+        track_points[i][0] = closest_point[0]
+        track_points[i][1] = closest_point[1]
+        track_points[i][2] = closest_point[2]
+        
+        latitude, longitude = closest_point[0], closest_point[1]  # update the current point to be the closest we found
         # calculate again with the point found (returns to the start of the loop
 
-    #TODO: print the points to map and a route if possible
-    return HttpResponse(str(trackPoints))
-    # return trackPoints
+    # TODO: print the points to map and a route if possible
+    return HttpResponse(str(track_points))
+    # return track_points
 
 
 def get_place_details(request, place_id):
@@ -192,8 +198,8 @@ def get_place_details(request, place_id):
     return JsonResponse({'place': place.to_json(), 'reviews': reviews_dicts}, status=200)
 
 
-#TODO there should be a text box who autocomplete whenever the user starts a search
-#create an sql query to search if that search exists
+# TODO: there should be a text box who autocomplete whenever the user starts a search
+# TODO: create an sql query to search if that search exists
 def find_popular_search(places_id_list):
     search_id = find_search_id_query(places_id_list)
     find_popular_query = "SELECT sp.popularity FROM ("+ search_id+ ") AS S_ID, search_popularity AS sp " \
@@ -202,7 +208,7 @@ def find_popular_search(places_id_list):
     return popularity_rate
 
 
-#TODO should be called whenever a search is being made
+# TODO: should be called whenever a search is being made
 def update_popular_search(places_id_list):
     search_id = execute_query(find_search_id_query(places_id_list))
     # if there is not search like that, insert it to search_popularity and searches_places
@@ -214,7 +220,7 @@ def update_popular_search(places_id_list):
             insert_to_searces_places += "("+str(search_id[0]["search_id"])+","+str(places_id_list[1])+"), "
         execute_query(insert_to_searces_places[:-2])
 
-    elif(len(search_id)>1):
+    elif len(search_id) > 1:
         return JsonResponse({'error': 'this search has more than one ID'}, status=404)
 
     else:
