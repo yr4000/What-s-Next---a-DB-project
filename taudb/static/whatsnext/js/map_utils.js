@@ -247,6 +247,7 @@ function initMap() {
         //console.log( latitude + ', ' + longitude );
         if (lastMapClickLocation) {
             removeMarker(lastMapClickLocation);
+            markForSearch = true;
         }
         lastMapClickLocation = createMarker(position, "Clicked here", "-1", true, enumMarkerColors.Current, 0);
     });
@@ -275,9 +276,13 @@ function initMap() {
 }
 
 function createMarker(LatLong, title, place_id, center, color, index) {
-    if (markForSearch) {
+    if (markForSearch) { //Why do we need this boolean?
+        if(markersArray.length !=0){
+            clearMarkers()
+        }
         map.panTo(LatLong); // Center around marker.
-        searchAroundMarker(LatLong.lat(),LatLong.lng());
+        //console.log(LatLong.lat(),LatLong.lng())
+        searchAroundMarker((LatLong.lat()-51)*RESOLUTION,LatLong.lng()*RESOLUTION);
         markForSearch = false;
     }
     if (center) {
@@ -306,7 +311,7 @@ function removeMarker(marker) {
 }
 
 function clearMarkers() {
-    for (var i = 0; i <= markersArray.length; i++) {
+    while (markersArray.length != 0) {
         removeMarker(markersArray.pop());
     }
 }

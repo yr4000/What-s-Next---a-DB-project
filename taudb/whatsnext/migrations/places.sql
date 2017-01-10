@@ -89,6 +89,10 @@ CREATE TABLE search_popularity
   PRIMARY KEY (search_id)
 )
 
+#TODO we should make sure it is also at least 1
+ALTER TABLE search_popularity
+ADD search_size INT
+
 
 CREATE TABLE searches_places
 (

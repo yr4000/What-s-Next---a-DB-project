@@ -142,7 +142,7 @@ def find_search_id_query(places_id_list):
     places_str = ""
     for place in places_id_list:
         places_str  += "place_id = " + str(place) + " AND "
-    places_str = places_str[:-5] #remove the last add
+    places_str += "search_size = " +str(len(pl)) #remove the last add
     return "SELECT search_id FROM searches_places WHERE " + places_str
 
 

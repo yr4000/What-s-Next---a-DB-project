@@ -3,7 +3,7 @@ import urllib
 
 from django.conf import settings
 from whatsnext.models import Review
-from whatsnext.utils.data_access import insert_review_to_db
+from data_access import insert_review_to_db
 import datetime
 
 HOST = 'https://maps.googleapis.com'
