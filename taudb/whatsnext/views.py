@@ -15,10 +15,6 @@ from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
     get_places_near_location, find_search_id_query
 
-# Globals
-BARS_VIEW = "places"  # TODO replace when time comes
-BASE_TABLE = "places_v2"
-
 
 def homepage(request):
     categories = []
@@ -54,8 +50,8 @@ def search_by_name(request):
         query = 'Select full_text_results.id, full_text_results.google_id, full_text_results.name, ' \
                 'full_text_results.rating, full_text_results.vicinity, ' \
                 'full_text_results.latitude, full_text_results.longitude ' \
-                'From (Select * From places_v2 ' \
-                '      Where Match(places_v2.name) ' \
+                'From (Select * From places ' \
+                '      Where Match(places.name) ' \
                 '      Against("+%s" in boolean mode)) As full_text_results ' \
                 'Inner join places_categories ON full_text_results.id = places_categories.place_id ' \
                 'Inner join categories ON categories.id = places_categories.category_id ' \
@@ -64,8 +60,8 @@ def search_by_name(request):
         cur.execute(query, (word_to_search, category_for_search, limit_for_query))
     else:
         # search only by the word
-        query = 'Select * From places_v2 ' \
-                'Where Match(places_v2.name) ' \
+        query = 'Select * From places ' \
+                'Where Match(places.name) ' \
                 'Against("+%s" in boolean mode)'
         cur.execute(query, (word_to_search, ))
 
@@ -133,7 +129,7 @@ def pub_crawl(request):
         excludeLats = [trackPoints[x][0] for x in range(i)]  # we don't want the same point to appear in the track twice
         excludeLongs = [trackPoints[x][1] for x in range(i)]
         #TODO this query is for tests
-        query = "SELECT latitude, longitude, name FROM " + BARS_VIEW \
+        query = "SELECT latitude, longitude, name FROM places "\
                 + " WHERE latitude <= " + str(top) \
                 + " AND longitude <= " + str(right) \
                 + " AND latitude >= " + str(bottom) \

@@ -155,21 +155,21 @@ def get_categories_statistics(top, right, bottom, left):
 
     query = 'SELECT                                                                ' \
             '    categories.name AS category_name,                                 ' \
-            '    COUNT(places_v2.id) AS places_amount,                             ' \
+            '    COUNT(places.id) AS places_amount,                                ' \
             '    ROUND(AVG(places_rated.rating), 2) AS rating_average              ' \
             'FROM                                                                  ' \
-            '    places_v2                                                         ' \
+            '    places                                                            ' \
             '        JOIN                                                          ' \
-            '    places_categories ON places_v2.id = places_categories.place_id    ' \
+            '    places_categories ON places.id = places_categories.place_id       ' \
             '        JOIN                                                          ' \
             '    categories ON places_categories.category_id = categories.id       ' \
             '        JOIN                                                          ' \
             '    (SELECT                                                           ' \
-            '        places_v2.id, places_v2.rating                                ' \
+            '        places.id, places.rating                                      ' \
             '    FROM                                                              ' \
-            '        places_v2                                                     ' \
+            '        places                                                        ' \
             '    WHERE                                                             ' \
-            '        rating > 0) AS places_rated ON places_v2.id = places_rated.id ' \
+            '        rating > 0) AS places_rated ON places.id = places_rated.id    ' \
             'WHERE                                                                 ' \
             '    latitude BETWEEN %s AND %s                                        ' \
             '        AND longitude BETWEEN %s AND %s                               ' \

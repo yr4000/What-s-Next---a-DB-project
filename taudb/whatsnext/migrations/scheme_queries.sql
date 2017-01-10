@@ -1,5 +1,5 @@
 -- This is the old version of places
--- CREATE TABLE places (
+-- CREATE TABLE places_old (
 --     `id` INT NOT NULL AUTO_INCREMENT,
 --     `google_id` VARCHAR(50) UNIQUE NOT NULL,
 --     `name` VARCHAR(255) NOT NULL,
@@ -29,7 +29,7 @@ INSERT INTO categories (`name`) VALUES ('bar');
 INSERT INTO categories (`name`) VALUES ('museum');
 
 -- This is the old version of places_categories
--- CREATE TABLE places_categories (
+-- CREATE TABLE places_categories_old (
 --     `id` INT NOT NULL AUTO_INCREMENT,
 --     `place_id` INT NOT NULL,
 --     `category_id` INT NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE reviews (
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 
-CREATE TABLE places_v2 (
+CREATE TABLE places (
     `id` INT NOT NULL AUTO_INCREMENT,
     `google_id` VARCHAR(50) UNIQUE NOT NULL,
     `name` VARCHAR(255) NOT NULL,
@@ -70,8 +70,8 @@ CREATE TABLE places_v2 (
     KEY `idx_longitude` (`longitude`)
 )  ENGINE=MyISAM DEFAULT CHARSET=UTF8;
 
-
-CREATE TABLE places_categories_v2 (
+-- TODO: MyISAM does NOT support foreign keys, need to recreate this table
+CREATE TABLE places_categories (
     `id` INT NOT NULL AUTO_INCREMENT,
     `place_id` INT NOT NULL,
     `category_id` INT NOT NULL,
