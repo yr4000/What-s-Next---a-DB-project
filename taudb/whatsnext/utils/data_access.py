@@ -2,6 +2,7 @@ from db_utils import init_db_connection, init_db_cursor
 from whatsnext.models import Review, Place
 from exceptions import NotFoundInDb
 import MySQLdb as mdb
+from taudb.settings import RESOLUTION
 
 
 def get_place_by_place_id(place_id):
@@ -39,6 +40,55 @@ def get_place_by_place_id(place_id):
     cur.close()
 
     return place
+
+
+def get_places_near_location(center_latitude, center_longitude, top, right, bottom, left, category, limit):
+
+    cur = init_db_cursor()
+
+    query = 'SELECT                                                                    '\
+            '    places.id,                                                            '\
+            '    places.google_id,                                                     '\
+            '    places.name,                                                          '\
+            '    places.longitude,                                                     '\
+            '    places.latitude,                                                      '\
+            '    places.rating,                                                        '\
+            '    places.vicinity,                                                      '\
+            '    (POWER((latitude - %s) , 2) + POWER((longitude - %s), 2)) AS distance '\
+            'FROM                                                                      '\
+            '    places                                                                '\
+            '        JOIN                                                              '\
+            '    places_categories ON places.id = places_categories.place_id           '\
+            '        JOIN                                                              '\
+            '    categories ON places_categories.category_id = categories.id           '\
+            'WHERE                                                                     '\
+            '    categories.name = %s                                                  '\
+            '        AND latitude BETWEEN %s AND %s                                    '\
+            '        AND longitude BETWEEN %s AND %s                                   '\
+            'ORDER BY distance ASC                                                     '\
+            'LIMIT %s                                                                  '
+
+    # TODO: why do we have a limit set from the client? why do we have a limit at all?
+    # TODO: this could easily become a more complicated query and be part of the required 6 (it's currently not!)
+    cur.execute(query, (center_latitude, center_longitude, category, bottom, top, left, right, limit))
+    rows = cur.fetchall()
+
+    # TODO: this is not a good structure of the json, but it's not critical if we don't have time.
+    places = dict()
+    for result in rows:
+        place = dict()
+        place["id"] = result["id"]
+        place["google_id"] = result["google_id"]
+        place["name"] = result["name"]
+        place["longitude"] = result["longitude"] / RESOLUTION
+        place["latitude"] = (result["latitude"] / RESOLUTION) + 51
+        place["rating"] = result["rating"]
+        place["vicinity"] = result["vicinity"]
+        places[place["id"]] = place
+
+    cur.close()
+
+    return places
 
 
 def get_place_reviews(place):
@@ -143,6 +193,7 @@ def get_categories_statistics(top, right, bottom, left):
     cur.close()
 
     return statistics
+
 
 def find_search_id_query(places_id_list):
     places_str = ""

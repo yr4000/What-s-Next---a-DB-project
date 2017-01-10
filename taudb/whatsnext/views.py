@@ -9,14 +9,13 @@ from django.http import HttpResponse, JsonResponse, Http404
 # Internal packages import
 from utils.db_utils import *
 from utils.geo_utils import *
-from utils.data_access import *
 from utils.google_maps_access import fetch_reviews_from_google
 from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
-from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics
+from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
+    get_places_near_location, find_search_id_query
 
 # Globals
-RESOLUTION = 10000
 BARS_VIEW = "places"  # TODO replace when time comes
 BASE_TABLE = "places_v2"
 
@@ -85,39 +84,6 @@ def search_by_name(request):
     return JsonResponse(places, status=201)
 
 
-# TODO Yair, delete this view once you understand why the other one is more of a view rather then a function.
-# returns places (e.g hotels, bars, attractions etc...).
-# pre: latitude, longitude are NOT modified (i.e in the desirable resolution), and dist is in Km.
-# post: a json string with the desired request
-def search_places_by_points(latitude,longitude,dist,table = BASE_TABLE ,columns = "*"):
-    hotels = {}
-    top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, dist)
-    # write the query
-    query = "SELECT " + columns + " FROM " + table \
-            + " WHERE latitude <= " + str(top) \
-            + " AND longitude <= " + str(right) \
-            + " AND latitude >= " + str(bottom) \
-            + " AND longitude >= " + str(left)
-    # send the query to database
-    rows = execute_query(query)
-    for row in rows:
-        # TODO: there might be a problem with the names of the hotels: 'unicodeDecodeError: 'utf8' codec can't decode..'
-        # TODO: return all the information we want
-        '''
-        #here i tried to solve the decoding problem
-        for element in row:
-            x = row[element]
-            row[element].decode('latin-1')
-          '''
-        hotel = dict()
-        hotel["id"] = row["id"]
-        hotel["google_id"] = row["google_id"]
-        hotels[row["id"]] = hotel
-    # return result:
-    n = len(hotels)  # for debug TODO remember to delete
-    return JsonResponse(hotels, status=200)
-
-
 # input : latitude, longitude, distance, category
 # output : a square sized distance**2 with all the places from that category in it's range
 def search_places_by_point(request):
@@ -132,31 +98,10 @@ def search_places_by_point(request):
     category = request_json["category"].lower()
     limit = request_json["limit"]
 
-    #returns a 4*distance**2 square around the selected point.
+    #  returns a 4*distance**2 square around the selected point.
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
 
-    #returns the #limit'th places closest to the point, based on oclidian distance.
-    #(since we search in relatively small areai oclidian distance is sufficient).
-    query = 'SELECT *,(POWER(latitude - '+str(latitude)+',2) + POWER(longitude - '+str(longitude)+',2)) AS distance' \
-            ' FROM places JOIN places_categories ON places.id = places_categories.place_id ' \
-            'JOIN categories ON places_categories.category_id = categories.id WHERE categories.name = "' + category + \
-            '" AND latitude BETWEEN ' + str(bottom) + ' AND ' + str(top) + ' AND ' \
-            'longitude BETWEEN ' + str(left) + ' AND ' + str(right) + ' ORDER BY distance ASC ' + ' LIMIT ' + str(limit)
-
-    print("executing query : " + query)
-
-    places = dict()
-    rows = execute_query(query)
-    for result in rows:
-        place = dict()
-        place["id"] = result["id"]
-        place["google_id"] = result["google_id"]
-        place["name"] = result["name"]
-        place["longitude"] = result["longitude"]/RESOLUTION
-        place["latitude"] = (result["latitude"]/RESOLUTION)+51
-        place["rating"] = result["rating"]
-        place["vicinity"] = result["vicinity"]
-        places[place["id"]] = place
+    places = get_places_near_location(latitude, longitude, top, right, bottom, left, category, limit)
 
     return JsonResponse(places, status=200)
 
