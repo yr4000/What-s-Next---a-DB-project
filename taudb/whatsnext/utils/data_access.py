@@ -1,6 +1,7 @@
 from db_utils import init_db_connection, init_db_cursor
 from whatsnext.models import Review, Place
 from exceptions import NotFoundInDb
+import MySQLdb as mdb
 
 
 def get_place_by_place_id(place_id):
@@ -72,22 +73,27 @@ def get_place_reviews(place):
     return reviews
 
 
-def insert_review_to_db(review):
-    if not review:
-        raise ValueError('review argument must be not None')
+def insert_review_to_db(reviews):
+    if not reviews:
+        raise ValueError('reviews argument must be not None')
+
+    # convert the reviews list to a list of tuples, so it can be used in the query execution
+    reviews_tuples_list = list()
+    for review in reviews:
+        reviews_tuples_list.append((review.place_id, review.author, review.rating, review.text, review.date))
 
     # TODO: should use an object to obtain the connection and cursor
     conn = init_db_connection()
-    cur = init_db_cursor()
+    cur = conn.cursor(mdb.cursors.DictCursor)
+
+    query = 'INSERT INTO reviews (`place_id`, `author`, `rating`, `text`, `date`) '\
+            'VALUES (%s, %s, %s, %s, %s)                                          '
 
     # TODO: check what happens if review.date is None
-    cur.execute('INSERT INTO reviews (`place_id`, `author`, `rating`, `text`, `date`) '
-                'VALUES (%s, %s, %s, %s, %s)',
-                (review.place_id, review.author, review.rating, review.text, review.date))
+    cur.executemany(query, reviews_tuples_list)
 
     conn.commit()
 
-    review.review_id = cur.lastrowid
     cur.close()
 
 

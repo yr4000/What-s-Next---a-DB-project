@@ -31,6 +31,7 @@ def insert_places_to_table():
             ' VALUES (%s, %s, %s, %s, %s, %s, %s)', tuples_to_add)
         conn.commit()
         print 'inserted {num} tuples to places table'.format(num=len(tuples_to_add))
+    cur.close()
 
 
 def insert_places_categories_to_table():
@@ -61,7 +62,7 @@ def insert_places_categories_to_table():
             ' VALUES (%s, %s, %s)', tuples_to_add)
         conn.commit()
         print 'inserted {num} tuples to places_categories table'.format(num=len(tuples_to_add))
-
+    cur.close()
 
 
 # insert_places_to_table()

@@ -1,10 +1,12 @@
+import datetime
 import json
 import urllib
+import thread
 
 from django.conf import settings
+
 from whatsnext.models import Review
-from data_access import insert_review_to_db
-import datetime
+from whatsnext.utils.data_access import insert_review_to_db
 
 HOST = 'https://maps.googleapis.com'
 
@@ -27,13 +29,13 @@ def fetch_reviews_from_google(place):
     json_response = json.load(urllib.urlopen(url))
     check_response_status(json_response)
 
-    new_reviews = convert_to_reviews_list(json_response)
+    new_reviews = convert_to_reviews_list(json_response, place.place_id)
 
-    for new_review in new_reviews:
-        # add missing place_id to the new review according to parameter place
-        new_review.place_id = place.place_id
-        # TODO: must be async, and grouped to a single insert query!
-        insert_review_to_db(new_review)
+    # insert_review_to_db(new_reviews)  # TODO: must be async, and grouped to a single insert query!
+    try:
+        thread.start_new_thread(insert_review_to_db, (new_reviews,))
+    except Exception as e:
+        print 'thread init failed. {}'.format(e.message)
 
     return new_reviews
 
@@ -47,7 +49,7 @@ def check_response_status(json_response):
 
 
 # TODO: itzhaki also fetch the overall rating of the place to update it
-def convert_to_reviews_list(json_response):
+def convert_to_reviews_list(json_response, place_id):
     new_reviews = list()
 
     # if response is empty or does not contain results return an empty list
@@ -79,7 +81,7 @@ def convert_to_reviews_list(json_response):
         except KeyError:
             date = None
 
-        new_review = Review(review_id=None, place_id=None, author=author, rating=rating, text=text, date=date)
+        new_review = Review(review_id=None, place_id=place_id, author=author, rating=rating, text=text, date=date)
 
         new_reviews.append(new_review)
 
