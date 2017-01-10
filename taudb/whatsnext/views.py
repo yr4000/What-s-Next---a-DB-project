@@ -13,7 +13,7 @@ from utils.google_maps_access import fetch_reviews_from_google
 from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
-    get_places_near_location, find_search_id_query
+    search_places_near_location, find_search_id_query, search_places_by_name
 
 
 def homepage(request):
@@ -34,50 +34,13 @@ def search_by_name(request):
 
     request_json = json.loads(request.body)
 
-    places = dict()
+    search_word = request_json["word"]
+    search_category = request_json["category"]
+    limit = request_json["limit"]
 
-    categories = ['Lodging', 'Bar', 'Restaurant', 'Museum']
+    places = search_places_by_name(search_word, search_category, limit)
 
-    word_to_search = request_json["word"]
-    category_for_search = request_json["category"]
-    limit_for_query = request_json["limit"]
-
-    cur = init_db_cursor()
-
-    # Get places whom contain the word in the request
-    if category_for_search in categories:
-        # search by the word and by the category also
-        query = 'Select full_text_results.id, full_text_results.google_id, full_text_results.name, ' \
-                'full_text_results.rating, full_text_results.vicinity, ' \
-                'full_text_results.latitude, full_text_results.longitude ' \
-                'From (Select * From places ' \
-                '      Where Match(places.name) ' \
-                '      Against("+%s" in boolean mode)) As full_text_results ' \
-                'Inner join places_categories ON full_text_results.id = places_categories.place_id ' \
-                'Inner join categories ON categories.id = places_categories.category_id ' \
-                'Where categories.name = %s' \
-                'LIMIT %s'
-        cur.execute(query, (word_to_search, category_for_search, limit_for_query))
-    else:
-        # search only by the word
-        query = 'Select * From places ' \
-                'Where Match(places.name) ' \
-                'Against("+%s" in boolean mode)'
-        cur.execute(query, (word_to_search, ))
-
-    rows = cur.fetchall()
-    for row in rows:
-        place = dict()
-        place["id"] = row["id"]
-        place["google_id"] = row["google_id"]
-        place["rating"] = row["rating"]
-        place["vicinity"] = row["vicinity"]
-        place["name"] = row["name"]
-        place["latitude"] = (row["latitude"] / RESOLUTION) + 51
-        place["longitude"] = (row["longitude"] / RESOLUTION)
-        places[row["id"]] = place
-
-    return JsonResponse(places, status=201)
+    return JsonResponse(places, status=200)
 
 
 # input : latitude, longitude, distance, category
@@ -97,7 +60,7 @@ def search_places_by_point(request):
     #  returns a 4*distance**2 square around the selected point.
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
 
-    places = get_places_near_location(latitude, longitude, top, right, bottom, left, category, limit)
+    places = search_places_near_location(latitude, longitude, top, right, bottom, left, category, limit)
 
     return JsonResponse(places, status=200)
 
@@ -165,7 +128,7 @@ def pub_crawl(request):
         track_points[i][0] = closest_point[0]
         track_points[i][1] = closest_point[1]
         track_points[i][2] = closest_point[2]
-        
+
         latitude, longitude = closest_point[0], closest_point[1]  # update the current point to be the closest we found
         # calculate again with the point found (returns to the start of the loop
 
