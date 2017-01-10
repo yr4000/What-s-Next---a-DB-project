@@ -115,7 +115,7 @@ GOOGLE_API_KEY = 'AIzaSyCGnmhFJarg4hMWmtJF37V1NaINNXGpzBU'
 
 DB_ALL = "DbMysql06"
 
-RESOLUTION = 10000
+RESOLUTION = 10000.0
 
 if platform.system() == 'Linux':
     DB_HOST = "mysqlsrv.cs.tau.ac.il"
