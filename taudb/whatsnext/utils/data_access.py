@@ -10,25 +10,25 @@ def get_place_by_place_id(place_id):
 
     cur = init_db_cursor()
 
-    query = 'SELECT' \
-            '   places.id AS place_id, ' \
-            '   places.google_id, ' \
-            '   places.name, ' \
-            '   places.rating, ' \
-            '   places.vicinity, ' \
-            '   places.latitude, ' \
-            '   places.longitude, ' \
-            '   categories.name AS category ' \
-            'FROM' \
-            '   places ' \
-            '       INNER JOIN ' \
-            '   places_categories ON places.id = places_categories.place_id ' \
-            '       INNER JOIN ' \
-            '   categories ON places_categories.category_id = categories.id ' \
-            'WHERE' \
-            '   places.id = {place_id}'.format(place_id=place_id)
+    query = 'SELECT                                                         '\
+            '   places.id AS place_id,                                      '\
+            '   places.google_id,                                           '\
+            '   places.name,                                                '\
+            '   places.rating,                                              '\
+            '   places.vicinity,                                            '\
+            '   places.latitude,                                            '\
+            '   places.longitude,                                           '\
+            '   categories.name AS category                                 '\
+            'FROM                                                           '\
+            '   places                                                      '\
+            '       INNER JOIN                                              '\
+            '   places_categories ON places.id = places_categories.place_id '\
+            '       INNER JOIN                                              '\
+            '   categories ON places_categories.category_id = categories.id '\
+            'WHERE                                                          '\
+            '   places.id = %s                                              '
 
-    cur.execute(query)
+    cur.execute(query, (place_id,))
 
     record = cur.fetchone()  # expecting single place since id is a pk
     if record:
