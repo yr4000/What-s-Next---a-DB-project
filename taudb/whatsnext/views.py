@@ -195,14 +195,12 @@ def calc_categories_statistics(request):
     if 'latitude' not in request.GET or 'longitude' not in request.GET or 'distance' not in request.GET:
         return JsonResponse(MISSING_QUERY_PARAMS, status=400)
 
-    # get required query parameters latitude, longitude, distance
-    latitude = request.GET['latitude']
-    longitude = request.GET['longitude']
-    distance = request.GET['distance']
-    if not longitude or not latitude or not distance:
-        return JsonResponse(INVALID_QUERY_PARAMS, status=400)
+    # get required query parameters
+    latitude = float(request.GET['latitude'])
+    longitude = float(request.GET['longitude'])
+    distance = float(request.GET['distance'])
 
-    top, right, bottom, left = get_boundaries_by_center_and_distance(longitude, latitude, distance)
+    top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
 
     statistics = get_categories_statistics(top, right, bottom, left)
 

@@ -73,7 +73,6 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
     cur.execute(query, (center_latitude, center_longitude, category, bottom, top, left, right, limit))
     rows = cur.fetchall()
 
-    # TODO: this is not a good structure of the json, but it's not critical if we don't have time.
     places = dict()
     for result in rows:
         place = dict()
@@ -144,7 +143,6 @@ def search_places_by_name(search_word, search_category, limit):
     rows = cur.fetchall()
 
     # TODO: This is code duplication of search_places_by_location.
-    # TODO: this is not a good structure of the json, but it's not critical if we don't have time.
     places = dict()
     for row in rows:
         place = dict()
@@ -249,15 +247,13 @@ def get_categories_statistics(top, right, bottom, left):
 
     records = cur.fetchall()
 
-    statistics = list()
+    statistics = dict()
     for record in records:
         category_name = record['category_name']
-        place_amount = record['place_amount']
+        places_amount = record['places_amount']
         rating_average = record['rating_average']
 
-        statistics.append({'category_name': category_name,
-                           'place_amount': place_amount,
-                           'rating_average': rating_average})
+        statistics[category_name] = {'places_amount': places_amount, 'rating_average': rating_average}
 
     cur.close()
 
