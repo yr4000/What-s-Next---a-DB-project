@@ -75,14 +75,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
 
     places = dict()
     for result in rows:
-        place = dict()
-        place["id"] = result["id"]
-        place["google_id"] = result["google_id"]
-        place["name"] = result["name"]
-        place["longitude"] = result["longitude"] / RESOLUTION
-        place["latitude"] = (result["latitude"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
-        place["rating"] = result["rating"]
-        place["vicinity"] = result["vicinity"]
+        place = json_to_dict(result)
         places[place["id"]] = place
 
     cur.close()
@@ -90,70 +83,61 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
     return places
 
 
+def json_to_dict(result):
+    place = dict()
+    place["id"] = result["id"]
+    place["google_id"] = result["google_id"]
+    place["name"] = result["name"]
+    place["longitude"] = result["longitude"] / RESOLUTION
+    place["latitude"] = (result["latitude"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+    place["rating"] = result["rating"]
+    place["vicinity"] = result["vicinity"]
+    return place
+
+
 def search_places_by_name(search_word, search_category, limit):
 
     cur = init_db_cursor()
 
-    # TODO: this list should not be here, because we're supposed to fetch it from db OR get it from the client.
-    # TODO: Otherwise we have no excuse to have the categories table...
-    categories = ['Lodging', 'Bar', 'Restaurant', 'Museum']
+    # search by the word and the category
+    query = 'SELECT                                                                            ' \
+            '    full_text_results.id,                                                         ' \
+            '    full_text_results.google_id,                                                  ' \
+            '    full_text_results.name,                                                       ' \
+            '    full_text_results.rating,                                                     ' \
+            '    full_text_results.vicinity,                                                   ' \
+            '    full_text_results.latitude,                                                   ' \
+            '    full_text_results.longitude                                                   ' \
+            'FROM                                                                              ' \
+            '    (SELECT                                                                       ' \
+            '        places.id,                                                                ' \
+            '        places.google_id,                                                         ' \
+            '        places.rating,                                                            ' \
+            '        places.vicinity,                                                          ' \
+            '        places.name,                                                              ' \
+            '        places.latitude,                                                          ' \
+            '        places.longitude                                                          ' \
+            '    FROM                                                                          ' \
+            '        places                                                                    ' \
+            '    WHERE                                                                         ' \
+            '        MATCH (places.name) AGAINST ("+%s" IN BOOLEAN MODE)) AS full_text_results ' \
+            '        INNER JOIN                                                                ' \
+            '    places_categories ON full_text_results.id = places_categories.place_id        ' \
+            '        INNER JOIN                                                                ' \
+            '    categories ON categories.id = places_categories.category_id                   ' \
+            'WHERE                                                                             ' \
+            '    categories.name = %s                                                          ' \
+            'LIMIT %s                                                                          '
 
-    # Get places whom contain the word in the request
-    if search_category in categories:
-        # search by the word and the category
-        query = 'SELECT                                                                            ' \
-                '    full_text_results.id,                                                         ' \
-                '    full_text_results.google_id,                                                  ' \
-                '    full_text_results.name,                                                       ' \
-                '    full_text_results.rating,                                                     ' \
-                '    full_text_results.vicinity,                                                   ' \
-                '    full_text_results.latitude,                                                   ' \
-                '    full_text_results.longitude                                                   ' \
-                'FROM                                                                              ' \
-                '    (SELECT                                                                       ' \
-                '        places.id,                                                                ' \
-                '        places.google_id,                                                         ' \
-                '        places.rating,                                                            ' \
-                '        places.vicinity,                                                          ' \
-                '        places.name,                                                              ' \
-                '        places.latitude,                                                          ' \
-                '        places.longitude                                                          ' \
-                '    FROM                                                                          ' \
-                '        places                                                                    ' \
-                '    WHERE                                                                         ' \
-                '        MATCH (places.name) AGAINST ("+%s" IN BOOLEAN MODE)) AS full_text_results ' \
-                '        INNER JOIN                                                                ' \
-                '    places_categories ON full_text_results.id = places_categories.place_id        ' \
-                '        INNER JOIN                                                                ' \
-                '    categories ON categories.id = places_categories.category_id                   ' \
-                'WHERE                                                                             ' \
-                '    categories.name = %s                                                          ' \
-                'LIMIT %s                                                                          '
-
-        # TODO: why do we have a limit set from the client? why do we have a limit at all?
-        cur.execute(query, (search_word, search_category, limit))
-    else:
-        # TODO: we should never use *, and this query should be formatted like the above
-        # search by the word only
-        query = 'Select * From places ' \
-                'Where Match(places.name) ' \
-                'Against("+%s" in boolean mode)'
-        cur.execute(query, (search_word,))
+    # TODO: why do we have a limit set from the client? why do we have a limit at all?
+    cur.execute(query, (search_word, search_category, limit))
 
     rows = cur.fetchall()
 
-    # TODO: This is code duplication of search_places_by_location.
     places = dict()
-    for row in rows:
-        place = dict()
-        place["id"] = row["id"]
-        place["google_id"] = row["google_id"]
-        place["rating"] = row["rating"]
-        place["vicinity"] = row["vicinity"]
-        place["name"] = row["name"]
-        place["latitude"] = (row["latitude"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
-        place["longitude"] = (row["longitude"] / RESOLUTION)
-        places[row["id"]] = place
+    for result in rows:
+        place = json_to_dict(result)
+        places[place["id"]] = place
 
     return places
 
