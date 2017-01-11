@@ -1,6 +1,6 @@
 from __future__ import division  # is needed to be able to divide like a human being....
 import math
-from taudb.settings import RESOLUTION
+from taudb.settings import RESOLUTION, LATITUDE_DIST_DIV_ADJUSTMENT, LONGITUDE_DIST_DIV_ADJUSTMENT,LONDON_LATITUDE_DB_CONST
 
 '''
  for details:
@@ -38,11 +38,13 @@ in longitude: the second digit from the dot is 0.69 km for each count 1 (up or d
 # in order to create a square area sizes 2dist*2dist around the point
 # TODO: this function is not precise, but maybe for us is good enough. need to check according to map or improve
 # TODO: i changed it yet it worked... why?
-# TODO: Yair - please extract 111 and 69 to parameters with a name - it's not clear what they mean
 def get_boundaries_by_center_and_distance(latitude, longitude, dist):
     dist /= 1000  # from meters to km
-    top = latitude + dist*RESOLUTION/111
-    bottom = latitude - dist*RESOLUTION/111
-    right = longitude + dist*RESOLUTION/69
-    left = longitude - dist*RESOLUTION/69
+    top = latitude + dist*RESOLUTION/LATITUDE_DIST_DIV_ADJUSTMENT
+    bottom = latitude - dist*RESOLUTION/LATITUDE_DIST_DIV_ADJUSTMENT
+    right = longitude + dist*RESOLUTION/LONGITUDE_DIST_DIV_ADJUSTMENT
+    left = longitude - dist*RESOLUTION/LONGITUDE_DIST_DIV_ADJUSTMENT
     return top, right, bottom, left
+
+def modify_longlat_for_db(latitude,longitude):
+    return (latitude-LONDON_LATITUDE_DB_CONST)*RESOLUTION, longitude*RESOLUTION

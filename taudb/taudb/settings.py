@@ -116,6 +116,9 @@ GOOGLE_API_KEY = 'AIzaSyCGnmhFJarg4hMWmtJF37V1NaINNXGpzBU'
 DB_ALL = "DbMysql06"
 
 RESOLUTION = 10000.0
+LATITUDE_DIST_DIV_ADJUSTMENT = 111.0 #distance must be in Km!
+LONGITUDE_DIST_DIV_ADJUSTMENT = 69.0
+LONDON_LATITUDE_DB_CONST = 51
 
 if platform.system() == 'Linux':
     DB_HOST = "mysqlsrv.cs.tau.ac.il"

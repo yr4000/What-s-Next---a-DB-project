@@ -18,7 +18,9 @@ def init_db_cursor():
 def execute_query(query):
     cursor = init_db_cursor()
     cursor.execute(query)
-    return cursor.fetchall()
+    rows = cursor.fetchall()
+    cursor.close()
+    return rows
 
 #returns a query string of a view according to relevant parameters
 def create_view_from_parameters(tables_list,columns_list = "*"):

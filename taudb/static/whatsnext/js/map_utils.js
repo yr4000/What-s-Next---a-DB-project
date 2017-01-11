@@ -281,8 +281,8 @@ function createMarker(LatLong, title, place_id, center, color, index) {
             clearMarkers()
         }
         map.panTo(LatLong); // Center around marker.
-        //console.log(LatLong.lat(),LatLong.lng())
-        searchAroundMarker((LatLong.lat()-51)*RESOLUTION,LatLong.lng()*RESOLUTION);
+        //console.log((LatLong.lat()-51)*RESOLUTION,LatLong.lng()*RESOLUTION)
+        searchAroundMarker(LatLong.lat(),LatLong.lng());
         markForSearch = false;
     }
     if (center) {

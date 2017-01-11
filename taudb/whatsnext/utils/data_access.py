@@ -1,8 +1,8 @@
-from db_utils import init_db_connection, init_db_cursor
+from db_utils import init_db_connection, init_db_cursor,execute_query
 from whatsnext.models import Review, Place
 from exceptions import NotFoundInDb
 import MySQLdb as mdb
-from taudb.settings import RESOLUTION
+from taudb.settings import RESOLUTION,LONDON_LATITUDE_DB_CONST
 
 
 def get_place_by_place_id(place_id):
@@ -80,7 +80,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
         place["google_id"] = result["google_id"]
         place["name"] = result["name"]
         place["longitude"] = result["longitude"] / RESOLUTION
-        place["latitude"] = (result["latitude"] / RESOLUTION) + 51
+        place["latitude"] = (result["latitude"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
         place["rating"] = result["rating"]
         place["vicinity"] = result["vicinity"]
         places[place["id"]] = place
@@ -151,7 +151,7 @@ def search_places_by_name(search_word, search_category, limit):
         place["rating"] = row["rating"]
         place["vicinity"] = row["vicinity"]
         place["name"] = row["name"]
-        place["latitude"] = (row["latitude"] / RESOLUTION) + 51
+        place["latitude"] = (row["latitude"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
         place["longitude"] = (row["longitude"] / RESOLUTION)
         places[row["id"]] = place
 
@@ -281,12 +281,34 @@ def get_categories_statistics(top, right, bottom, left):
 
     return statistics
 
+# TODO: there should be a text box who autocomplete whenever the user starts a search
+# TODO: create an sql query to search if that search exists
+def find_popular_search(places_id_list):
+    search_id = find_search_id_query(places_id_list)
+    find_popular_query = "SELECT sp.popularity FROM ("+ search_id+ ") AS S_ID, search_popularity AS sp " \
+                          "WHERE S_ID.search_id = sp.search_id"
+    popularity_rate = execute_query(find_popular_query)
+    return popularity_rate
 
+#this function returns a string that determains which search_id will return.
+#it is vital it returns a string and not execute anything.
 def find_search_id_query(places_id_list):
     places_str = ""
     for place in places_id_list:
         places_str  += "place_id = " + str(place) + " AND "
-    places_str += "search_size = " +str(len(pl)) #remove the last add
+    places_str += "search_size = " +str(len(places_id_list))
     return "SELECT search_id FROM searches_places WHERE " + places_str
 
+def exe_find_search_id_query(places_id_list):
+    return execute_query(find_search_id_query(places_id_list))
 
+def insert_new_search(places_id_list):
+    execute_query("INSERT INTO search_popularity(popularity) VALUES (1)")
+    search_id = execute_query("SELECT MAX(search_id) FROM search_popularity")
+    insert_to_searces_places = "INSERT INTO searches_places VALUES "
+    for i in range(len(places_id_list)):
+        insert_to_searces_places += "(" + str(search_id[0]["search_id"]) + "," + str(places_id_list[1]) + "), "
+    execute_query(insert_to_searces_places[:-2])
+
+def update_search(search_id):
+    execute_query("UPDATE search_popularity SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))

@@ -13,7 +13,8 @@ from utils.google_maps_access import fetch_reviews_from_google
 from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
-    search_places_near_location, find_search_id_query, search_places_by_name
+    search_places_near_location, search_places_by_name, exe_find_search_id_query, insert_new_search, \
+    update_search
 
 
 def homepage(request):
@@ -57,8 +58,11 @@ def search_places_by_point(request):
     category = request_json["category"].lower()
     limit = request_json["limit"]
 
+    #modify the longitude and the latitude to be workable with DB.
+    latitude,longitude = modify_longlat_for_db(latitude,longitude);
+
     #  returns a 4*distance**2 square around the selected point.
-    top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
+    top, right, bottom, left = get_boundaries_by_center_and_distance(latitude,longitude, distance)
 
     places = search_places_near_location(latitude, longitude, top, right, bottom, left, category, limit)
 
@@ -161,33 +165,16 @@ def get_place_details(request, place_id):
     return JsonResponse({'place': place.to_json(), 'reviews': reviews_dicts}, status=200)
 
 
-# TODO: there should be a text box who autocomplete whenever the user starts a search
-# TODO: create an sql query to search if that search exists
-def find_popular_search(places_id_list):
-    search_id = find_search_id_query(places_id_list)
-    find_popular_query = "SELECT sp.popularity FROM ("+ search_id+ ") AS S_ID, search_popularity AS sp " \
-                          "WHERE S_ID.search_id = sp.search_id"
-    popularity_rate = execute_query(find_popular_query)
-    return popularity_rate
-
-
 # TODO: should be called whenever a search is being made
 def update_popular_search(places_id_list):
-    search_id = execute_query(find_search_id_query(places_id_list))
+    search_id = exe_find_search_id_query(places_id_list)
     # if there is not search like that, insert it to search_popularity and searches_places
     if not search_id:
-        execute_query("INSERT INTO search_popularity(popularity) VALUES (1)")
-        search_id = execute_query("SELECT MAX(search_id) FROM search_popularity")
-        insert_to_searces_places = "INSERT INTO searches_places VALUES "
-        for i in range(len(places_id_list)):
-            insert_to_searces_places += "("+str(search_id[0]["search_id"])+","+str(places_id_list[1])+"), "
-        execute_query(insert_to_searces_places[:-2])
-
+        insert_new_search(places_id_list)
     elif len(search_id) > 1:
         return JsonResponse({'error': 'this search has more than one ID'}, status=404)
-
     else:
-        execute_query("UPDATE search_popularity SET popularity = popularity+1 WHERE search_id = " +str(search_id[0]["search_id"]))
+        update_search(search_id)
     return
 
 
