@@ -190,7 +190,7 @@ def get_place_reviews(place):
     return reviews
 
 
-def insert_review_to_db(reviews):
+def insert_new_reviews(reviews):
     if not reviews:
         raise ValueError('reviews argument must be not None')
 
@@ -208,6 +208,28 @@ def insert_review_to_db(reviews):
 
     # TODO: check what happens if review.date is None
     cur.executemany(query, reviews_tuples_list)
+
+    conn.commit()
+
+    cur.close()
+
+
+def update_place_rating(new_rating, place_id):
+    if not new_rating or not place_id:
+        raise ValueError('all arguments must be not None')
+
+    # TODO: should use an object to obtain the connection and cursor
+    conn = init_db_connection()
+    cur = conn.cursor(mdb.cursors.DictCursor)
+
+    query = 'UPDATE places   '\
+            'SET             '\
+            '    rating = %s '\
+            'WHERE           '\
+            '    id = %s     '
+
+    # TODO: check what happens if review.date is None
+    cur.execute(query, (new_rating, place_id))
 
     conn.commit()
 

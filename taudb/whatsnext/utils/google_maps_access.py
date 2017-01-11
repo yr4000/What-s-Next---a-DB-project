@@ -6,7 +6,7 @@ import thread
 from django.conf import settings
 
 from whatsnext.models import Review
-from whatsnext.utils.data_access import insert_review_to_db
+from whatsnext.utils.data_access import insert_new_reviews, update_place_rating
 
 HOST = 'https://maps.googleapis.com'
 
@@ -29,13 +29,24 @@ def fetch_reviews_from_google(place):
     json_response = json.load(urllib.urlopen(url))
     check_response_status(json_response)
 
-    new_reviews = convert_to_reviews_list(json_response, place.place_id)
+    new_reviews = get_reviews_from_details_response(json_response, place.place_id)
 
-    # insert_review_to_db(new_reviews)  # TODO: must be async, and grouped to a single insert query!
+    # insert new reviews to the db, asynchronously to shorten response time
     try:
-        thread.start_new_thread(insert_review_to_db, (new_reviews,))
+        thread.start_new_thread(insert_new_reviews, (new_reviews,))
     except Exception as e:
-        print 'thread init failed. {}'.format(e.message)
+        # TODO: log? not critical
+        print 'thread init failed for inserting reviews. {}'.format(e.message)
+
+    # update the place rating in db to the current value in google, asynchronously to shorten response time
+    # this is only performed if there are no reviews for the place
+    new_rating = get_current_rating_from_details_response(json_response)
+    if new_rating:
+        try:
+            thread.start_new_thread(update_place_rating, (new_rating, place.place_id))
+        except Exception as e:
+            # TODO: log? not critical
+            print 'thread init failed for update place rating. {}'.format(e.message)
 
     return new_reviews
 
@@ -48,8 +59,7 @@ def check_response_status(json_response):
         raise Exception('response status was bad: {status}'.format(status=status))
 
 
-# TODO: itzhaki also fetch the overall rating of the place to update it
-def convert_to_reviews_list(json_response, place_id):
+def get_reviews_from_details_response(json_response, place_id):
     new_reviews = list()
 
     # if response is empty or does not contain results return an empty list
@@ -86,3 +96,16 @@ def convert_to_reviews_list(json_response, place_id):
         new_reviews.append(new_review)
 
     return new_reviews
+
+
+def get_current_rating_from_details_response(json_response):
+    # if response is empty or does not contain results return an empty list
+    if not json_response or KEY_RESULT not in json_response:
+        return None
+
+    result = json_response[KEY_RESULT]
+    if not result or KEY_REVIEWS not in result:
+        return None
+
+    rating = result[KEY_RATING]
+    return rating
