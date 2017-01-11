@@ -33,6 +33,14 @@ function searchAroundMarker(latitude, longitude) {
         JSON.stringify(search_values),
         function(response)
         {
+            if(markersArray.length !=0){
+                clearMarkers();
+                clearResultsTable();
+            }
+
+            $("#place-div").hide();
+            $("#results-div").show();
+
             console.log(response);
             var i = 0;
             for (var key in response) {
@@ -45,7 +53,7 @@ function searchAroundMarker(latitude, longitude) {
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to search by marker");
+         console.log("Failed to Search around Marker");
     });
 }
 
@@ -66,6 +74,14 @@ function searchByFullText(word,category) {
         JSON.stringify(search_values),
         function(response)
         {
+            if(markersArray.length !=0){
+                clearMarkers();
+                clearResultsTable();
+            }
+
+            $("#place-div").hide();
+            $("#results-div").show();
+
             var i = 0;
             for (var key in response) {
                 var place = response[key];
@@ -77,13 +93,44 @@ function searchByFullText(word,category) {
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to run full text search");
+         console.log("Failed to preform Full Text Search");
     });
 }
 
-function getPlaceDetails(place_id) {
+function getPlaceDetails(place_id, index) {
     var url="/place/" + place_id + "/details/";
 
+    $.getJSON(url,
+    "",
+    function(response) {
+        console.log(response);
+
+        $("#results-div").hide();
+        $("#place-div").show();
+
+        $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(response.place.category)] +
+                                    String.fromCharCode((index % 26) + 65) + ".png";
+        $("#current-name")[0].innerHTML = response.place.name;
+        $("#current-id")[0].innerText = "Internal: " + place_id + "| Google: " + response.place.google_id;
+        $("#current-address")[0].innerText = response.place.vicinity;
+
+        for (var key in response.reviews) {
+            var review = response.reviews[key];
+            var reviewDiv = document.createElement("div");
+            reviewDiv.className = "review";
+            reviewDiv.innerHTML = "<b>Rating: " + review.rating + "</b></br>" + review.text +
+                                  "</br><b>By " + review.author + " on " + review.date + "</b>";
+            $("#current-reviews")[0].appendChild(reviewDiv);
+        }
+    },
+        'json')
+    .fail(function(jgXHR, textStatus, errorThrown) {
+         console.log("Failed to fetch Place Details");
+    });
+}
+
+function getPlaceStatistics(place) {
+    var url="/stats/categories?latitude=" + place.latitude + "&longitude=" + place.longitude + "&distance=" + DEFAULT_SEARCH_DISTANCE;
     $.getJSON(url,
     "",
     function(response) {
@@ -91,6 +138,8 @@ function getPlaceDetails(place_id) {
     },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to fetch Hotels");
+         console.log("Failed to fetch Place Statistics");
     });
+
+    
 }

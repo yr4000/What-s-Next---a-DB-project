@@ -44,6 +44,10 @@ function closeNavForSearch() {
     closeNav();
 }
 
+function showResults() {
+    $("#place-div").hide();
+    $("#results-div").show();
+}
 
 function addLocationRow(location, type, index) {
     var resultsTable = document.getElementById("results");
@@ -59,7 +63,7 @@ function addLocationRow(location, type, index) {
     titleCell.innerText = location.name;
     titleCell.className = "place-title";
     placeRow.onclick = function() {
-      getPlaceDetails(location.id);
+      getPlaceDetails(location.id, index);
     };
 
     placeRow = resultsTable.insertRow(-1);
@@ -73,3 +77,19 @@ function addLocationRow(location, type, index) {
 }
 
 
+function clearResultsTable() {
+    var resultsTable = document.getElementById("results");
+
+    while (resultsTable.hasChildNodes()) {
+        resultsTable.removeChild(resultsTable.lastChild);
+    }
+}
+
+function capitalizeFirstLetter(string)
+{
+    if (!string || 0 == string.length) {
+        return '';
+    }
+
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}

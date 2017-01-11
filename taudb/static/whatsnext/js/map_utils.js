@@ -277,9 +277,6 @@ function initMap() {
 
 function createMarker(LatLong, title, place_id, center, color, index) {
     if (markForSearch) { //Why do we need this boolean?
-        if(markersArray.length !=0){
-            clearMarkers()
-        }
         map.panTo(LatLong); // Center around marker.
         //console.log((LatLong.lat()-51)*RESOLUTION,LatLong.lng()*RESOLUTION)
         searchAroundMarker(LatLong.lat(),LatLong.lng());
@@ -296,7 +293,7 @@ function createMarker(LatLong, title, place_id, center, color, index) {
     });
     m.addListener("click", function() {
         map.panTo(LatLong);
-        getPlaceDetails(place_id);
+        getPlaceDetails(place_id, index);
     });
 
     return m;

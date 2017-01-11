@@ -30,7 +30,7 @@
 
 	</div>
     <div class="nav">
-        <div style="display:none;">
+        <div id ="search-div">
 			<select id="search-category">
 				<option value="default">Start with...</option>
 				{% for cat in categories %}
@@ -39,8 +39,17 @@
 			</select>&nbsp;
 			<input type="text" id="place-name" size="12" placeholder="Location name">
 		</div>
-        <div>Place</div>
-        <div>
+        <div id="place-div">
+			<div onclick="showResults()"><< Back to Results</div>
+			<table>
+				<tr><td rowspan="3"><img src="" id="current-icon"></td><td id="current-name"></td></tr>
+				<tr><td id="current-address"></td></tr>
+				<tr><td id="current-id"></td></tr>
+				<tr><td id="current-reviews" colspan="2"></td></tr>
+				<tr><td id="statistics"></td></tr>
+			</table>
+		</div>
+        <div id="results-div">
 			<table id="results"></table>
 		</div>
     </div>
