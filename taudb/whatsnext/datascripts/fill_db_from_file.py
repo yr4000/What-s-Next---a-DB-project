@@ -8,6 +8,8 @@ import MySQLdb as mdb
                 DO NOT RUN THIS FILE UNLESS YOUR NAME IS ALON ITZHAKI!!!!!!
                         EVERYTHING IS IN COMMENT AS A PRECAUTION
 
+                                (is my name Alon Itzhaki?)
+
                                 !!!!! IMPORTANT !!!!!
 '''
 

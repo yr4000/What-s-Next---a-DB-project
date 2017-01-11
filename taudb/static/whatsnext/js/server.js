@@ -17,9 +17,14 @@ $.ajaxSetup({
     }
 });
 
+
 function searchAroundMarker(latitude, longitude) {
     var url = "/place/get_around_marker/";
-
+    //TODO: Alon M, please use this code or something else to check update popular searches function
+    //for(i = 1; i<4; i++){
+    //    currentSearch.push(i);
+    //}
+    //updatePopularSearches();
     var search_values = {
         latitude: latitude,
         longitude: longitude,
@@ -62,6 +67,7 @@ function searchAroundMarker(latitude, longitude) {
  */
 function searchByFullText(word,category) {
     var url = "/searchByFullText/";
+    isSearchByText = true;
 
     var search_values = {
         word: word,
@@ -140,6 +146,32 @@ function getPlaceStatistics(place) {
     .fail(function(jgXHR, textStatus, errorThrown) {
          console.log("Failed to fetch Place Statistics");
     });
+}
 
-    
+function updatePopularSearches() {
+    console.log("started update popular search");
+    var url = "/updatePopularSearches/";
+    var search = {
+        places_id_list: currentSearch
+    }
+
+    $.post(url,
+        JSON.stringify(search_values),
+        function(response)
+        {
+            console.log(response);
+            while(currentSearch.length!=0){
+                currentSearch.pop();
+            }
+        },
+        'json')
+    .fail(function(jgXHR, textStatus, errorThrown) {
+         console.log("Failed to fetch Place Statistics");
+    });
+    console.log("finished");
+}
+
+//after each "what's next" we should use this function to update the currentSearch Array
+function addPlaceIDToCurrentSearch(place_id) {
+    currentSearch.push(place_id);
 }

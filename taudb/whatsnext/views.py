@@ -90,6 +90,7 @@ def pub_crawl(request):
     for i in range(1,num_of_bars):
         curr_min_dist = -1
         closest_point = [0, 0, ""]
+        latitude,longitude = modify_longlat_for_db(latitude,longitude)
         # return all bars in range of 0.5 km
         top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, 0.5)
         # we don't want the same point to appear in the track twice
@@ -167,6 +168,7 @@ def get_place_details(request, place_id):
 
 # TODO: should be called whenever a search is being made
 def update_popular_search(places_id_list):
+
     search_id = exe_find_search_id_query(places_id_list)
     # if there is not search like that, insert it to search_popularity and searches_places
     if not search_id:
