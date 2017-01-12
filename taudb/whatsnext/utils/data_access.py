@@ -44,6 +44,88 @@ def get_place_by_place_id(place_id):
     return place
 
 
+def find_suggestion_near_location(center_latitude, center_longitude):
+
+    cur = init_db_cursor()
+
+    query = 'Select 	                                                                                            ' \
+            'p1.id As p1id,                                                                                         ' \
+            '	p2id,                                                                                               ' \
+            '	p3id,                                                                                               ' \
+            '	p4id,                                                                                               ' \
+            '	(sqrt((p4lat - %s)^2 / 10000 + (p4lon - %s)^2 / 10000) +                                            ' \
+            '	sqrt((p3lat - p4lat)^2 / 10000 + (p3lon - p4lon)^2 / 10000) +                                       ' \
+            '	sqrt((p2lat - p3lat)^2 / 10000 + (p2lon - p3lon)^2 / 10000) +                                       ' \
+            '	sqrt((p1.latitude - p2lat)^2 / 10000 + (p1.longitude - p2lon)^2 / 10000)) As TotalDistAfterTransp   ' \
+            'From                                                                                                   ' \
+            '	places as p1,                                                                                       ' \
+            '	places_categories as pc1,                                                                           ' \
+            '	(Select                                                                                             ' \
+            '		p2.id As p2id,                                                                                  ' \
+            '	 	p3id,                                                                                           ' \
+            '		p4id,                                                                                           ' \
+            '		p2.latitude As p2lat,                                                                           ' \
+            '		p2.longitude As p2lon,                                                                          ' \
+            '       p4lat,                                                                                          ' \
+            '		p4lon,                                                                                          ' \
+            '		p3lat,                                                                                          ' \
+            '		p3lon                                                                                           ' \
+            '		From                                                                                            ' \
+            '		places as p2,                                                                                   ' \
+            '		places_categories as pc2,                                                                       ' \
+            '		(Select                                                                                         ' \
+            '			p4id,                                                                                       ' \
+            '			p3.id As p3id,                                                                              ' \
+            '			p3.latitude As p3lat,                                                                       ' \
+            '			p3.longitude As p3lon,                                                                      ' \
+            '			p4lat,                                                                                      ' \
+            '			p4lon                                                                                       ' \
+            '		From                                                                                            ' \
+            '			places as p3,                                                                               ' \
+            '			places_categories as pc3,                                                                   ' \
+            '			(Select                                                                                     ' \
+            '				p4.id As p4id,                                                                          ' \
+            '				p4.latitude As p4lat,                                                                   ' \
+            '               p4.longitude As p4lon                                                                   ' \
+            '				From                                                                                    ' \
+            '					places as p4,                                                                       ' \
+            '					places_categories as pc4	                                                        ' \
+            '			    Where                                                                                   ' \
+            '					p4.id = pc4.place_id                                                                ' \
+            '					And pc4.category_id = 4                                                             ' \
+            '                   And p4.latitude BETWEEN %s - 15 AND %s + 15                                         ' \
+            '                   AND p4.longitude BETWEEN %s - 5 AND %s + 5 ) AS muesums                             ' \
+            '		Where                                                                                           ' \
+            '			p3.id = pc3.place_id                                                                        ' \
+            '			And pc3.category_id = 3                                                                     ' \
+            '			And p3.latitude BETWEEN p4lat - 15 AND p4lat + 15                                           ' \
+            'AND p3.longitude BETWEEN p4lon - 15 AND p4lat + 15 ) AS bars                                           ' \
+            '	Where                                                                                               ' \
+            '		p2.id = pc2.place_id                                                                            ' \
+            '		And pc2.category_id = 2                                                                         ' \
+            '		And p2.latitude BETWEEN p3lat - 15 AND p3lat + 15                                               ' \
+            'AND p2.longitude BETWEEN p3lon - 15 AND p3lat + 15 ) AS resturants                                     ' \
+            'Where                                                                                                  ' \
+            '	p1.id = pc1.place_id                                                                                ' \
+            '	And pc1.category_id = 1                                                                             ' \
+            '	And p1.latitude BETWEEN p2lat - 15 AND p2lat + 15                                                   ' \
+            '   AND p1.longitude BETWEEN p2lon - 15 AND p2lat + 15                                                  ' \
+            'Order By                                                                                               ' \
+            '	TotalDistAfterTransp'
+
+    cur.execute(query, (center_longitude, center_longitude, center_latitude ,
+                        center_latitude, center_longitude, center_longitude))
+    rows = cur.fetchall()
+
+    places = dict()
+    for result in rows:
+        place = query_results_to_dict(result)
+        places[place["id"]] = place
+
+    cur.close()
+
+    return places
+
 def search_places_near_location(center_latitude, center_longitude, top, right, bottom, left, category, limit):
 
     cur = init_db_cursor()

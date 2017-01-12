@@ -44,6 +44,23 @@ def search_by_name(request):
     return JsonResponse(places, status=200)
 
 
+def find_suggestion_by_point(request):
+    if request.is_ajax() is False:
+        raise Http404
+
+    request_json = json.loads(request.body)
+
+    latitude = request_json["latitude"]
+    longitude = request_json["longitude"]
+
+    # modify the longitude and the latitude to be workable with DB.
+    latitude,longitude = modify_longlat_for_db(latitude,longitude)
+
+    places = find_suggestion_near_location(latitude, longitude)
+
+    return JsonResponse(places, status=200)
+
+
 # input : latitude, longitude, distance, category
 # output : a square sized distance**2 with all the places from that category in it's range
 def search_places_by_point(request):
