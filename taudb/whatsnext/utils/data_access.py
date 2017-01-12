@@ -77,7 +77,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
 
     places = dict()
     for result in rows:
-        place = json_to_dict(result)
+        place = query_results_to_dict(result)
         places[place["id"]] = place
 
     cur.close()
@@ -85,7 +85,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
     return places
 
 
-def json_to_dict(result):
+def query_results_to_dict(result):
     place = dict()
     place["id"] = result["id"]
     place["google_id"] = result["google_id"]
@@ -137,7 +137,7 @@ def search_places_by_name(search_word, search_category, offset_for_paging):
 
     places = dict()
     for result in rows:
-        place = json_to_dict(result)
+        place = query_results_to_dict(result)
         places[place["id"]] = place
 
     return places
