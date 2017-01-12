@@ -37,9 +37,9 @@ def search_by_name(request):
 
     search_word = request_json["word"]
     search_category = request_json["category"]
-    limit = request_json["limit"]
+    offset_for_paging = request_json["page_offset"]
 
-    places = search_places_by_name(search_word, search_category, limit)
+    places = search_places_by_name(search_word, search_category, offset_for_paging)
 
     return JsonResponse(places, status=200)
 

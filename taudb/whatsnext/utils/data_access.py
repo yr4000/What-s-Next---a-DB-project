@@ -4,6 +4,8 @@ from exceptions import NotFoundInDb
 import MySQLdb as mdb
 from taudb.settings import RESOLUTION,LONDON_LATITUDE_DB_CONST
 
+DEFAULT_RESULTS_AMOUNT = 10
+
 
 def get_place_by_place_id(place_id):
     if not place_id:
@@ -95,7 +97,7 @@ def json_to_dict(result):
     return place
 
 
-def search_places_by_name(search_word, search_category, limit):
+def search_places_by_name(search_word, search_category, offset_for_paging):
 
     cur = init_db_cursor()
 
@@ -127,16 +129,17 @@ def search_places_by_name(search_word, search_category, limit):
             '    categories ON categories.id = places_categories.category_id                   ' \
             'WHERE                                                                             ' \
             '    categories.name = %s                                                          ' \
-            'LIMIT %s                                                                          '
+            'LIMIT %s, %s                                                                          '
 
-    # TODO: why do we have a limit set from the client? why do we have a limit at all?
-    cur.execute(query, (search_word, search_category, limit))
+    cur.execute(query, (search_word, search_category, offset_for_paging, DEFAULT_RESULTS_AMOUNT))
 
     rows = cur.fetchall()
 
     places = dict()
     for result in rows:
         place = json_to_dict(result)
+        print place
+        print
         places[place["id"]] = place
 
     return places

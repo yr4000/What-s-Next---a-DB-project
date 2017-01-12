@@ -65,15 +65,14 @@ function searchAroundMarker(latitude, longitude) {
 /**
  * Created by DrorBrunman on 04/01/2017.
  */
-function searchByFullText(word,category) {
+function searchByFullText(word,category,page_offset) {
     var url = "/searchByFullText/";
     isSearchByText = true;
 
     var search_values = {
         word: word,
         category: category,
-        limit: DEFAULT_RESULTS_AMOUNT,
-        page:0
+        page_offset:page_offset
     };
 
     $.post(url,
