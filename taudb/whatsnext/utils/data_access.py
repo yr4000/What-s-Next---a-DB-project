@@ -138,8 +138,6 @@ def search_places_by_name(search_word, search_category, offset_for_paging):
     places = dict()
     for result in rows:
         place = json_to_dict(result)
-        print place
-        print
         places[place["id"]] = place
 
     return places
