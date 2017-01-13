@@ -128,11 +128,25 @@ function searchCombinationByPoint(latitude, longitude, page_offset) {
 
             var i = 0;
             for (var key in response) {
-                var place = response[key];
-                addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                          place["name"], place["id"], false, enumMarkerColors[place["category"]], i);
-                addLocationRow(place, place["category"], i);
-                i++;
+                var sugg = response[key]; // the current 4 places combo suggestion from query
+
+                addMarker(new google.maps.LatLng(sugg[0].latitude, sugg[0].longitude),
+                          sugg[0]["name"], sugg[0]["id"], false, enumMarkerColors[sugg[0]["category"]], i);
+                addLocationRow(sugg[0], sugg[0]["category"], i);
+
+                addMarker(new google.maps.LatLng(sugg[1].latitude, sugg[1].longitude),
+                          sugg[1]["name"], sugg[1]["id"], false, enumMarkerColors[sugg[1]["category"]], i+1);
+                addLocationRow(sugg[1], sugg[1]["category"], i+1);
+
+                addMarker(new google.maps.LatLng(sugg[2].latitude, sugg[2].longitude),
+                          sugg[2]["name"], sugg[2]["id"], false, enumMarkerColors[sugg[2]["category"]], i+2);
+                addLocationRow(sugg[2], sugg[2]["category"], i+2);
+
+                addMarker(new google.maps.LatLng(sugg[3].latitude, sugg[3].longitude),
+                          sugg[3]["name"], sugg[3]["id"], false, enumMarkerColors[sugg[3]["category"]], i+3);
+                addLocationRow(sugg[3], sugg[3]["category"], i+3);
+
+                i = i + 4;
             }
         },
         'json')
