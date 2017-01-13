@@ -36,7 +36,7 @@ def search_by_name(request):
     request_json = json.loads(request.body)
 
     search_word = request_json["word"]
-    search_category = request_json["category"]
+    search_category = request_json["category"].lower()
     offset_for_paging = request_json["page_offset"]
 
     places = search_places_by_name(search_word, search_category, offset_for_paging)

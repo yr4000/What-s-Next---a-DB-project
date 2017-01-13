@@ -43,6 +43,7 @@ def get_place_by_place_id(place_id):
 
     return place
 
+
 def get_place_by_place_id_v2(place_id):
     if not place_id:
         raise ValueError('id argument must be not None')
@@ -173,7 +174,7 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
 
     cur.execute(query, (center_longitude, center_longitude, center_latitude ,
                         center_latitude, center_longitude, center_longitude,
-                        offset_for_paging, DEFAULT_RESULTS_AMOUNT))
+                        (offset_for_paging * DEFAULT_RESULTS_AMOUNT), DEFAULT_RESULTS_AMOUNT))
     rows = cur.fetchall()
 
     places = dict()
@@ -281,7 +282,8 @@ def search_places_by_name(search_word, search_category, offset_for_paging):
             '    categories.name = %s                                                          ' \
             'LIMIT %s, %s                                                                          '
 
-    cur.execute(query, (search_word, search_category, offset_for_paging, DEFAULT_RESULTS_AMOUNT))
+    cur.execute(query, (search_word, search_category, (offset_for_paging * DEFAULT_RESULTS_AMOUNT),
+                        DEFAULT_RESULTS_AMOUNT))
 
     rows = cur.fetchall()
 
