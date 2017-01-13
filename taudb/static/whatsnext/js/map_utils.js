@@ -288,13 +288,18 @@ function createMarker(LatLong, title, place_id, center, color, index) {
         position: LatLong,
         map: map,
         icon: iconFolderPath + color + String.fromCharCode((index % 26) + 65) + ".png",
-        title:title
+        title:title,
+        place_id: place_id
     });
-    m.addListener("click", function() {
+    m.addListener("rightclick", function() {
         map.panTo(LatLong);
         getPlaceDetails(place_id, index);
     });
-
+    m.addListener('click', function () {
+        removeAllMarkersExceptChosenOne(self);
+        currentSearch.push(place_id);
+        console.log("currentSearch = "+String(currentSearch));
+    });
     return m;
 }
 
@@ -310,4 +315,20 @@ function clearMarkers() {
     while (markersArray.length != 0) {
         removeMarker(markersArray.pop());
     }
+}
+
+/*after a marker is chosen all the markers except him
+  will be removed of the map using this function.
+  #TODO: it doesn't work right now because i coudn't figure how to work with indexes....
+ */
+function removeAllMarkersExceptChosenOne(anakin) {
+    console.log("start chosen one")
+    for(i=0;i++;i<markersArray.length){
+        if(anakin.place_id == markersArray[i]){
+            continue;
+        }
+        console.log(markersArray[i].title);
+        removeMarker(markersArray[i]);
+    }
+    console.log("end chosen one")
 }
