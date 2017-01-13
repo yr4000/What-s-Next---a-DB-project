@@ -90,6 +90,9 @@ CREATE TABLE search_popularity
   PRIMARY KEY (search_id)
 )
 
+ALTER TABLE search_popularity
+RENAME TO search_properties
+
 #TODO we should make sure it is also at least 1
 ALTER TABLE search_popularity
 ADD search_size INT

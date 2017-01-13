@@ -409,28 +409,48 @@ def find_popular_search(places_id_list):
     return popularity_rate
 
 
-# this function returns a string that determains which search_id will return.
-# it is vital it returns a string and not execute anything.
-def find_search_id_query(places_id_list):
-    places_str = ""
-    for place in places_id_list:
-        places_str  += "place_id = " + str(place) + " AND "
-    places_str += "search_size = " +str(len(places_id_list))
-    return "SELECT search_id FROM searches_places WHERE " + places_str
-
-
 def exe_find_search_id_query(places_id_list):
     return execute_query(find_search_id_query(places_id_list))
 
+# this function returns a string that determains which search_id will return.
+# it is vital it returns a string and not execute anything.
+def find_search_id_query(places_id_list):
+    query = "SELECT sp.search_id " \
+            "FROM (SELECT sp0.search_id " \
+                   "FROM searches_places AS sp0 "
+    places_str,inner_join = "",""
+    for i in range(len(places_id_list)):
+        #this is ake sure we add the exact ammount of inner join needed.
+        if (i != len(places_id_list)-1):
+            inner_join = "INNER JOIN searches_places AS sp"+str(i+1)+" "
+        places_str  +="sp"+str(i)+".place_id = " + str(places_id_list[i]) + " AND "
+    places_str =inner_join + "WHERE " + places_str[:-5] #remove the last " ADD "
+    query += places_str +" ) AS possible_searches INNER JOIN search_properties AS sp " \
+                         "ON possible_searches.search_id = sp.search_id " \
+                         "WHERE sp.search_size = 3 "
+    return query
+
+'''
+example for find_search_query_id_result:
+    SELECT sp.search_id
+    FROM   (SELECT sp0.search_id
+            FROM searches_places AS sp1
+            INNER JOIN searches_places AS sp1
+            INNER JOIN searches_places AS sp2
+            WHERE sp0.place_id = 1 AND sp2.place_id = 2 AND sp3.place_id = 3
+            ) as possible_searches INNER JOIN search_properties AS sp
+            ON possible_searches.search_id = sp.search_id
+    WHERE sp.search_size = 3
+'''
 
 def insert_new_search(places_id_list):
-    execute_query("INSERT INTO search_popularity(popularity) VALUES (1)")
-    search_id = execute_query("SELECT MAX(search_id) FROM search_popularity")
-    insert_to_searces_places = "INSERT INTO searches_places VALUES "
+    execute_query("INSERT INTO search_properties(popularity,search_size) VALUES (1," +str(len(places_id_list))+")") #creates new popularity
+    search_id = execute_query("SELECT MAX(search_id) FROM search_properties") #returns the new popularity id
+    insert_to_searches_places = "INSERT INTO searches_places VALUES "
     for i in range(len(places_id_list)):
-        insert_to_searces_places += "(" + str(search_id[0]["search_id"]) + "," + str(places_id_list[1]) + "), "
-    execute_query(insert_to_searces_places[:-2])
+        insert_to_searches_places += "(" + str(search_id[0]["search_id"]) + "," + str(places_id_list[1]) + "), "
+    execute_query(insert_to_searches_places[:-2]) #insert this popularity into searches_places
 
 
 def update_search(search_id):
-    execute_query("UPDATE search_popularity SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))
+    execute_query("UPDATE search_properties SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))

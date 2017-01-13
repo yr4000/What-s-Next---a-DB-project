@@ -21,10 +21,10 @@ $.ajaxSetup({
 function searchAroundMarker(latitude, longitude) {
     var url = "/place/get_around_marker/";
     //TODO: Alon M, please use this code or something else to check update popular searches function
-    //for(i = 1; i<4; i++){
-    //    currentSearch.push(i);
-    //}
-    //updatePopularSearches();
+    for(i = 1; i<4; i++){
+        currentSearch.push(i);
+    }
+    updatePopularSearches();
     var search_values = {
         latitude: latitude,
         longitude: longitude,
@@ -172,19 +172,21 @@ function updatePopularSearches() {
     var search = {
         places_id_list: currentSearch
     }
+    console.log(currentSearch)
 
     $.post(url,
-        JSON.stringify(search_values),
+        JSON.stringify(search),
         function(response)
         {
             console.log(response);
+            console.log("updated successfuly :)")
             while(currentSearch.length!=0){
                 currentSearch.pop();
             }
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to fetch Place Statistics");
+         console.log("Failed to update popular searches :(");
     });
     console.log("finished");
 }

@@ -14,7 +14,7 @@ from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
     search_places_near_location, search_places_by_name, exe_find_search_id_query, insert_new_search, \
-    update_search, get_popular_places_for_category
+    update_search, get_popular_places_for_category,find_suggestion_near_location
 
 
 def homepage(request):
@@ -186,17 +186,29 @@ def get_place_details(request, place_id):
 
 # TODO: should be called whenever a search is being made
 def update_popular_search(places_id_list):
+    try:
+        update_success = False
+        '''
+        if request.is_ajax() is False:
+            raise Http404
 
-    search_id = exe_find_search_id_query(places_id_list)
-    # if there is not search like that, insert it to search_popularity and searches_places
-    if not search_id:
-        insert_new_search(places_id_list)
-    elif len(search_id) > 1:
-        return JsonResponse({'error': 'this search has more than one ID'}, status=404)
-    else:
-        update_search(search_id)
-    return
+        request_json = json.loads(request.body)
 
+        places_id_list = request_json["places_id_list"]
+        '''
+
+        search_id = exe_find_search_id_query(places_id_list)
+        # if there is not search like that, insert it to search_popularity and searches_places
+        if len(search_id)==0:
+            insert_new_search(places_id_list)
+        elif len(search_id) > 1:
+            return JsonResponse({'error': 'this search has more than one ID'}, status=404)
+        else:
+            update_search(search_id)
+        update_sucess = True
+        return JsonResponse(update_success, status=200)
+    except Exception:
+        return JsonResponse(str(Exception), status=200)
 
 def calc_categories_statistics(request):
     if 'latitude' not in request.GET or 'longitude' not in request.GET or 'distance' not in request.GET:
@@ -230,3 +242,4 @@ def calc_top_places_for_category(request):
 
     return JsonResponse(top_places, status=200)
 
+#exe_find_search_id_query([4,5,6]) #TODO for test! only Yair shall delete!
