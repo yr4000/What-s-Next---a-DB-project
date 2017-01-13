@@ -1,4 +1,4 @@
-from db_utils import init_db_connection, init_db_cursor,execute_query
+from db_utils import init_db_connection, init_db_cursor,execute_SFW_query,execute_writing_query
 from whatsnext.models import Review, Place
 from exceptions import NotFoundInDb
 import MySQLdb as mdb
@@ -474,12 +474,12 @@ def find_popular_search(places_id_list):
     search_id = find_search_id_query(places_id_list)
     find_popular_query = "SELECT sp.popularity FROM ("+ search_id+ ") AS S_ID, search_popularity AS sp " \
                           "WHERE S_ID.search_id = sp.search_id"
-    popularity_rate = execute_query(find_popular_query)
+    popularity_rate = execute_SFW_query(find_popular_query)
     return popularity_rate
 
 
 def exe_find_search_id_query(places_id_list):
-    return execute_query(find_search_id_query(places_id_list))
+    return execute_SFW_query(find_search_id_query(places_id_list))
 
 # this function returns a string that determains which search_id will return.
 # it is vital it returns a string and not execute anything.
@@ -491,7 +491,7 @@ def find_search_id_query(places_id_list):
     for i in range(len(places_id_list)):
         #this is ake sure we add the exact ammount of inner join needed.
         if (i != len(places_id_list)-1):
-            inner_join = "INNER JOIN searches_places AS sp"+str(i+1)+" "
+            inner_join += "INNER JOIN searches_places AS sp"+str(i+1)+" "
         places_str  +="sp"+str(i)+".place_id = " + str(places_id_list[i]) + " AND "
     places_str =inner_join + "WHERE " + places_str[:-5] #remove the last " ADD "
     query += places_str +" ) AS possible_searches INNER JOIN search_properties AS sp " \
@@ -513,13 +513,14 @@ example for find_search_query_id_result:
 '''
 
 def insert_new_search(places_id_list):
-    execute_query("INSERT INTO search_properties(popularity,search_size) VALUES (1," +str(len(places_id_list))+")") #creates new popularity
-    search_id = execute_query("SELECT MAX(search_id) FROM search_properties") #returns the new popularity id
+    execute_writing_query("INSERT INTO search_properties(popularity,search_size) VALUES (1," +str(len(places_id_list))+")") #creates new popularity
+    search_id = execute_SFW_query("SELECT MAX(search_id) AS search_id FROM search_properties") #returns the new popularity id
+    #return search_id
     insert_to_searches_places = "INSERT INTO searches_places VALUES "
     for i in range(len(places_id_list)):
-        insert_to_searches_places += "(" + str(search_id[0]["search_id"]) + "," + str(places_id_list[1]) + "), "
-    execute_query(insert_to_searches_places[:-2]) #insert this popularity into searches_places
+        insert_to_searches_places += "(" + str(search_id[0]['search_id']) + "," + str(places_id_list[i]) + "), "
+    execute_writing_query(insert_to_searches_places[:-2]) #insert this popularity into searches_places
 
 
 def update_search(search_id):
-    execute_query("UPDATE search_properties SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))
+    execute_writing_query("UPDATE search_properties SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))

@@ -19,7 +19,7 @@ from utils.data_access import get_place_by_place_id, get_place_reviews, get_cate
 
 def homepage(request):
     categories = []
-    categories_results = execute_query("SELECT * FROM categories")
+    categories_results = execute_SFW_query("SELECT * FROM categories")
     for category in categories_results:
         categories.append(category["name"].capitalize())
 
@@ -131,7 +131,7 @@ def pub_crawl(request):
         for x in range(i):
             query = query + " AND latitude != " + str(exclude_lats[x]) \
                             + " AND longitude != " + str(exclude_longs[x])
-        rows = execute_query(query)
+        rows = execute_SFW_query(query)
         if len(rows) == 0:
             break
 
@@ -186,30 +186,31 @@ def get_place_details(request, place_id):
 
 
 # TODO: should be called whenever a search is being made
-def update_popular_search(places_id_list):
-    try:
-        update_success = False
-        '''
-        if request.is_ajax() is False:
-            raise Http404
+def update_popular_search(request):
 
-        request_json = json.loads(request.body)
+    update_status = ""
 
-        places_id_list = request_json["places_id_list"]
-        '''
+    if request.is_ajax() is False:
+        raise Http404
 
-        search_id = exe_find_search_id_query(places_id_list)
-        # if there is not search like that, insert it to search_popularity and searches_places
-        if len(search_id)==0:
-            insert_new_search(places_id_list)
-        elif len(search_id) > 1:
-            return JsonResponse({'error': 'this search has more than one ID'}, status=404)
-        else:
-            update_search(search_id)
-        update_success = True
-        return JsonResponse(update_success, status=200)
-    except Exception:
-        return JsonResponse(str(Exception), status=200)
+    request_json = json.loads(request.body)
+
+    places_id_list = request_json["places_id_list"]
+
+
+    search_id = exe_find_search_id_query(places_id_list)
+    #return JsonResponse({'update_status': update_status, 'len_search_is': len(search_id)}, status=200)
+
+    # if there is not search like that, insert it to search_popularity and searches_places
+    if len(search_id)==0:
+        insert_new_search(places_id_list)
+        update_status += "inserted new search"
+    elif len(search_id) > 1:
+        return JsonResponse({'error': 'this search has more than one ID'}, status=404)
+    else:
+        update_search(search_id)
+        update_status += "updated search"
+    return JsonResponse({'update_status' : update_status}, status=200) #for debug
 
 
 def calc_categories_statistics(request):
@@ -243,5 +244,3 @@ def calc_top_places_for_category(request):
     top_places = get_popular_places_for_category(category)
 
     return JsonResponse(top_places, status=200)
-
-#exe_find_search_id_query([4,5,6]) #TODO for test! only Yair shall delete!
