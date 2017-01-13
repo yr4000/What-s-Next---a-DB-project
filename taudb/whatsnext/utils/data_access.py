@@ -355,6 +355,50 @@ def get_categories_statistics(top, right, bottom, left, except_category):
     return statistics
 
 
+def get_popular_places_for_category(category):
+    if not category:
+        raise ValueError('category arguments must be not None')
+
+    cur = init_db_cursor()
+
+    # TODO: this should not be limited like this - need to decide on the requirement
+    # TODO: current popularity is just the amount of times the place was chosen as a group of places
+    query = 'SELECT                                                                           '\
+            '    places.id, places.name, SUM(search_popularity.popularity) AS popularity      '\
+            'FROM                                                                             '\
+            '    places                                                                       '\
+            '        INNER JOIN                                                               '\
+            '    searches_places ON places.id = searches_places.place_id                      '\
+            '        INNER JOIN                                                               '\
+            '    search_popularity ON searches_places.search_id = search_popularity.search_id '\
+            '        INNER JOIN                                                               '\
+            '    places_categories on places.id = places_categories.place_id                  '\
+            '        INNER JOIN                                                               '\
+            '    categories on places_categories.category_id = categories.id                  '\
+            'WHERE                                                                            '\
+            '    categories.name = %s                                                         '\
+            'GROUP BY places.id, places.name                                                  '\
+            'ORDER BY popularity DESC                                                         '\
+            'LIMIT 5                                                                          '
+
+    cur.execute(query, (category,))
+
+    records = cur.fetchall()
+
+    top_places = dict()
+    for record in records:
+        place_id = record['id']
+        place_name = record['name']
+        popularity = record['popularity']
+
+        top_places[place_id] = {'place_id': place_id, 'place_name': place_name, 'popularity': popularity}
+
+    cur.close()
+
+    return top_places
+
+
+
 # TODO: there should be a text box who autocomplete whenever the user starts a search
 # TODO: create an sql query to search if that search exists
 def find_popular_search(places_id_list):

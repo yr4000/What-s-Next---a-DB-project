@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^place/(?P<place_id>\d+)/details', views.get_place_details),
     url(r'^place/get_around_marker/', views.search_places_by_point),
     url(r'^stats/categories', views.calc_categories_statistics),
+    url(r'^stats/top_places', views.calc_top_places_for_category),
     url(r'^updatePopularSearches', views.update_popular_search)
     ]

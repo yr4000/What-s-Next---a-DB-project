@@ -14,7 +14,7 @@ from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
     search_places_near_location, search_places_by_name, exe_find_search_id_query, insert_new_search, \
-    update_search
+    update_search, get_popular_places_for_category
 
 
 def homepage(request):
@@ -217,4 +217,16 @@ def calc_categories_statistics(request):
     statistics = get_categories_statistics(top, right, bottom, left, except_category)
 
     return JsonResponse(statistics, status=200)
+
+
+def calc_top_places_for_category(request):
+    if 'category' not in request.GET:
+        return JsonResponse(MISSING_QUERY_PARAMS, status=400)
+
+    # get required query parameters
+    category = request.GET['category']
+
+    top_places = get_popular_places_for_category(category)
+
+    return JsonResponse(top_places, status=200)
 
