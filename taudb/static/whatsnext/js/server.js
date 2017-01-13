@@ -92,8 +92,8 @@ function searchByFullText(word) {
             for (var key in response) {
                 var place = response[key];
                 addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                          place["name"], place["id"], false, enumMarkerColors[category], i);
-                addLocationRow(place, category, i);
+                          place["name"], place["id"], false, enumMarkerColors[searchCategory], i);
+                addLocationRow(place, searchCategory, i);
                 i++;
             }
             requestPage++;

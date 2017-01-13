@@ -39,6 +39,9 @@ def search_by_name(request):
     search_category = request_json["category"].lower()
     offset_for_paging = request_json["page_offset"]
 
+    print "Searching for a " + search_category + " with " + search_word + \
+          " in it's name [Page " + str(offset_for_paging) + "]"
+
     places = search_places_by_name(search_word, search_category, offset_for_paging)
 
     return JsonResponse(places, status=200)
@@ -203,10 +206,11 @@ def update_popular_search(places_id_list):
             return JsonResponse({'error': 'this search has more than one ID'}, status=404)
         else:
             update_search(search_id)
-        update_sucess = True
+        update_success = True
         return JsonResponse(update_success, status=200)
     except Exception:
         return JsonResponse(str(Exception), status=200)
+
 
 def calc_categories_statistics(request):
     if 'latitude' not in request.GET or 'longitude' not in request.GET or 'distance' not in request.GET:
