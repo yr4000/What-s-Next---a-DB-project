@@ -13,13 +13,13 @@ var enumMarkerColors = {
     Hotel : "blue/blue_Marker",
     Bar : "purple/purple_Marker",
     Museum : "orange/orange_Marker",
-    Current : "green/green_Marker"
+    Current : "darkgreen/darkgreen_Marker"
 };
 
 var DEFAULT_MAP_CENTER = {lat: 51.509865, lng: -0.118092};
 
 var DEFAULT_SEARCH_DISTANCE = 5000;
-var DEFAULT_SEARCH_CATEGORY = "Lodging";
+var DEFAULT_SEARCH_CATEGORY = "Hotel";
 var RESOLUTION = 10000;
 var DEFAULT_RESULTS_AMOUNT = 20;
 

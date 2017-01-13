@@ -192,11 +192,21 @@ function getPlaceStatistics(place) {
             }
             var iconCell = row.insertCell(cells++);
             var catIcon = document.createElement("img");
-            catIcon.src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(key)] + "A.png";
+            $(iconCell).data("category",key);
+            catIcon.src = iconFolderPath + enumMarkerColors[key] + "A.png";
             iconCell.appendChild(catIcon);
+            iconCell.onclick = function() {
+                changeSearchCategory($(this).data("category"));
+                searchAroundMarker(place.latitude, place.longitude);
+            };
             var catCell = row.insertCell(cells++);
-            catCell.innerHTML = "<b>" + category.places_amount + " " + capitalizeFirstLetter(key) + " </b>" +
+            $(catCell).data("category",key);
+            catCell.innerHTML = "<b>" + category.places_amount + " " + key + "s </b>" +
                 "<br> [Avg. Rating : " + category.rating_average + "]";
+            catCell.onclick = function() {
+                changeSearchCategory($(this).data("category"));
+                searchAroundMarker(place.latitude, place.longitude);
+            };
         }
     },
         'json')
