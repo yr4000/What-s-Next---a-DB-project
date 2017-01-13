@@ -23,13 +23,14 @@ def fetch_reviews_from_google(place):
         host=HOST,
         api_key=settings.GOOGLE_API_KEY,
         api='/maps/api/place/details/json',
-        google_id=place.google_id)
+        google_id=place['google_id'])  # TODO: again, need to fix this to use the Place class
 
     # process Google Places API response
     json_response = json.load(urllib.urlopen(url))
     check_response_status(json_response)
 
-    new_reviews = get_reviews_from_details_response(json_response, place.place_id)
+    # TODO: again, need to fix this to use the Place class
+    new_reviews = get_reviews_from_details_response(json_response, place['id'])
 
     # insert new reviews to the db, asynchronously to shorten response time
     try:
@@ -43,7 +44,8 @@ def fetch_reviews_from_google(place):
     new_rating = get_current_rating_from_details_response(json_response)
     if new_rating:
         try:
-            thread.start_new_thread(update_place_rating, (new_rating, place.place_id))
+            # TODO: again, need to fix this to use the Place class
+            thread.start_new_thread(update_place_rating, (new_rating, place['id']))
         except Exception as e:
             # TODO: log? not critical
             print 'thread init failed for update place rating. {}'.format(e.message)
