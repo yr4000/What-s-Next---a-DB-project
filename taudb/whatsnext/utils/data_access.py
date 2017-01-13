@@ -309,7 +309,7 @@ def update_place_rating(new_rating, place_id):
     cur.close()
 
 
-def get_categories_statistics(top, right, bottom, left):
+def get_categories_statistics(top, right, bottom, left, except_category):
     if not top or not right or not bottom or not left:
         raise ValueError('location arguments must be not None')
 
@@ -333,12 +333,12 @@ def get_categories_statistics(top, right, bottom, left):
             '    WHERE                                                             ' \
             '        rating > 0) AS places_rated ON places.id = places_rated.id    ' \
             'WHERE                                                                 ' \
-            '    latitude BETWEEN %s AND %s                                        ' \
+            '   latitude BETWEEN %s AND %s                                         ' \
             '        AND longitude BETWEEN %s AND %s                               ' \
             'GROUP BY categories.name                                              ' \
-            'HAVING places_amount > 0;                                             '
+            'HAVING places_amount > 0 AND categories.name != %s                    '
 
-    cur.execute(query, (bottom, top, left, right))
+    cur.execute(query, (bottom, top, left, right, except_category))
 
     records = cur.fetchall()
 

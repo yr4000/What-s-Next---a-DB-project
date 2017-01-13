@@ -206,13 +206,15 @@ def calc_categories_statistics(request):
     latitude = float(request.GET['latitude'])
     longitude = float(request.GET['longitude'])
     distance = float(request.GET['distance'])
+    # we want to return statistics for ALL categories EXCEPT the given category
+    except_category = request.GET['except_category']
 
     # modify the longitude and the latitude to be workable with DB.
     latitude, longitude = modify_longlat_for_db(latitude, longitude)
 
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
 
-    statistics = get_categories_statistics(top, right, bottom, left)
+    statistics = get_categories_statistics(top, right, bottom, left, except_category)
 
     return JsonResponse(statistics, status=200)
 
