@@ -48,6 +48,7 @@ def find_suggestion_near_location(center_latitude, center_longitude):
 
     cur = init_db_cursor()
 
+    # TODO: Not sure what this means yet, but please make sure "category" projected to the results as well
     query = 'Select 	                                                                                            ' \
             'p1.id As p1id,                                                                                         ' \
             '	p2id,                                                                                               ' \
@@ -139,6 +140,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
             '    places.latitude,                                                      '\
             '    places.rating,                                                        '\
             '    places.vicinity,                                                      '\
+            '    categories.name AS category,                                          '\
             '    (POWER((latitude - %s) , 2) + POWER((longitude - %s), 2)) AS distance '\
             'FROM                                                                      '\
             '    places                                                                '\
@@ -177,6 +179,7 @@ def query_results_to_dict(result):
     place["latitude"] = (result["latitude"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
     place["rating"] = result["rating"]
     place["vicinity"] = result["vicinity"]
+    place["category"] = result["category"]
     return place
 
 
@@ -193,6 +196,7 @@ def search_places_by_name(search_word, search_category, offset_for_paging):
             '    full_text_results.vicinity,                                                   ' \
             '    full_text_results.latitude,                                                   ' \
             '    full_text_results.longitude                                                   ' \
+            '    categories.name AS category                                                   ' \
             'FROM                                                                              ' \
             '    (SELECT                                                                       ' \
             '        places.id,                                                                ' \
