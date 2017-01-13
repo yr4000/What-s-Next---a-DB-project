@@ -24,3 +24,6 @@ var searchDistance = DEFAULT_SEARCH_DISTANCE;
 
 // this will contain the place_id's of the current search
 var currentSearch = [];
+
+// Next page to ask in request.
+var requestPage = 0;

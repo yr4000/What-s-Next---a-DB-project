@@ -24,14 +24,14 @@ function searchAroundMarker(latitude, longitude) {
     for(i = 1; i<4; i++){
         currentSearch.push(i);
     }
-    updatePopularSearches();
+    //updatePopularSearches();
     var search_values = {
         latitude: latitude,
         longitude: longitude,
         distance: searchDistance,
         category: searchCategory,
         limit: DEFAULT_RESULTS_AMOUNT,
-        page: 0
+        page: requestPage
     };
 
     $.post(url,
@@ -40,7 +40,7 @@ function searchAroundMarker(latitude, longitude) {
         {
             if(markersArray.length !=0){
                 clearMarkers();
-                clearResultsTable("results");
+                clearTable("results");
             }
 
             $("#place-div").hide();
@@ -55,6 +55,7 @@ function searchAroundMarker(latitude, longitude) {
                 addLocationRow(place, searchCategory, i);
                 i++;
             }
+            requestPage++;
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -62,14 +63,17 @@ function searchAroundMarker(latitude, longitude) {
     });
 }
 
-function searchByFullText(word,category,page_offset) {
+/**
+ * Created by DrorBrunman on 04/01/2017.
+ */
+function searchByFullText(word) {
     var url = "/searchByFullText/";
     isSearchByText = true;
 
     var search_values = {
         word: word,
-        category: category,
-        page_offset:page_offset
+        category: searchCategory,
+        page_offset: requestPage
     };
 
     $.post(url,
@@ -78,7 +82,7 @@ function searchByFullText(word,category,page_offset) {
         {
             if(markersArray.length !=0){
                 clearMarkers();
-                clearResultsTable("results");
+                clearTable("results");
             }
 
             $("#place-div").hide();
@@ -92,6 +96,7 @@ function searchByFullText(word,category,page_offset) {
                 addLocationRow(place, category, i);
                 i++;
             }
+            requestPage++;
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -176,7 +181,7 @@ function getPlaceStatistics(place) {
     "",
     function(response) {
         console.log(response);
-        clearResultsTable("statistics");
+        clearTable("statistics");
         var statistics = document.getElementById("statistics");
         var cells = 0;
         for (var key in response) {
@@ -190,8 +195,8 @@ function getPlaceStatistics(place) {
             catIcon.src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(key)] + "A.png";
             iconCell.appendChild(catIcon);
             var catCell = row.insertCell(cells++);
-            catCell.innerHTML = "<b>" + capitalizeFirstLetter(key) + " </b> : " + category.places_amount
-                + "<br>[Avg. Rating : " + category.rating_average + "]";
+            catCell.innerHTML = "<b>" + category.places_amount + " " + capitalizeFirstLetter(key) + " </b>" +
+                "<br> [Avg. Rating : " + category.rating_average + "]";
         }
     },
         'json')
@@ -205,15 +210,15 @@ function updatePopularSearches() {
     var url = "/updatePopularSearches/";
     var search = {
         places_id_list: currentSearch
-    }
-    console.log(currentSearch)
+    };
+    console.log(currentSearch);
 
     $.post(url,
         JSON.stringify(search),
         function(response)
         {
             console.log(response);
-            console.log("updated successfuly :)")
+            console.log("updated successfuly :)");
             while(currentSearch.length!=0){
                 currentSearch.pop();
             }

@@ -276,10 +276,8 @@ function initMap() {
 }
 
 function createMarker(LatLong, title, place_id, center, color, index) {
-    //console.log(markForSearch,isSearchByText); TODO: Alon, from some reason it doesnt recognize isSearchByText
     if ((markForSearch && !isSearchByText)) {
         map.panTo(LatLong); // Center around marker.
-        //console.log((LatLong.lat()-51)*RESOLUTION,LatLong.lng()*RESOLUTION)
         searchAroundMarker(LatLong.lat(),LatLong.lng());
         markForSearch = false;
     }

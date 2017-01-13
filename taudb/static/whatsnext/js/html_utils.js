@@ -2,26 +2,32 @@
  * Created by Alonmeytal on 24/12/2016.
  */
 $(document).ready(function () {
-    openNav();
     $("#overlay-place-name").on("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
-        if(keyPressed == 13)
-            closeNavForSearch();
+        if(keyPressed == 13) {
+            searchByFullText($("#overlay-place-name").val(), searchCategory);
+            closeNav();
+        }
     });
-    $("#search-category").on("change", function(e) {
-        searchCategory = $("#search-category")[0].selectedOptions[0].innerText;
+
+    $("#overlay-search-category").on("change", function() {
+        changeSearchCategory($("#overlay-search-category").find(":selected").text())
     });
+
     $("#place-name").on("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
-            var searchValue = $("#place-name")[0].value;
-            searchByFullText(searchValue, searchCategory);
+            var searchValue = $("#overlay-place-name").val();
+            searchByFullText(searchValue);
         }
     });
 });
 
-function openNav() {
-    $("#myNav").show();
+function changeSearchCategory(newCategory) {
+    if (newCategory != searchCategory) {
+        searchCategory = newCategory;
+        requestPage = 0;
+    }
 }
 
 function closeNav() {
@@ -31,16 +37,6 @@ function closeNav() {
 
 function markForSearch() {
     markForSearch = true;
-    closeNav();
-}
-
-function closeNavForSearch() {
-    searchCategory = $("#overlay-search-category")[0].selectedOptions[0].innerText;
-    if (searchCategory == $("#overlay-search-category")[0].options[0].innerText) {
-        searchCategory = DEFAULT_SEARCH_CATEGORY;
-    }
-    var searchValue = $("#overlay-place-name")[0].value;
-    searchByFullText(searchValue, searchCategory);
     closeNav();
 }
 
@@ -77,7 +73,7 @@ function addLocationRow(location, type, index) {
 }
 
 
-function clearResultsTable(table_name) {
+function clearTable(table_name) {
     var table = document.getElementById(table_name);
 
     while (table.hasChildNodes()) {
@@ -87,9 +83,8 @@ function clearResultsTable(table_name) {
 
 function capitalizeFirstLetter(string)
 {
-    if (!string || 0 == string.length) {
+    if (!string || 0 == string.length)
         return '';
-    }
 
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
