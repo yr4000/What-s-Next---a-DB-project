@@ -348,6 +348,7 @@ def get_categories_statistics(top, right, bottom, left):
 
     return statistics
 
+
 # TODO: there should be a text box who autocomplete whenever the user starts a search
 # TODO: create an sql query to search if that search exists
 def find_popular_search(places_id_list):
@@ -357,8 +358,9 @@ def find_popular_search(places_id_list):
     popularity_rate = execute_query(find_popular_query)
     return popularity_rate
 
-#this function returns a string that determains which search_id will return.
-#it is vital it returns a string and not execute anything.
+
+# this function returns a string that determains which search_id will return.
+# it is vital it returns a string and not execute anything.
 def find_search_id_query(places_id_list):
     places_str = ""
     for place in places_id_list:
@@ -366,8 +368,10 @@ def find_search_id_query(places_id_list):
     places_str += "search_size = " +str(len(places_id_list))
     return "SELECT search_id FROM searches_places WHERE " + places_str
 
+
 def exe_find_search_id_query(places_id_list):
     return execute_query(find_search_id_query(places_id_list))
+
 
 def insert_new_search(places_id_list):
     execute_query("INSERT INTO search_popularity(popularity) VALUES (1)")
@@ -376,6 +380,7 @@ def insert_new_search(places_id_list):
     for i in range(len(places_id_list)):
         insert_to_searces_places += "(" + str(search_id[0]["search_id"]) + "," + str(places_id_list[1]) + "), "
     execute_query(insert_to_searces_places[:-2])
+
 
 def update_search(search_id):
     execute_query("UPDATE search_popularity SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))

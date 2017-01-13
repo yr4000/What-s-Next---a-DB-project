@@ -75,8 +75,8 @@ def search_places_by_point(request):
     category = request_json["category"].lower()
     limit = request_json["limit"]
 
-    #modify the longitude and the latitude to be workable with DB.
-    latitude,longitude = modify_longlat_for_db(latitude,longitude);
+    # modify the longitude and the latitude to be workable with DB.
+    latitude, longitude = modify_longlat_for_db(latitude, longitude)
 
     #  returns a 4*distance**2 square around the selected point.
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude,longitude, distance)

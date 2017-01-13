@@ -46,5 +46,7 @@ def get_boundaries_by_center_and_distance(latitude, longitude, dist):
     left = longitude - dist*RESOLUTION/LONGITUDE_DIST_DIV_ADJUSTMENT
     return top, right, bottom, left
 
-def modify_longlat_for_db(latitude,longitude):
+
+# TODO: itzhaki - refactor this to get 1 point and do the conversion in dataaccess only
+def modify_longlat_for_db(latitude, longitude):
     return (latitude-LONDON_LATITUDE_DB_CONST)*RESOLUTION, longitude*RESOLUTION
