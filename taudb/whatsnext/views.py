@@ -52,11 +52,9 @@ def find_suggestion_by_point(request):
 
     latitude = request_json["latitude"]
     longitude = request_json["longitude"]
+    offset_for_paging = request_json["page_offset"]
 
-    # modify the longitude and the latitude to be workable with DB.
-    latitude,longitude = modify_longlat_for_db(latitude,longitude)
-
-    places = find_suggestion_near_location(latitude, longitude)
+    places = find_suggestion_near_location(latitude, longitude, offset_for_paging)
 
     return JsonResponse(places, status=200)
 

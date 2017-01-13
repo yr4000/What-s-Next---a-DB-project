@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.homepage),
     url(r'^searchByFullText', views.search_by_name),
+    url(r'^searchCombinationByPoint', views.find_suggestion_by_point),
     url(r'^place/(?P<place_id>\d+)/details', views.get_place_details),
     url(r'^place/get_around_marker/', views.search_places_by_point),
     url(r'^stats/categories', views.calc_categories_statistics),

@@ -43,89 +43,152 @@ def get_place_by_place_id(place_id):
 
     return place
 
-
-def find_suggestion_near_location(center_latitude, center_longitude):
+def get_place_by_place_id_v2(place_id):
+    if not place_id:
+        raise ValueError('id argument must be not None')
 
     cur = init_db_cursor()
 
-    # TODO: Not sure what this means yet, but please make sure "category" projected to the results as well
+    query = 'SELECT                                                         '\
+            '   places.id AS place_id,                                      '\
+            '   places.google_id,                                           '\
+            '   places.name,                                                '\
+            '   places.rating,                                              '\
+            '   places.vicinity,                                            '\
+            '   places.latitude,                                            '\
+            '   places.longitude,                                           '\
+            '   categories.name AS category                                 '\
+            'FROM                                                           '\
+            '   places                                                      '\
+            '       INNER JOIN                                              '\
+            '   places_categories ON places.id = places_categories.place_id '\
+            '       INNER JOIN                                              '\
+            '   categories ON places_categories.category_id = categories.id '\
+            'WHERE                                                          '\
+            '   places.id = %s                                              '
+
+    cur.execute(query, (place_id,))
+
+    record = cur.fetchone()  # expecting single place since id is a pk
+    if record:
+        place = query_results_to_dict_v2(record)
+    else:
+        raise NotFoundInDb('db does not include a record with id: {id}'.format(id=id))
+
+    cur.close()
+
+    return place
+
+
+def query_results_to_dict_v2(result):
+    place = dict()
+    place["id"] = result["place_id"]
+    place["google_id"] = result["google_id"]
+    place["name"] = result["name"]
+    place["longitude"] = result["longitude"] / RESOLUTION
+    place["latitude"] = (result["latitude"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+    place["rating"] = result["rating"]
+    place["vicinity"] = result["vicinity"]
+    place["category"] = result["category"]
+    return place
+
+
+def find_suggestion_near_location(center_latitude, center_longitude, offset_for_paging):
+
+    cur = init_db_cursor()
     query = 'Select 	                                                                                            ' \
-            'p1.id As p1id,                                                                                         ' \
-            '	p2id,                                                                                               ' \
-            '	p3id,                                                                                               ' \
-            '	p4id,                                                                                               ' \
-            '	(sqrt((p4lat - %s)^2 / 10000 + (p4lon - %s)^2 / 10000) +                                            ' \
-            '	sqrt((p3lat - p4lat)^2 / 10000 + (p3lon - p4lon)^2 / 10000) +                                       ' \
-            '	sqrt((p2lat - p3lat)^2 / 10000 + (p2lon - p3lon)^2 / 10000) +                                       ' \
-            '	sqrt((p1.latitude - p2lat)^2 / 10000 + (p1.longitude - p2lon)^2 / 10000)) As TotalDistAfterTransp   ' \
+            '   hotels.id As hotels_id,                                                                             ' \
+            '	resturants_id,                                                                                      ' \
+            '	bars_id,                                                                                            ' \
+            '	muesums_id,                                                                                         ' \
+            '	(sqrt((muesums_lat - %s)^2 / 10000 + (muesums_lon - %s)^2 / 10000) +                                ' \
+            '	sqrt((bars_lat - muesums_lat)^2 / 10000 + (bars_lon - muesums_lon)^2 / 10000) +                     ' \
+            '	sqrt((resturants_lat - bars_lat)^2 / 10000 + (resturants_lon - bars_lon)^2 / 10000) +               ' \
+            '	sqrt((hotels.latitude - resturants_lat)^2 / 10000 + (hotels.longitude - resturants_lon)^2 / 10000)) ' \
+            '   As TotalDistAfterTransp                                                                             ' \
             'From                                                                                                   ' \
-            '	places as p1,                                                                                       ' \
-            '	places_categories as pc1,                                                                           ' \
+            '	places as hotels,                                                                                   ' \
+            '	places_categories as pc_hotels,                                                                     ' \
             '	(Select                                                                                             ' \
-            '		p2.id As p2id,                                                                                  ' \
-            '	 	p3id,                                                                                           ' \
-            '		p4id,                                                                                           ' \
-            '		p2.latitude As p2lat,                                                                           ' \
-            '		p2.longitude As p2lon,                                                                          ' \
-            '       p4lat,                                                                                          ' \
-            '		p4lon,                                                                                          ' \
-            '		p3lat,                                                                                          ' \
-            '		p3lon                                                                                           ' \
+            '		resturants.id As resturants_id,                                                                 ' \
+            '	 	bars_id,                                                                                        ' \
+            '		muesums_id,                                                                                     ' \
+            '		resturants.latitude As resturants_lat,                                                          ' \
+            '		resturants.longitude As resturants_lon,                                                         ' \
+            '       muesums_lat,                                                                                    ' \
+            '		muesums_lon,                                                                                    ' \
+            '		bars_lat,                                                                                       ' \
+            '		bars_lon                                                                                        ' \
             '		From                                                                                            ' \
-            '		places as p2,                                                                                   ' \
-            '		places_categories as pc2,                                                                       ' \
+            '		places as resturants,                                                                           ' \
+            '		places_categories as pc_resturants,                                                             ' \
             '		(Select                                                                                         ' \
-            '			p4id,                                                                                       ' \
-            '			p3.id As p3id,                                                                              ' \
-            '			p3.latitude As p3lat,                                                                       ' \
-            '			p3.longitude As p3lon,                                                                      ' \
-            '			p4lat,                                                                                      ' \
-            '			p4lon                                                                                       ' \
+            '			muesums_id,                                                                                 ' \
+            '			bars.id As bars_id,                                                                         ' \
+            '			bars.latitude As bars_lat,                                                                  ' \
+            '			bars.longitude As bars_lon,                                                                 ' \
+            '			muesums_lat,                                                                                ' \
+            '			muesums_lon                                                                                 ' \
             '		From                                                                                            ' \
-            '			places as p3,                                                                               ' \
-            '			places_categories as pc3,                                                                   ' \
+            '			places as bars,                                                                             ' \
+            '			places_categories as pc_bars,                                                               ' \
             '			(Select                                                                                     ' \
-            '				p4.id As p4id,                                                                          ' \
-            '				p4.latitude As p4lat,                                                                   ' \
-            '               p4.longitude As p4lon                                                                   ' \
+            '				muesums.id As muesums_id,                                                               ' \
+            '				muesums.latitude As muesums_lat,                                                        ' \
+            '               muesums.longitude As muesums_lon                                                        ' \
             '				From                                                                                    ' \
-            '					places as p4,                                                                       ' \
-            '					places_categories as pc4	                                                        ' \
+            '					places as muesums,                                                                  ' \
+            '					places_categories as pc_muesums	                                                    ' \
             '			    Where                                                                                   ' \
-            '					p4.id = pc4.place_id                                                                ' \
-            '					And pc4.category_id = 4                                                             ' \
-            '                   And p4.latitude BETWEEN %s - 15 AND %s + 15                                         ' \
-            '                   AND p4.longitude BETWEEN %s - 5 AND %s + 5 ) AS muesums                             ' \
+            '					muesums.id = pc_muesums.place_id                                                    ' \
+            '					And pc_muesums.category_id = 4                                                      ' \
+            '                   And muesums.latitude BETWEEN %s - 100 AND %s + 100                                  ' \
+            '                   And muesums.longitude BETWEEN %s - 50 AND %s + 50 ) As muesums                      ' \
             '		Where                                                                                           ' \
-            '			p3.id = pc3.place_id                                                                        ' \
-            '			And pc3.category_id = 3                                                                     ' \
-            '			And p3.latitude BETWEEN p4lat - 15 AND p4lat + 15                                           ' \
-            'AND p3.longitude BETWEEN p4lon - 15 AND p4lat + 15 ) AS bars                                           ' \
+            '			bars.id = pc_bars.place_id                                                                  ' \
+            '			And pc_bars.category_id = 3                                                                 ' \
+            '           And bars.id <> muesums_id                                                                   ' \
+            '			And bars.latitude BETWEEN muesums_lat - 15 AND muesums_lat + 15                             ' \
+            '           And bars.longitude BETWEEN muesums_lon - 15 AND muesums_lat + 15 ) As bars                  ' \
             '	Where                                                                                               ' \
-            '		p2.id = pc2.place_id                                                                            ' \
-            '		And pc2.category_id = 2                                                                         ' \
-            '		And p2.latitude BETWEEN p3lat - 15 AND p3lat + 15                                               ' \
-            'AND p2.longitude BETWEEN p3lon - 15 AND p3lat + 15 ) AS resturants                                     ' \
+            '		resturants.id = pc_resturants.place_id                                                          ' \
+            '		And pc_resturants.category_id = 2                                                               ' \
+            '       And resturants.id <> bars_id                                                                    ' \
+            '		And resturants.id <> muesums_id                                                                 ' \
+            '		And resturants.latitude BETWEEN bars_lat - 15 AND bars_lat + 15                                 ' \
+            '       And resturants.longitude BETWEEN bars_lon - 15 AND bars_lat + 15 ) As resturants                ' \
             'Where                                                                                                  ' \
-            '	p1.id = pc1.place_id                                                                                ' \
-            '	And pc1.category_id = 1                                                                             ' \
-            '	And p1.latitude BETWEEN p2lat - 15 AND p2lat + 15                                                   ' \
-            '   AND p1.longitude BETWEEN p2lon - 15 AND p2lat + 15                                                  ' \
+            '	hotels.id = pc_hotels.place_id                                                                      ' \
+            '	And pc_hotels.category_id = 1                                                                       ' \
+            '   And hotels.id <> resturants_id 				                                                        ' \
+            '	And hotels.id <> bars_id                                                                            ' \
+            '	And hotels.id <> muesums_id                                                                         ' \
+            '	And hotels.latitude BETWEEN resturants_lat - 15 AND resturants_lat + 15                             ' \
+            '   And hotels.longitude BETWEEN resturants_lon - 15 AND resturants_lat + 15                            ' \
             'Order By                                                                                               ' \
-            '	TotalDistAfterTransp'
+            '	TotalDistAfterTransp                                                                                ' \
+            'Limit                                                                                                  ' \
+            '   %s, %s'
+
 
     cur.execute(query, (center_longitude, center_longitude, center_latitude ,
-                        center_latitude, center_longitude, center_longitude))
+                        center_latitude, center_longitude, center_longitude,
+                        offset_for_paging, DEFAULT_RESULTS_AMOUNT))
     rows = cur.fetchall()
 
     places = dict()
+    i = 0
     for result in rows:
-        place = query_results_to_dict(result)
-        places[place["id"]] = place
+        places[i] = get_place_by_place_id_v2(result["hotels_id"])
+        places[i+1] = get_place_by_place_id_v2(result["resturants_id"])
+        places[i+2] = get_place_by_place_id_v2(result["bars_id"])
+        places[i+3] = get_place_by_place_id_v2(result["muesums_id"])
+        i = i + 4
 
     cur.close()
 
     return places
+
 
 
 def search_places_near_location(center_latitude, center_longitude, top, right, bottom, left, category, limit):

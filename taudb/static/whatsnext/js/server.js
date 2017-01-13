@@ -62,9 +62,6 @@ function searchAroundMarker(latitude, longitude) {
     });
 }
 
-/**
- * Created by DrorBrunman on 04/01/2017.
- */
 function searchByFullText(word,category,page_offset) {
     var url = "/searchByFullText/";
     isSearchByText = true;
@@ -99,6 +96,43 @@ function searchByFullText(word,category,page_offset) {
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
          console.log("Failed to preform Full Text Search");
+    });
+}
+
+function searchCombinationByPoint(latitude, longitude, page_offset) {
+    var url = "/searchCombinationByPoint/";
+    isSearchByText = false;
+
+    var search_values = {
+        latitude: latitude,
+        longitude: longitude,
+        page_offset: page_offset
+    };
+
+    $.post(url,
+        JSON.stringify(search_values),
+        function(response)
+        {
+            if(markersArray.length !=0){
+                clearMarkers();
+                clearResultsTable();
+            }
+
+            $("#place-div").hide();
+            $("#results-div").show();
+
+            var i = 0;
+            for (var key in response) {
+                var place = response[key];
+                addMarker(new google.maps.LatLng(place.latitude, place.longitude),
+                          place["name"], place["id"], false, enumMarkerColors[place["category"]], i);
+                addLocationRow(place, place["category"], i);
+                i++;
+            }
+        },
+        'json')
+    .fail(function(jgXHR, textStatus, errorThrown) {
+         console.log("Failed to preform search combination by point");
     });
 }
 
