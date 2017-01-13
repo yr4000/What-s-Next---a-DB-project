@@ -40,7 +40,7 @@ function searchAroundMarker(latitude, longitude) {
         {
             if(markersArray.length !=0){
                 clearMarkers();
-                clearResultsTable();
+                clearResultsTable("results");
             }
 
             $("#place-div").hide();
@@ -81,7 +81,7 @@ function searchByFullText(word,category,page_offset) {
         {
             if(markersArray.length !=0){
                 clearMarkers();
-                clearResultsTable();
+                clearResultsTable("results");
             }
 
             $("#place-div").hide();
@@ -127,6 +127,7 @@ function getPlaceDetails(place_id, index) {
                                   "</br><b>By " + review.author + " on " + review.date + "</b>";
             $("#current-reviews")[0].appendChild(reviewDiv);
         }
+        getPlaceStatistics({latitude:response.place.latitude, longitude:response.place.longitude});
     },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -135,11 +136,29 @@ function getPlaceDetails(place_id, index) {
 }
 
 function getPlaceStatistics(place) {
-    var url="/stats/categories?latitude=" + place.latitude + "&longitude=" + place.longitude + "&distance=" + DEFAULT_SEARCH_DISTANCE;
+    var url="/stats/categories?latitude=" + place.latitude + "&longitude=" + place.longitude +
+        "&distance=" + DEFAULT_SEARCH_DISTANCE + "&except_category=" + place.category;
     $.getJSON(url,
     "",
     function(response) {
         console.log(response);
+        clearResultsTable("statistics");
+        var statistics = document.getElementById("statistics");
+        var cells = 0;
+        for (var key in response) {
+            var category = response[key];
+            if (cells % 4 == 0) {
+                var row = statistics.insertRow(-1);
+                cells = 0;
+            }
+            var iconCell = row.insertCell(cells++);
+            var catIcon = document.createElement("img");
+            catIcon.src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(key)] + "A.png";
+            iconCell.appendChild(catIcon);
+            var catCell = row.insertCell(cells++);
+            catCell.innerHTML = "<b>" + capitalizeFirstLetter(key) + " </b> : " + category.places_amount
+                + "<br>[Avg. Rating : " + category.rating_average + "]";
+        }
     },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {

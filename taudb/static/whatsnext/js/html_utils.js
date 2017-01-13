@@ -77,11 +77,11 @@ function addLocationRow(location, type, index) {
 }
 
 
-function clearResultsTable() {
-    var resultsTable = document.getElementById("results");
+function clearResultsTable(table_name) {
+    var table = document.getElementById(table_name);
 
-    while (resultsTable.hasChildNodes()) {
-        resultsTable.removeChild(resultsTable.lastChild);
+    while (table.hasChildNodes()) {
+        table.removeChild(table.lastChild);
     }
 }
 

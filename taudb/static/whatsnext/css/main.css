@@ -127,6 +127,10 @@ input, select {
 	padding-left: 10px;
 }
 
+#statistics {
+	width: 100%;
+}
+
 /* http://stackoverflow.com/questions/12499886/how-to-hide-or-disable-the-google-logo-footer-copyright-on-google-maps-javascr */
 a[href^="http://maps.google.com/maps"]{display:none !important}
 a[href^="https://maps.google.com/maps"]{display:none !important}
