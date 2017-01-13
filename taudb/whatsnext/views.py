@@ -199,7 +199,7 @@ def update_popular_search(request):
 
 
     search_id = exe_find_search_id_query(places_id_list)
-    #return JsonResponse({'update_status': update_status, 'len_search_is': len(search_id)}, status=200)
+    #return JsonResponse({'update_status': update_status, 'search_is': len(search_id)}, status=200)
 
     # if there is not search like that, insert it to search_popularity and searches_places
     if len(search_id)==0:

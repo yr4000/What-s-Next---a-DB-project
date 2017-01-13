@@ -21,10 +21,11 @@ $.ajaxSetup({
 function searchAroundMarker(latitude, longitude) {
     var url = "/place/get_around_marker/";
 
-    //for(i = 4; i<7; i++){
+    //for(i = 5; i<7; i++){
     //    currentSearch.push(i);
     //}
-    updatePopularSearches();
+    //updatePopularSearches();
+
     var search_values = {
         latitude: latitude,
         longitude: longitude,
@@ -34,6 +35,7 @@ function searchAroundMarker(latitude, longitude) {
         page: requestPage
     };
 
+    console.log("Starting search around marker");
     $.post(url,
         JSON.stringify(search_values),
         function(response)
@@ -47,6 +49,7 @@ function searchAroundMarker(latitude, longitude) {
             $("#results-div").show();
 
             console.log(response);
+
             var i = 0;
             for (var key in response) {
                 var place = response[key];
@@ -56,11 +59,13 @@ function searchAroundMarker(latitude, longitude) {
                 i++;
             }
             requestPage++;
+
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
          console.log("Failed to Search around Marker");
     });
+    console.log("Finished search around marker");
 }
 
 /**

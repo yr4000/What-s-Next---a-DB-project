@@ -176,7 +176,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
     cur = init_db_cursor()
 
     query = 'SELECT                                                                    '\
-            '    places.id As,                                                         '\
+            '    places.id,                                                         '\
             '    places.google_id,                                                     '\
             '    places.name,                                                          '\
             '    places.longitude,                                                     '\
@@ -463,7 +463,7 @@ def exe_find_search_id_query(places_id_list):
 # this function returns a string that determains which search_id will return.
 # it is vital it returns a string and not execute anything.
 def find_search_id_query(places_id_list):
-    query = "SELECT sp.search_id " \
+    query = "SELECT DISTINCT sp.search_id " \
             "FROM (SELECT sp0.search_id " \
                    "FROM searches_places AS sp0 "
     places_str,inner_join = "",""
@@ -475,12 +475,12 @@ def find_search_id_query(places_id_list):
     places_str =inner_join + "WHERE " + places_str[:-5] #remove the last " ADD "
     query += places_str +" ) AS possible_searches INNER JOIN search_properties AS sp " \
                          "ON possible_searches.search_id = sp.search_id " \
-                         "WHERE sp.search_size = 3 "
+                         "WHERE sp.search_size = "+str(len(places_id_list))
     return query
 
 '''
 example for find_search_query_id_result:
-    SELECT sp.search_id
+    SELECT DISTINCT sp.search_id
     FROM   (SELECT sp0.search_id
             FROM searches_places AS sp1
             INNER JOIN searches_places AS sp1
