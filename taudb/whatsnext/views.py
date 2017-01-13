@@ -180,7 +180,8 @@ def get_place_details(request, place_id):
     for review in reviews:
         reviews_dicts.append(review.to_json())
 
-    return JsonResponse({'place': place.to_json(), 'reviews': reviews_dicts}, status=200)
+    # TODO: This does not use the Place class anymore, need to fix this
+    return JsonResponse({'place': place, 'reviews': reviews_dicts}, status=200)
 
 
 # TODO: should be called whenever a search is being made

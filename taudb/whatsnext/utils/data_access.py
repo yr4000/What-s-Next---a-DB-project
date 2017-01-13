@@ -14,7 +14,7 @@ def get_place_by_place_id(place_id):
     cur = init_db_cursor()
 
     query = 'SELECT                                                         '\
-            '   places.id AS place_id,                                      '\
+            '   places.id,                                                  '\
             '   places.google_id,                                           '\
             '   places.name,                                                '\
             '   places.rating,                                              '\
@@ -35,7 +35,7 @@ def get_place_by_place_id(place_id):
 
     record = cur.fetchone()  # expecting single place since id is a pk
     if record:
-        place = Place(**record)
+        place = query_results_to_dict(record)
     else:
         raise NotFoundInDb('db does not include a record with id: {id}'.format(id=id))
 
@@ -125,6 +125,7 @@ def find_suggestion_near_location(center_latitude, center_longitude):
     cur.close()
 
     return places
+
 
 def search_places_near_location(center_latitude, center_longitude, top, right, bottom, left, category, limit):
 
@@ -243,7 +244,8 @@ def get_place_reviews(place):
             'WHERE                       '\
             '   reviews.place_id = %s    '
 
-    cur.execute(query, (place.place_id,))
+    # cur.execute(query, (place.place_id,)) TODO: this does not use the Place class anymore, need to fix this
+    cur.execute(query, (place['id'],))
 
     records = cur.fetchall()
 
