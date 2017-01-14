@@ -78,7 +78,7 @@ function searchByFullText(word) {
     var search_values = {
         word: word,
         category: searchCategory,
-        page_offset: requestPage
+        page: requestPage
     };
 
     $.post(url,
@@ -116,7 +116,7 @@ function searchCombinationByPoint(latitude, longitude, page_offset) {
     var search_values = {
         latitude: latitude,
         longitude: longitude,
-        page_offset: page_offset
+        page: requestPage
     };
 
     $.post(url,
