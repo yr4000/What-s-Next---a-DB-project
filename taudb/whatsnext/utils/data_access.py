@@ -53,7 +53,7 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
             '   rid, rgid, rn, rr, rv, r_lat, r_lon,                                                                ' \
             '   bid, bgid, bn, br, bv, b_lat, b_lon,                                                                ' \
             '   muid, mdig, mn, mr, mv,	m_lat, m_lon,                                                               ' \
-            '   (sqrt((m_lat - 5000)^2 / 100 + (m_lon - (-2700))^2 / 100) +                                         ' \
+            '   (sqrt((m_lat - %s)^2 / 100 + (m_lon - %s)^2 / 100) +                                                ' \
             '   sqrt((b_lat - m_lat)^2 / 100 + (b_lon - m_lon)^2 / 100) +                                           ' \
             '   sqrt((r_lat - b_lat)^2 / 100 + (r_lon - b_lon)^2 / 100) +                                           ' \
             '   sqrt((hotels.latitude - r_lat)^2 / 100 + (hotels.longitude - r_lon)^2 / 100))                       ' \
@@ -112,10 +112,9 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
             'Limit                                                                                                  ' \
             '   %s, %s'
 
-    offset = offset_for_paging * DEFAULT_RESULTS_AMOUNT
     cur.execute(query, (center_longitude, center_longitude, center_latitude,
-                        center_latitude, center_longitude, center_longitude,
-                        offset, DEFAULT_RESULTS_AMOUNT))
+                    center_latitude, center_longitude, center_longitude,
+                    offset_for_paging * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
     rows = cur.fetchall()
 
     places = dict()
@@ -263,8 +262,8 @@ def search_places_by_name(search_word, search_category, offset_for_paging):
             '    categories.name = %s                                                          ' \
             'LIMIT %s, %s                                                                      '
 
-    offset = offset_for_paging * DEFAULT_RESULTS_AMOUNT
-    cur.execute(query, (search_word, search_category, offset, DEFAULT_RESULTS_AMOUNT))
+    cur.execute(query, (search_word, search_category,
+                        offset_for_paging * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
 
     rows = cur.fetchall()
 
