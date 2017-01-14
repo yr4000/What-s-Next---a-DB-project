@@ -101,8 +101,6 @@ input, select {
 	font-size: 56pt;
 }
 
-
-
 #serach-options-bar {
 	display: table;
 	width: 100%;
@@ -193,6 +191,22 @@ input, select {
 	font-size: xx-small;
 }
 
+#current-accept {
+	display:inline-block;
+	width: 50%;
+	background: green;
+	color: white;
+	font-weight:bold;
+}
+
+#end-here {
+	display:inline-block;
+	width:50%;
+	background: black;
+	color: white;
+	font-weight:bold;
+}
+
 .review {
 	font-size: 10pt;
 	padding: 4px;
@@ -210,19 +224,16 @@ input, select {
 
 }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
+.next-nav {
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 45%;
+    top: 40%;
+    background-color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.85);
+    overflow-x: hidden; /* Disable horizontal scroll */
+    box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
     display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    padding: 12px 16px;
-    z-index: 1;
 }
 
 

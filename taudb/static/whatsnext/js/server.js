@@ -1,7 +1,7 @@
 function cleanScreen() {
     clearMarkers();
     clearTable("results");
-    map.setZoom(enumZoomLevels.Districts);
+    //map.setZoom(enumZoomLevels.Districts);
 }
 
 // Send CSRF cookie with every non-safe method
@@ -163,16 +163,18 @@ function getPlaceDetails(place_id, index) {
     function(response) {
         console.log(response);
 
-        map.setZoom(enumZoomLevels.Streets);
+        //map.setZoom(enumZoomLevels.Streets);
+        currentPlace = response.place;
 
         $("#results-div").hide();
         $("#place-div").show();
 
-        $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(response.place.category)] +
+        $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(currentPlace.category)] +
                                     String.fromCharCode((index % 26) + 65) + ".png";
-        $("#current-name")[0].innerHTML = response.place.name;
-        $("#current-id")[0].innerText = "Internal: " + place_id + "| Google: " + response.place.google_id;
-        $("#current-address")[0].innerText = response.place.vicinity;
+        $("#current-name")[0].innerHTML = currentPlace.name;
+        $("#current-id")[0].innerText = "Internal: " + currentPlace.place_id + "| Google: " + currentPlace.google_id;
+        $("#current-id").data("place-id", currentPlace.place_id);
+        $("#current-address")[0].innerText = currentPlace.vicinity;
 
         for (var key in response.reviews) {
             var review = response.reviews[key];
@@ -182,8 +184,7 @@ function getPlaceDetails(place_id, index) {
                                   "</br><b>By " + review.author + " on " + review.date + "</b>";
             $("#current-reviews")[0].appendChild(reviewDiv);
         }
-        getPlaceStatistics({latitude:response.place.latitude, longitude:response.place.longitude,
-            category:response.place.category});
+        getPlaceStatistics();
     },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -191,9 +192,9 @@ function getPlaceDetails(place_id, index) {
     });
 }
 
-function getPlaceStatistics(place) {
-    var url="/stats/categories?latitude=" + place.latitude + "&longitude=" + place.longitude +
-        "&distance=" + DEFAULT_SEARCH_DISTANCE + "&except_category=" + place.category;
+function getPlaceStatistics() {
+    var url="/stats/categories?latitude=" + currentPlace.latitude + "&longitude=" + currentPlace.longitude +
+        "&distance=" + DEFAULT_SEARCH_DISTANCE + "&except_category=" + currentPlace.category;
     $.getJSON(url,
     "",
     function(response) {

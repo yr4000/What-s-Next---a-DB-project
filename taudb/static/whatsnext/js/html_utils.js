@@ -2,6 +2,8 @@
  * Created by Alonmeytal on 24/12/2016.
  */
 $(document).ready(function () {
+    changeSearchCategory(DEFAULT_SEARCH_CATEGORY);
+    
     document.addEventListener("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if ((keyPressed == 27) && $("#myNav").is(":visible")) {
@@ -29,7 +31,12 @@ $(document).ready(function () {
         }
     });
 
-    changeSearchCategory(DEFAULT_SEARCH_CATEGORY);
+    $("#current-accept").on("click", function(e) {
+        // Remembering choice.
+        currentSearch.push(currentPlace);
+        // Asking what's next
+        $(".next-nav").show();
+    });
 });
 
 function changeSearchCategory(newCategory) {
@@ -69,6 +76,12 @@ function selectForSearch(categoryDiv) {
     var newCategory = $(categoryDiv).text();
     changeSearchCategory(newCategory);
     searchBarShow();
+}
+
+function nextCategory(category) {
+    $(".next-nav").hide();
+    changeSearchCategory(category);
+    searchAroundMarker(currentPlace.latitude, currentPlace.longitude);
 }
 
 function addLocationRow(location, type, index) {

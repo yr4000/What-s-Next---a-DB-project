@@ -27,3 +27,6 @@ var currentSearch = [];
 
 // Next page to ask in request.
 var requestPage = 0;
+
+// Current Place object holder.
+var currentPlace = null;
