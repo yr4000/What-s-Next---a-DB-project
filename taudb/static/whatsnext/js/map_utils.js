@@ -89,13 +89,14 @@ function addMarker(LatLong, title, place_id, center, color, index) {
     markersArray.push(createMarker(LatLong, title, place_id, center, color, index));
 }
 
+//TODO: got this error message once: Uncaught TypeError: marker.setMap is not a function
 function removeMarker(marker) {
     marker.setMap(null);
 }
 
-function clearMarkers() {
-    while (markersArray.length != 0) {
-        removeMarker(markersArray.pop());
+function clearArray(arr) {
+    while (arr.length != 0) {
+        removeMarker(arr.pop());
     }
 }
 

@@ -410,7 +410,9 @@ def get_popular_places_for_category(category):
     # TODO: this should not be limited like this - need to decide on the requirement
     # TODO: current popularity is just the amount of times the place was chosen as a group of places
     query = 'SELECT                                                                           '\
-            '    places.id,                                                                   '\
+            '    places.id, 
+            	 places.name,
+            	 SUM(search_properties.popularity) AS popularity      '\
             '    places.name,                                                                 '\
             '    SUM(search_popularity.popularity) AS popularity                              '\
             'FROM                                                                             '\
@@ -418,7 +420,7 @@ def get_popular_places_for_category(category):
             '        INNER JOIN                                                               '\
             '    searches_places ON places.id = searches_places.place_id                      '\
             '        INNER JOIN                                                               '\
-            '    search_popularity ON searches_places.search_id = search_popularity.search_id '\
+            '    search_properties ON searches_places.search_id = search_properties.search_id '\
             '        INNER JOIN                                                               '\
             '    places_categories on places.id = places_categories.place_id                  '\
             '        INNER JOIN                                                               '\
@@ -451,7 +453,7 @@ def get_popular_places_for_category(category):
 # TODO: create an sql query to search if that search exists
 def find_popular_search(places_id_list):
     search_id = find_search_id_query(places_id_list)
-    find_popular_query = "SELECT sp.popularity FROM ("+ search_id+ ") AS S_ID, search_popularity AS sp " \
+    find_popular_query = "SELECT sp.popularity FROM ("+ search_id+ ") AS S_ID, search_properties AS sp " \
                           "WHERE S_ID.search_id = sp.search_id"
     popularity_rate = execute_SFW_query(find_popular_query)
     return popularity_rate

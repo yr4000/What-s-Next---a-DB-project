@@ -32,10 +32,16 @@ $(document).ready(function () {
     });
 
     $("#current-accept").on("click", function(e) {
-        // Remembering choice.
-        currentSearch.push(currentPlace);
+        // Remembering choice. TODO need to push the place id, for some reason it pushes nan
+        currentSearch.push(parseInt(currentPlace["id"]));
+        console.log(currentSearch);
         // Asking what's next
         $(".next-nav").show();
+    });
+
+    $("#end-here").on("click", function(e) {
+        updatePopularSearches();
+        clearArray(currentSearch);
     });
 });
 

@@ -1,5 +1,5 @@
 function cleanScreen() {
-    clearMarkers();
+    clearArray(markersArray);
     clearTable("results");
     //map.setZoom(enumZoomLevels.Districts);
 }
@@ -22,11 +22,6 @@ $.ajaxSetup({
 
 function searchAroundMarker(latitude, longitude) {
     var url = "/place/get_around_marker/";
-
-    //for(i = 5; i<7; i++){
-    //    currentSearch.push(i);
-    //}
-    //updatePopularSearches();
 
     var search_values = {
         latitude: latitude,
@@ -119,7 +114,7 @@ function searchCombinationByPoint(latitude, longitude) {
         function(response)
         {
             if(markersArray.length !=0){
-                clearMarkers();
+                clearArray(markersArray);
                 clearResultsTable();
             }
 
