@@ -17,14 +17,12 @@
 			<span id="overlayTitle">
 				What's Next?!
 			</span><br><br>
-			<select id="overlay-search-category">
-				<option value="NULL">Start with...</option>
-				{% for cat in categories %}
-				<option value="{{ cat }}">{{ cat }}</option>
-				{% endfor %}
-			</select>
-			&nbsp;
-			<input type="text" id="overlay-place-name" size="12" placeholder="Location name"><br><br>
+            <div id="start-search-categories">
+            {% for cat in categories %}
+				<span id="start-{{ cat }}" class="start-category" onclick="setFirstCategory(this)">{{ cat }}</span>
+			{% endfor %}
+            </div>
+			<input type="text" id="overlay-place-name" placeholder="Let's start with a place called...."><br><br>
 			OR
 			<a href="javascript:void(0)" class="closebtn" onclick="markForSearch()">Mark Your Location On The Map</a>
 		</div>
@@ -55,6 +53,9 @@
         <div id="results-div">
 			<table id="results"></table>
 		</div>
+        <div id="current-search">
+            Search so far...
+        </div>
     </div>
 
     <div class="next-nav">

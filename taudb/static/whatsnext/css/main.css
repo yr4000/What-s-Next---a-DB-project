@@ -31,34 +31,6 @@ input, select {
     transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
 }
 
-#closebtn {
-	text-decoration: none;
-	color: #818181;
-    position: absolute;
-    top: 20px;
-    right: 45px;
-    font-size: 60px;
-}
-
-#closebtn:hover {
-	color: #f1f1f1;
-}
-
-
-.nav {
-    height: 94%;
-    width: 400px;
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 2%;
-    top: 2%;
-    background-color: rgb(255, 255, 255);
-    background-color: rgba(255, 255, 255, 0.85);
-    overflow-x: hidden; /* Disable horizontal scroll */
-    box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
-    display: none;
-}
-
 /* Position the content inside the overlay */
 .overlay-content {
     position: relative;
@@ -82,10 +54,10 @@ input, select {
 	text-decoration: underline;
 }
 
-.overlay-content > input, select {
-	background-color: rgba(255,255,255, 0.9);
+.overlay-content > input {
+	background-color: rgba(255,255,255, 0.2);
 	height: 60px;
-	width: 300px;
+	width: 680px;
 	size: 20px;
 	color: rgb(0,0,0);
 	padding: 10px;
@@ -95,6 +67,76 @@ input, select {
 	font-family: Georgia, sans-serif;
 	font-size: 14pt;
 	font-weight: bold;
+}
+
+#closebtn {
+	text-decoration: none;
+	color: #818181;
+    position: absolute;
+    top: 20px;
+    right: 45px;
+    font-size: 60px;
+}
+
+#closebtn:hover {
+	color: #f1f1f1;
+}
+.start-category {
+    width: 150px;
+    display: inline-table;
+    color: #818181;
+    border-bottom: solid 2px;
+    margin-bottom: 10px;
+}
+
+#start-Hotel:hover {
+    color: blue;
+    border-bottom: solid 2px blue;
+}
+#start-Hotel.started {
+    color: blue;
+    border-bottom: solid 2px blue;
+}
+
+#start-Restaurant:hover {
+    color: red;
+    border-bottom: solid 2px red;
+}
+#start-Restaurant.started {
+    color: red;
+    border-bottom: solid 2px red;
+}
+
+#start-Museum:hover {
+    color: orange;
+    border-bottom: solid 2px orange;
+}
+#start-Museum.started {
+    color: orange;
+    border-bottom: solid 2px orange;
+}
+
+#start-Bar:hover {
+    color: purple;
+    border-botttom: solid 2px purple;
+}
+#start-Bar.started {
+    color: purple;
+    border-botttom: solid 2px purple;
+}
+
+.nav {
+    height: 94%;
+    width: 400px;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 2%;
+    top: 2%;
+    background-color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.85);
+    overflow-x: hidden; /* Disable horizontal scroll */
+    box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
+    display: none;
 }
 
 #overlayTitle {
@@ -217,11 +259,16 @@ input, select {
 	width: 100%;
 }
 
+#current-search {
+	position:absolute;
+	bottom:0;
+	display:none;
+}
+
 #choose-next-category-list{
 	height: 50px;
 	width: 220px;
 	font-size: 15px;
-
 }
 
 .next-nav {

@@ -43,9 +43,11 @@ function changeSearchCategory(newCategory) {
     if (newCategory != searchCategory) {
         searchCategory = newCategory;
         requestPage = 0;
-        $(".selected").removeClass("selected");
-        $("#search-" + newCategory).addClass("selected");
     }
+    $(".selected").removeClass("selected");
+    $("#search-" + newCategory).addClass("selected");
+    $(".started").removeClass("started");
+    $("#start-" + newCategory).addClass("started");
 }
 
 function closeNav() {
@@ -76,6 +78,13 @@ function selectForSearch(categoryDiv) {
     var newCategory = $(categoryDiv).text();
     changeSearchCategory(newCategory);
     searchBarShow();
+}
+
+function setFirstCategory(categorySpan) {
+    var newCategory = $(categorySpan).text();
+    changeSearchCategory(newCategory);
+
+
 }
 
 function nextCategory(category) {
