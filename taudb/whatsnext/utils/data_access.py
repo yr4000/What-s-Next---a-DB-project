@@ -161,11 +161,6 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
         museum["longitude"] = result["m_lon"] / RESOLUTION
         museum["category"] = 'museum'
 
-        print '{0}th row print :'.format(i)
-        print hotel
-        print restaurant
-        print bar
-        print museum
         places[i] = [hotel, restaurant, bar, museum]
         i = i+1
 
@@ -179,7 +174,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
     cur = init_db_cursor()
 
     query = 'SELECT                                                                    '\
-            '    places.id,                                                         '\
+            '    places.id,                                                            '\
             '    places.google_id,                                                     '\
             '    places.name,                                                          '\
             '    places.longitude,                                                     '\
@@ -196,8 +191,8 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
             '    categories ON places_categories.category_id = categories.id           '\
             'WHERE                                                                     '\
             '    categories.name = %s                                                  '\
-            '        AND latitude BETWEEN %s AND %s                                    '\
-            '        AND longitude BETWEEN %s AND %s                                   '\
+            '    AND latitude BETWEEN %s AND %s                                        '\
+            '    AND longitude BETWEEN %s AND %s                                       '\
             'ORDER BY distance ASC                                                     '\
             'LIMIT %s                                                                  '
 
