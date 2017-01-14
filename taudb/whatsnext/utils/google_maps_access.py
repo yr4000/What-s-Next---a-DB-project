@@ -102,12 +102,11 @@ def get_reviews_from_details_response(json_response, place_id):
 
 def get_current_rating_from_details_response(json_response):
     # if response is empty or does not contain results return an empty list
-    if not json_response or KEY_RESULT not in json_response:
+    try:
+        return json_response[KEY_RESULT][KEY_RATING]
+    except KeyError:
+        # TODO: log here?
+        print 'Place has no rating in the following json: {json}'.format(json=json_response)
         return None
 
-    result = json_response[KEY_RESULT]
-    if not result or KEY_REVIEWS not in result:
-        return None
 
-    rating = result[KEY_RATING]
-    return rating

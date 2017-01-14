@@ -174,7 +174,6 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
     return places
 
 
-
 def search_places_near_location(center_latitude, center_longitude, top, right, bottom, left, category, limit):
 
     cur = init_db_cursor()
@@ -494,6 +493,7 @@ example for find_search_query_id_result:
             ON possible_searches.search_id = sp.search_id
     WHERE sp.search_size = 3
 '''
+
 
 def insert_new_search(places_id_list):
     execute_writing_query("INSERT INTO search_properties(popularity,search_size) VALUES (1," +str(len(places_id_list))+")") #creates new popularity
