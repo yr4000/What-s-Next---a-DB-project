@@ -62,13 +62,13 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
             '	places as hotels,                                                                                   ' \
             '	places_categories as pc_hotels,                                                                     ' \
             '	(Select                                                                                             ' \
-            '		resturants.id As rid, resturants.google_id As rgid, resturants.name As rn,                      ' \
-            '       resturants.rating As rr, resturants.vicinity As rv, resturants.latitude As r_lat,               ' \
-            '       resturants.longitude As r_lon,bid, bgid, bn, br, bv, b_lat, b_lon,                              ' \
+            '		restaurants.id As rid, restaurants.google_id As rgid, restaurants.name As rn,                   ' \
+            '       restaurants.rating As rr, restaurants.vicinity As rv, restaurants.latitude As r_lat,            ' \
+            '       restaurants.longitude As r_lon,bid, bgid, bn, br, bv, b_lat, b_lon,                             ' \
             '       muid, mdig, mn, mr, mv,	m_lat, m_lon                                                            ' \
             '		From                                                                                            ' \
-            '		places as resturants,                                                                           ' \
-            '		places_categories as pc_resturants,                                                             ' \
+            '		places as restaurants,                                                                          ' \
+            '		places_categories as pc_restaurants,                                                            ' \
             '		(Select                                                                                         ' \
             '			bars.id As bid, bars.google_id As bgid, bars.name As bn, bars.rating As br,                 ' \
             '           bars.vicinity As bv, bars.latitude As b_lat, bars.longitude As b_lon,                       ' \
@@ -77,28 +77,28 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
             '			places as bars,                                                                             ' \
             '			places_categories as pc_bars,                                                               ' \
             '			(Select                                                                                     ' \
-            '				muesums.id As muid, muesums.google_id As mdig, muesums.name as mn,                      ' \
-            '               muesums.rating as mr, muesums.vicinity as mv,muesums.latitude As m_lat,                 ' \
-            '               muesums.longitude As m_lon                                                              ' \
+            '				museums.id As muid, museums.google_id As mdig, museums.name as mn,                      ' \
+            '               museums.rating as mr, museums.vicinity as mv,museums.latitude As m_lat,                 ' \
+            '               museums.longitude As m_lon                                                              ' \
             '				From                                                                                    ' \
-            '					places as muesums,                                                                  ' \
-            '					places_categories as pc_muesums	                                                    ' \
+            '					places as museums,                                                                  ' \
+            '					places_categories as pc_museums	                                                    ' \
             '			    Where                                                                                   ' \
-            '					muesums.id = pc_muesums.place_id                                                    ' \
-            '					And pc_muesums.category_id = 4                                                      ' \
-            '                   And muesums.latitude BETWEEN %s - 100 AND %s + 100                                  ' \
-            '                   And muesums.longitude BETWEEN %s - 50 AND %s + 50 ) As muesums                      ' \
+            '					museums.id = pc_museums.place_id                                                    ' \
+            '					And pc_museums.category_id = 4                                                      ' \
+            '                   And museums.latitude BETWEEN %s - 100 AND %s + 100                                  ' \
+            '                   And museums.longitude BETWEEN %s - 50 AND %s + 50 ) As museums                      ' \
             '		Where                                                                                           ' \
             '			bars.id = pc_bars.place_id                                                                  ' \
             '			And pc_bars.category_id = 3 And bars.latitude BETWEEN m_lat - 10 AND m_lat + 10             ' \
             '           And bars.longitude BETWEEN m_lon - 10 AND m_lat + 10 And bars.id <> muid ) As bars          ' \
             '	Where                                                                                               ' \
-            '		resturants.id = pc_resturants.place_id                                                          ' \
-            '		And pc_resturants.category_id = 2                                                               ' \
-            '       And resturants.latitude BETWEEN b_lat - 10 AND b_lat + 10                                       ' \
-            '       AND resturants.longitude BETWEEN b_lon - 10 AND b_lat + 10                                      ' \
-            '       And resturants.id <> bid                                                                        ' \
-            '       AND resturants.id <> muid ) As resturants                                                       ' \
+            '		restaurants.id = pc_restaurants.place_id                                                        ' \
+            '		And pc_restaurants.category_id = 2                                                              ' \
+            '       And restaurants.latitude BETWEEN b_lat - 10 AND b_lat + 10                                      ' \
+            '       AND restaurants.longitude BETWEEN b_lon - 10 AND b_lat + 10                                     ' \
+            '       And restaurants.id <> bid                                                                       ' \
+            '       AND restaurants.id <> muid ) As restaurants                                                     ' \
             'Where                                                                                                  ' \
             '	hotels.id = pc_hotels.place_id                                                                      ' \
             '	And pc_hotels.category_id = 1                                                                       ' \
@@ -113,17 +113,17 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
             '   %s, %s'
 
     cur.execute(query, (center_longitude, center_longitude, center_latitude,
-                    center_latitude, center_longitude, center_longitude,
-                    offset_for_paging * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
+                        center_latitude, center_longitude, center_longitude,
+                        offset_for_paging * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
     rows = cur.fetchall()
 
     places = dict()
     i = 0
     for result in rows:
         hotel = dict()
-        resturant = dict()
+        restaurant = dict()
         bar = dict()
-        muesum = dict()
+        museum = dict()
 
         hotel["id"] = result["hid"]
         hotel["google_id"] = result["hgid"]
@@ -134,14 +134,14 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
         hotel["longitude"] = result["h_lon"] / RESOLUTION
         hotel["category"] = 'hotel'
 
-        resturant["id"] = result["rid"]
-        resturant["google_id"] = result["rgid"]
-        resturant["name"] = result["rn"]
-        resturant["rating"] = result["rr"]
-        resturant["vicinity"] = result["rv"]
-        resturant["latitude"] = (result["r_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
-        resturant["longitude"] = result["r_lon"] / RESOLUTION
-        resturant["category"] = 'resturant'
+        restaurant["id"] = result["rid"]
+        restaurant["google_id"] = result["rgid"]
+        restaurant["name"] = result["rn"]
+        restaurant["rating"] = result["rr"]
+        restaurant["vicinity"] = result["rv"]
+        restaurant["latitude"] = (result["r_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+        restaurant["longitude"] = result["r_lon"] / RESOLUTION
+        restaurant["category"] = 'restaurant'
 
         bar["id"] = result["bid"]
         bar["google_id"] = result["bgid"]
@@ -152,16 +152,21 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
         bar["longitude"] = result["b_lon"] / RESOLUTION
         bar["category"] = 'bar'
 
-        muesum["id"] = result["muid"]
-        muesum["google_id"] = result["mdig"]
-        muesum["name"] = result["mn"]
-        muesum["rating"] = result["mr"]
-        muesum["vicinity"] = result["mv"]
-        muesum["latitude"] = (result["m_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
-        muesum["longitude"] = result["m_lon"] / RESOLUTION
-        muesum["category"] = 'muesum'
+        museum["id"] = result["muid"]
+        museum["google_id"] = result["mdig"]
+        museum["name"] = result["mn"]
+        museum["rating"] = result["mr"]
+        museum["vicinity"] = result["mv"]
+        museum["latitude"] = (result["m_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+        museum["longitude"] = result["m_lon"] / RESOLUTION
+        museum["category"] = 'museum'
 
-        places[i] = [hotel, resturant, bar, muesum]
+        print '{0}th row print :'.format(i)
+        print hotel
+        print restaurant
+        print bar
+        print museum
+        places[i] = [hotel, restaurant, bar, museum]
         i = i+1
 
     cur.close()
