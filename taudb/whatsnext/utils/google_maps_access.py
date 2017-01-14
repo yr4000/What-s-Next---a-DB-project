@@ -31,17 +31,16 @@ def fetch_reviews_from_google(place):
 
     # TODO: again, need to fix this to use the Place class
     new_reviews = get_reviews_from_details_response(json_response, place['id'])
-
     # insert new reviews to the db, asynchronously to shorten response time
-    try:
-        thread.start_new_thread(insert_new_reviews, (new_reviews,))
-    except Exception as e:
-        # TODO: log? not critical
-        print 'thread init failed for inserting reviews. {}'.format(e.message)
+    if new_reviews:
+        try:
+            thread.start_new_thread(insert_new_reviews, (new_reviews,))
+        except Exception as e:
+            # TODO: log? not critical
+            print 'thread init failed for inserting reviews. {}'.format(e.message)
 
-    # update the place rating in db to the current value in google, asynchronously to shorten response time
-    # this is only performed if there are no reviews for the place
     new_rating = get_current_rating_from_details_response(json_response)
+    # update the place rating in db to the current value in google, asynchronously to shorten response time
     if new_rating:
         try:
             # TODO: again, need to fix this to use the Place class
