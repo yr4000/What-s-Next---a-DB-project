@@ -182,7 +182,8 @@ function getPlaceDetails(place_id, index) {
                                   "</br><b>By " + review.author + " on " + review.date + "</b>";
             $("#current-reviews")[0].appendChild(reviewDiv);
         }
-        getPlaceStatistics({latitude:response.place.latitude, longitude:response.place.longitude});
+        getPlaceStatistics({latitude:response.place.latitude, longitude:response.place.longitude,
+            category:response.place.category});
     },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {

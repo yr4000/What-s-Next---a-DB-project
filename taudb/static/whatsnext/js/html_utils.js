@@ -59,11 +59,11 @@ function showResults() {
 
 function searchBarShow() {
     $("#search-div").css('display','table');
-};
+}
 
 function searchBarHide() {
     $("#search-div").css('display','none');
-};
+}
 
 function selectForSearch(categoryDiv) {
     var newCategory = $(categoryDiv).text();
