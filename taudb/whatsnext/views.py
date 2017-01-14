@@ -37,7 +37,7 @@ def search_by_name(request):
 
     search_word = request_json["word"]
     search_category = request_json["category"].lower()
-    offset_for_paging = request_json["page_offset"]
+    offset_for_paging = request_json["page"]
 
     print "Searching for a " + search_category + " with " + search_word + \
           " in it's name [Page " + str(offset_for_paging) + "]"
@@ -55,7 +55,7 @@ def find_suggestion_by_point(request):
 
     latitude = request_json["latitude"]
     longitude = request_json["longitude"]
-    offset_for_paging = request_json["page_offset"]
+    offset_for_paging = request_json["page"]
 
     places = find_suggestion_near_location(latitude, longitude, offset_for_paging)
 
