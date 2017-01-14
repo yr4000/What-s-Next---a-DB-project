@@ -35,7 +35,7 @@ def get_place_by_place_id(place_id):
 
     record = cur.fetchone()  # expecting single place since id is a pk
     if record:
-        place = record
+        place = query_results_to_dict(record)
     else:
         raise NotFoundInDb('db does not include a record with id: {id}'.format(id=id))
 
