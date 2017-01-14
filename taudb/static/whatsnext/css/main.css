@@ -31,6 +31,20 @@ input, select {
     transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
 }
 
+#closebtn {
+	text-decoration: none;
+	color: #818181;
+    position: absolute;
+    top: 20px;
+    right: 45px;
+    font-size: 60px;
+}
+
+#closebtn:hover {
+	color: #f1f1f1;
+}
+
+
 .nav {
     height: 94%;
     width: 400px;
