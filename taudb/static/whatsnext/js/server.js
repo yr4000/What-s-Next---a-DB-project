@@ -109,7 +109,7 @@ function searchByFullText(word) {
     });
 }
 
-function searchCombinationByPoint(latitude, longitude, page_offset) {
+function searchCombinationByPoint(latitude, longitude) {
     var url = "/searchCombinationByPoint/";
     isSearchByText = false;
 
