@@ -17,7 +17,7 @@ var markForSearch = false;
 var isSearchByText = false;
 
 // Search Category (Holds first default search value
-var searchCategory = DEFAULT_SEARCH_CATEGORY;
+var searchCategory = null;
 
 // Default Distance for search
 var searchDistance = DEFAULT_SEARCH_DISTANCE;

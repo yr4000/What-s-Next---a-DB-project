@@ -63,6 +63,10 @@ input, select {
 	color: white;
 	text-decoration: none;
 }
+.overlay-content > a:hover {
+	color: white;
+	text-decoration: underline;
+}
 
 .overlay-content > input, select {
 	background-color: rgba(255,255,255, 0.9);
@@ -83,8 +87,62 @@ input, select {
 	font-size: 56pt;
 }
 
+
+
+#serach-options-bar {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+}
+
+.search-category {
+	display: table-cell;
+	text-align: center;
+	padding-top: 10px;
+}
+.selected{
+	background: rgba(200, 200, 200, 0.85)
+}
+
+#search-Hotel {
+	border-bottom: solid 3px blue;
+}
+
+#search-Restaurant {
+	border-bottom: solid 3px red;
+}
+
+#search-Bar {
+	border-bottom: solid 3px purple;
+}
+
+#search-Museum {
+	border-bottom: solid 3px orange;
+}
+
 #search-div {
 	display: none;
+	width: 100%;
+	table-layout: fixed;
+}
+
+.search-way {
+	display: table-cell;
+	text-align: center;
+}
+
+#search-around {
+	width: 20%;
+}
+
+#search-popular {
+	width: 30%;
+}
+
+#place-name {
+	border: 0;
+	background-color: rgba(255,255,255, 0.9);
+	width: 100%;
 }
 
 #place-div {
@@ -130,6 +188,29 @@ input, select {
 #statistics {
 	width: 100%;
 }
+
+#choose-next-category-list{
+	height: 50px;
+	width: 220px;
+	font-size: 15px;
+
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+}
+
 
 /* http://stackoverflow.com/questions/12499886/how-to-hide-or-disable-the-google-logo-footer-copyright-on-google-maps-javascr */
 a[href^="http://maps.google.com/maps"]{display:none !important}

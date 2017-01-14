@@ -1,6 +1,8 @@
-/**
- * Created by Alonmeytal on 02/01/2017.
- */
+function cleanScreen() {
+    clearMarkers();
+    clearTable("results");
+    map.setZoom(enumZoomLevels.Districts);
+}
 
 // Send CSRF cookie with every non-safe method
 function csrfSafeMethod(method) {
@@ -35,14 +37,12 @@ function searchAroundMarker(latitude, longitude) {
         page: requestPage
     };
 
-    console.log("Starting search around marker");
     $.post(url,
         JSON.stringify(search_values),
         function(response)
         {
             if(markersArray.length !=0){
-                clearMarkers();
-                clearTable("results");
+                cleanScreen();
             }
 
             $("#place-div").hide();
@@ -65,12 +65,8 @@ function searchAroundMarker(latitude, longitude) {
     .fail(function(jgXHR, textStatus, errorThrown) {
          console.log("Failed to Search around Marker");
     });
-    console.log("Finished search around marker");
 }
 
-/**
- * Created by DrorBrunman on 04/01/2017.
- */
 function searchByFullText(word) {
     var url = "/searchByFullText/";
     isSearchByText = true;
@@ -86,8 +82,7 @@ function searchByFullText(word) {
         function(response)
         {
             if(markersArray.length !=0){
-                clearMarkers();
-                clearTable("results");
+                cleanScreen();
             }
 
             $("#place-div").hide();
@@ -168,6 +163,8 @@ function getPlaceDetails(place_id, index) {
     function(response) {
         console.log(response);
 
+        map.setZoom(enumZoomLevels.Streets);
+
         $("#results-div").hide();
         $("#place-div").show();
 
@@ -214,18 +211,19 @@ function getPlaceStatistics(place) {
             $(iconCell).data("category",key);
             catIcon.src = iconFolderPath + enumMarkerColors[key] + "A.png";
             iconCell.appendChild(catIcon);
-            iconCell.onclick = function() {
-                changeSearchCategory($(this).data("category"));
-                searchAroundMarker(place.latitude, place.longitude);
-            };
+            // Statistics shouldn't be clickable.
+            //iconCell.onclick = function() {
+            //changeSearchCategory($(this).data("category"));
+            //searchAroundMarker(place.latitude, place.longitude);
+            //};
             var catCell = row.insertCell(cells++);
             $(catCell).data("category",key);
             catCell.innerHTML = "<b>" + category.places_amount + " " + key + "s </b>" +
                 "<br> [Avg. Rating : " + category.rating_average + "]";
-            catCell.onclick = function() {
-                changeSearchCategory($(this).data("category"));
-                searchAroundMarker(place.latitude, place.longitude);
-            };
+            //catCell.onclick = function() {
+            //    changeSearchCategory($(this).data("category"));
+            //    searchAroundMarker(place.latitude, place.longitude);
+            //};
         }
     },
         'json')

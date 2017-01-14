@@ -30,14 +30,15 @@
 
 	</div>
     <div class="nav">
+        <div id="serach-options-bar">
+            {% for cat in categories %}
+				<span id="search-{{ cat }}" class="search-category" onclick="selectForSearch(this)">{{ cat }}</span>
+			{% endfor %}
+        </div>
         <div id ="search-div">
-			<select id="search-category">
-				<option value="default">Start with...</option>
-				{% for cat in categories %}
-				<option value="{{ cat }}">{{ cat }}</option>
-				{% endfor %}
-			</select>&nbsp;
-			<input type="text" id="place-name" size="12" placeholder="Location name">
+            <span id="search-around" class="search-way">Zoom?</span>
+            <span id="search-popular" class="search-way">Most Popular</span>
+            <span id="search-name" class="search-way"><input type="text" id="place-name" placeholder="Location name"></span>
 		</div>
         <div id="place-div">
 			<div onclick="showResults()"><< Back to Results</div>

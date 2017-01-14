@@ -291,15 +291,19 @@ function createMarker(LatLong, title, place_id, center, color, index) {
         title:title,
         place_id: place_id
     });
-    m.addListener("rightclick", function() {
+
+    m.addListener("click", function() {
         map.panTo(LatLong);
         getPlaceDetails(place_id, index);
     });
-    m.addListener('click', function () {
+    /*
+    // TODO delete this event listener.
+    m.addListener("rightclick", function () {
         removeAllMarkersExceptChosenOne(self);
         currentSearch.push(place_id);
         console.log("currentSearch = "+String(currentSearch));
     });
+        */
     return m;
 }
 

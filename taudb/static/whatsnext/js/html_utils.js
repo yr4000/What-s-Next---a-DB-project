@@ -2,6 +2,13 @@
  * Created by Alonmeytal on 24/12/2016.
  */
 $(document).ready(function () {
+    document.addEventListener("keyup", function(e) {
+        var keyPressed = (e.keyCode ? e.keyCode : e.which);
+        if ((keyPressed == 27) && $("#myNav").is(":visible")) {
+             closeNav();
+            document.removeEventListener("keyup", this);
+        }
+    });
     $("#overlay-place-name").on("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
@@ -17,16 +24,20 @@ $(document).ready(function () {
     $("#place-name").on("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
-            var searchValue = $("#overlay-place-name").val();
+            var searchValue = $("#place-name").val();
             searchByFullText(searchValue);
         }
     });
+
+    changeSearchCategory(DEFAULT_SEARCH_CATEGORY);
 });
 
 function changeSearchCategory(newCategory) {
     if (newCategory != searchCategory) {
         searchCategory = newCategory;
         requestPage = 0;
+        $(".selected").removeClass("selected");
+        $("#search-" + newCategory).addClass("selected");
     }
 }
 
@@ -43,6 +54,21 @@ function markForSearch() {
 function showResults() {
     $("#place-div").hide();
     $("#results-div").show();
+    map.setZoom(enumZoomLevels.Districts);
+}
+
+function searchBarShow() {
+    $("#search-div").css('display','table');
+};
+
+function searchBarHide() {
+    $("#search-div").css('display','none');
+};
+
+function selectForSearch(categoryDiv) {
+    var newCategory = $(categoryDiv).text();
+    changeSearchCategory(newCategory);
+    searchBarShow();
 }
 
 function addLocationRow(location, type, index) {
