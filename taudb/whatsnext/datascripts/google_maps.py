@@ -23,10 +23,11 @@ HOST = 'https://maps.googleapis.com'
 API = '/maps/api/place/search/json'
 
 # TAU DB
-conn = mdb.connect(host='127.0.0.1', port=11211, user='DbMysql06', passwd='DbMysql06', db='DbMysql06')
+conn = mdb.connect(host='127.0.0.1', port=11211, user='DbMysql06', passwd='DbMysql06', db='DbMysql06',
+                   charset='utf8')
 
 # LOCAL DB
-# conn = mdb.connect(host='127.0.0.1', port=3306, user='root', passwd='', db='taudb')
+# conn = mdb.connect(host='127.0.0.1', port=3306, user='root', passwd='', db='taudb', charset='utf8')
 
 category_mapping = {'lodging': '1',
                     'restaurant': '2',

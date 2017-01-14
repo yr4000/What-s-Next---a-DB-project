@@ -15,7 +15,8 @@ import MySQLdb as mdb
 
 
 # def insert_places_to_table():
-#     conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305)
+#     conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305,
+#                        charset='utf8')
 #     cur = conn.cursor(mdb.cursors.DictCursor)
 #
 #     with open('places_05_01_17_converted.csv', 'rb') as f:
@@ -46,7 +47,8 @@ import MySQLdb as mdb
 
 
 # def insert_places_categories_to_table():
-#     conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305)
+#     conn = mdb.connect(host='127.0.0.1', user='DbMysql06', passwd='DbMysql06', db='DbMysql06', port=3305,
+#                        charset='utf8')
 #     cur = conn.cursor(mdb.cursors.DictCursor)
 #
 #     with open('places_categories_05_01_17.csv', 'rb') as f:

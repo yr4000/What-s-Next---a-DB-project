@@ -5,7 +5,7 @@ import MySQLdb
 # Creates an connection  with the DB
 def init_db_connection():
     return MySQLdb.connect(host=settings.DB_HOST, user=settings.DB_ALL, passwd=settings.DB_ALL,
-                           db=settings.DB_ALL, port=settings.DB_PORT)
+                           db=settings.DB_ALL, port=settings.DB_PORT, charset=settings.DB_CHARSET)
 
 
 # Creates an object used to send queries to the DB
