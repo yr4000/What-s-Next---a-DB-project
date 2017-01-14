@@ -63,7 +63,7 @@ function markForSearch() {
 function showResults() {
     $("#place-div").hide();
     $("#results-div").show();
-    map.setZoom(enumZoomLevels.Districts);
+    // map.setZoom(enumZoomLevels.Districts);
 }
 
 function searchBarShow() {
