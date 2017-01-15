@@ -66,7 +66,26 @@ function getMostPopular() {
     $.getJSON(url,
         "",
         function(response){
-            console.log(reponse);
+            clearTable("popular-results");
+
+            var resultsTable = document.getElementById("popular-results");
+            var resultNum = 0;
+            for (key in response) {
+                var result = response[key];
+                var resultRow = resultsTable.insertRow(-1);
+                var iconCell = resultRow.insertCell(0);
+                iconCell.innerHTML = '<img src="' + iconFolderPath + enumMarkerColors[searchCategory] +
+                                     String.fromCharCode((resultNum % 26) + 65) + '.png">';
+                var nameCell = resultRow.insertCell(1);
+                nameCell.innerText = result.place_name;
+                var popularityCell = resultRow.insertCell(2);
+                popularityCell.innerText = result.popularity;
+                $(resultRow).data("place", {id:result.place_id, icon:resultNum});
+                resultRow.onclick = function(e) {
+                    getPlaceDetails($(this).data("place").id, $(this).data("place").icon);
+                };
+                resultNum++;
+            }
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -137,6 +156,7 @@ function getPlaceDetails(place_id, index) {
         currentPlace = response.place;
 
         $("#results-div").hide();
+        $("#most-popular").hide();
         $("#place-div").show();
 
         $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(currentPlace.category)] +

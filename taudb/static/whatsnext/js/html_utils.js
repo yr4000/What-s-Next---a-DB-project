@@ -68,6 +68,7 @@ function markForSearch() {
 function showResults() {
     $("#place-div").hide();
     $("#results-div").show();
+    $("#most-popular").show();
     // map.setZoom(enumZoomLevels.Districts);
 }
 
@@ -88,8 +89,6 @@ function selectForSearch(categoryDiv) {
 function setFirstCategory(categorySpan) {
     var newCategory = $(categorySpan).text();
     changeSearchCategory(newCategory);
-
-
 }
 
 function nextCategory(category) {
@@ -152,9 +151,7 @@ function cleanScreen() {
 
 function showSearchResults(results) {
     cleanScreen();
-
-    $("#place-div").hide();
-    $("#results-div").show();
+    showResults();
 
     var i = 0;
     for (var key in results) {
@@ -164,5 +161,10 @@ function showSearchResults(results) {
         addLocationRow(place, searchCategory, i);
         i++;
     }
+
+    if (requestPage == 0) {
+        getMostPopular();
+    }
+
     requestPage++;
 }

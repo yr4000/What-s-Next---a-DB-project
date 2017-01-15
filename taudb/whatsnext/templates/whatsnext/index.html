@@ -35,8 +35,7 @@
 			{% endfor %}
         </div>
         <div id ="search-div">
-            <span id="search-around" class="search-way">Zoom?</span>
-            <span id="search-popular" class="search-way" onclick="getMostPopular()">Most Popular</span>
+            <span id="search-around" class="search-way">Distance</span>
             <span id="search-name" class="search-way"><input type="text" id="place-name" placeholder="Location name"></span>
 		</div>
         <div id="explanation-div">
@@ -56,6 +55,12 @@
         <div id="results-div">
 			<table id="results"></table>
 		</div>
+        <div id="most-popular">
+            <h3>People also searched</h3>
+            <table id="popular-results" width="100%">
+
+            </table>
+        </div>
         <div id="current-search">
             Search so far...
         </div>
