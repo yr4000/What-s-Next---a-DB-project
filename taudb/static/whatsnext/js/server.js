@@ -1,9 +1,3 @@
-function cleanScreen() {
-    clearArray(markersArray);
-    clearTable("results");
-    //map.setZoom(enumZoomLevels.Districts);
-}
-
 // Send CSRF cookie with every non-safe method
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
@@ -36,25 +30,7 @@ function searchAroundMarker(latitude, longitude) {
         JSON.stringify(search_values),
         function(response)
         {
-            if(markersArray.length !=0){
-                cleanScreen();
-            }
-
-            $("#place-div").hide();
-            $("#results-div").show();
-
-            console.log(response);
-
-            var i = 0;
-            for (var key in response) {
-                var place = response[key];
-                addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                          place["name"], place["id"], false, enumMarkerColors[searchCategory], i);
-                addLocationRow(place, searchCategory, i);
-                i++;
-            }
-            requestPage++;
-
+            showSearchResults(response);
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -76,26 +52,25 @@ function searchByFullText(word) {
         JSON.stringify(search_values),
         function(response)
         {
-            if(markersArray.length !=0){
-                cleanScreen();
-            }
-
-            $("#place-div").hide();
-            $("#results-div").show();
-
-            var i = 0;
-            for (var key in response) {
-                var place = response[key];
-                addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                          place["name"], place["id"], false, enumMarkerColors[searchCategory], i);
-                addLocationRow(place, searchCategory, i);
-                i++;
-            }
-            requestPage++;
+            showSearchResults(response);
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
          console.log("Failed to preform Full Text Search");
+    });
+}
+
+function getMostPopular() {
+    var url = "/stats/top_places?category=" + searchCategory;
+
+    $.getJSON(url,
+        "",
+        function(response){
+            console.log(reponse);
+        },
+        'json')
+    .fail(function(jgXHR, textStatus, errorThrown) {
+         console.log("Failed to get Most Popular Places.");
     });
 }
 
@@ -167,8 +142,8 @@ function getPlaceDetails(place_id, index) {
         $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(currentPlace.category)] +
                                     String.fromCharCode((index % 26) + 65) + ".png";
         $("#current-name")[0].innerHTML = currentPlace.name;
-        $("#current-id")[0].innerText = "Internal: " + currentPlace.place_id + "| Google: " + currentPlace.google_id;
-        $("#current-id").data("place-id", currentPlace.place_id);
+        $("#current-id")[0].innerText = "Internal: " + currentPlace.id + "| Google: " + currentPlace.google_id;
+        $("#current-id").data("place-id", currentPlace.id);
         $("#current-address")[0].innerText = currentPlace.vicinity;
 
         clearTable("current-reviews"); // Clear Old Reviews before inserting new ones.
@@ -268,13 +243,12 @@ function updatePopularSearches() {
     console.log("finished updated popular search");
 }
 
-
 function modifyCurrentSearchForServer(){
-    modifiedSearchArr = [];
-    tempArr = [];
+    var modifiedSearchArr = [];
+    var tempArr = [];
     currentSearch.reverse();
     while(currentSearch.length != 0){
-        objectHolder = currentSearch.pop();
+        var objectHolder = currentSearch.pop();
         modifiedSearchArr.push(objectHolder["id"]);
         tempArr.push(objectHolder);
     }

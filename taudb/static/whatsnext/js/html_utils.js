@@ -141,3 +141,28 @@ function capitalizeFirstLetter(string)
 
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
+
+function cleanScreen() {
+    if ($("#explanation-div").is(":visible"))
+        $("#explanation-div").hide();
+    clearArray(markersArray);
+    clearTable("results");
+    //map.setZoom(enumZoomLevels.Districts);
+}
+
+function showSearchResults(results) {
+    cleanScreen();
+
+    $("#place-div").hide();
+    $("#results-div").show();
+
+    var i = 0;
+    for (var key in results) {
+        var place = results[key];
+        addMarker(new google.maps.LatLng(place.latitude, place.longitude),
+                  place["name"], place["id"], false, enumMarkerColors[searchCategory], i);
+        addLocationRow(place, searchCategory, i);
+        i++;
+    }
+    requestPage++;
+}

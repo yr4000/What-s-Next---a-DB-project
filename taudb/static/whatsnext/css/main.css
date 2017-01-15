@@ -198,6 +198,11 @@ input, select {
 	width: 100%;
 }
 
+#explanation-div {
+	text-align: center;
+	padding-top: 240px;
+}
+
 #place-div {
 	display: none;
 }
@@ -233,7 +238,7 @@ input, select {
 }
 
 #current-accept {
-	display:inline-block;
+	display: inline-block;
 	width: 50%;
 	background: green;
 	color: white;
@@ -241,7 +246,7 @@ input, select {
 }
 
 #end-here {
-	display:inline-block;
+	display: inline-block;
 	width:50%;
 	background: black;
 	color: white;

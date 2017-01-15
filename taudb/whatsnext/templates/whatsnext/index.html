@@ -36,9 +36,12 @@
         </div>
         <div id ="search-div">
             <span id="search-around" class="search-way">Zoom?</span>
-            <span id="search-popular" class="search-way">Most Popular</span>
+            <span id="search-popular" class="search-way" onclick="getMostPopular()">Most Popular</span>
             <span id="search-name" class="search-way"><input type="text" id="place-name" placeholder="Location name"></span>
 		</div>
+        <div id="explanation-div">
+            <h2>Select a location on the map to search for places around it</h2>
+        </div>
         <div id="place-div">
 			<div onclick="showResults()"><< Back to Results</div>
 			<table width="100%">
