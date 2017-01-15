@@ -13,7 +13,6 @@ $.ajaxSetup({
     }
 });
 
-
 function searchAroundMarker(latitude, longitude) {
     var url = "/place/get_around_marker/";
 
@@ -30,6 +29,8 @@ function searchAroundMarker(latitude, longitude) {
         JSON.stringify(search_values),
         function(response)
         {
+            lastSearch = enumSearchTypes.Marker;
+            lastMarkerSearched = {latitude: latitude, longitude: longitude};
             showSearchResults(response);
         },
         'json')
@@ -40,7 +41,6 @@ function searchAroundMarker(latitude, longitude) {
 
 function searchByFullText(word) {
     var url = "/searchByFullText/";
-    isSearchByText = true;
 
     var search_values = {
         word: word,
@@ -52,6 +52,8 @@ function searchByFullText(word) {
         JSON.stringify(search_values),
         function(response)
         {
+            lastSearch = enumSearchTypes.FullText;
+            lastWordSearched = word;
             showSearchResults(response);
         },
         'json')
@@ -95,7 +97,7 @@ function getMostPopular() {
 
 function searchCombinationByPoint(latitude, longitude) {
     var url = "/searchCombinationByPoint/";
-    isSearchByText = false;
+    //isSearchByText = false; // TODO Alon add to enumSearchTypes if needed.
 
     var search_values = {
         latitude: latitude,

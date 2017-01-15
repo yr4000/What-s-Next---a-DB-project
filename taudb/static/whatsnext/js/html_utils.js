@@ -11,10 +11,11 @@ $(document).ready(function () {
             document.removeEventListener("keyup", this);
         }
     });
+
     $("#overlay-place-name").on("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
-            searchByFullText($("#overlay-place-name").val(), searchCategory);
+            searchByFullText($("#overlay-place-name").val());
             closeNav();
         }
     });
@@ -28,6 +29,30 @@ $(document).ready(function () {
         if(keyPressed == 13) {
             var searchValue = $("#place-name").val();
             searchByFullText(searchValue);
+            $("#search-div").css('display','none');
+        }
+    });
+    
+    $("#prev-page").on("click", function(e) {
+        if (requestPage <= 1)
+            return;
+        else {
+            requestPage -= 2;
+        }
+        if (lastSearch == enumSearchTypes.Marker) {
+            searchAroundMarker(lastMarkerSearched.latitude, lastMarkerSearched.longitude);
+        }
+        else if (lastSearch == enumSearchTypes.FullText) {
+            searchByFullText(lastWordSearched);
+        }
+    });
+    
+    $("#next-page").on("click", function(e) {
+        if (lastSearch == enumSearchTypes.Marker) {
+            searchAroundMarker(lastMarkerSearched.latitude, lastMarkerSearched.longitude);
+        }
+        else if (lastSearch == enumSearchTypes.FullText) {
+            searchByFullText(lastWordSearched);
         }
     });
 
@@ -58,11 +83,6 @@ function changeSearchCategory(newCategory) {
 function closeNav() {
     $("#myNav").hide();
     $(".nav").show();
-}
-
-function markForSearch() {
-    markForSearch = true;
-    closeNav();
 }
 
 function showResults() {
@@ -150,6 +170,9 @@ function cleanScreen() {
 }
 
 function showSearchResults(results) {
+    if (!Object.keys(results).length)
+        return; // If no results were returned do nothing.
+
     cleanScreen();
     showResults();
 
@@ -163,6 +186,7 @@ function showSearchResults(results) {
     }
 
     if (requestPage == 0) {
+        $("#category-name")[0].innerText = searchCategory;
         getMostPopular();
     }
 

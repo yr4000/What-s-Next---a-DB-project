@@ -11,10 +11,10 @@ var markersArray = new Array();
 var lastMapClickLocation = null;
 
 // If the setting a Marker should "find places"
-var markForSearch = false;
+var markForSearch = true;
 
 //If the use wants to search by string
-var isSearchByText = false;
+//var isSearchByText = false; // TODO Alon delete if found unnecessary
 
 // Search Category (Holds first default search value
 var searchCategory = null;
@@ -30,3 +30,12 @@ var requestPage = 0;
 
 // Current Place object holder.
 var currentPlace = null;
+
+// Last search type
+var lastSearch = enumSearchTypes.Marker;
+
+// Holds the latitude and longitude of the last marker search in searchByMarker.
+var lastMarkerSearched = null;
+
+// Hold the last word search in searchByFullWord.
+var lastWordSearched = null;

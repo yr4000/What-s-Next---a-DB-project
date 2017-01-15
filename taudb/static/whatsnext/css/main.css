@@ -206,10 +206,30 @@ input, select {
 
 #results-div {
 	display: none;
+    height: 480px;
+}
+
+#results {
+}
+
+#prev-page {
+    float: left;
+    width: 50%;
+}
+
+#next-page {
+    float: right;
+    width: 50%;
+    text-align: right;
 }
 
 #most-popular {
 	display: none;
+    padding: 30px 0 0 0;
+}
+
+.marker-cell {
+    border-bottom: dashed 1px black;
 }
 
 .place-title {
@@ -219,10 +239,12 @@ input, select {
 }
 
 .place-address {
+    border-bottom: dashed 1px black;
 }
 
 .place-rating {
 	font-weight: bold;
+    border-bottom: dashed 1px black;
 }
 
 #current-name {
@@ -255,17 +277,17 @@ input, select {
 }
 
 #current-reviews {
-	height:100%;
+    height:100%;
 	overflow-x: hidden;
 }
+
 .apology {
 	text-align: center;
 	padding-top: 240px;
 }
 .review {
 	font-size: 10pt;
-	padding: 4px;
-	padding-left: 10px;
+	padding: 4px 4px 4px 10px;
 }
 
 #statistics {
@@ -275,7 +297,6 @@ input, select {
 #current-search {
 	position:absolute;
 	bottom:0;
-	display:none;
 }
 
 #choose-next-category-list{
@@ -291,7 +312,6 @@ input, select {
     top: 40%;
     background-color: rgb(255, 255, 255);
     background-color: rgba(255, 255, 255, 0.85);
-    overflow-x: hidden; /* Disable horizontal scroll */
     box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
     display: none;
 }

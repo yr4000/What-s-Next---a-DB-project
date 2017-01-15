@@ -24,7 +24,7 @@
             </div>
 			<input type="text" id="overlay-place-name" placeholder="Let's start with a place called...."><br><br>
 			OR
-			<a href="javascript:void(0)" class="closebtn" onclick="markForSearch()">Mark Your Location On The Map</a>
+			<a href="javascript:void(0)" onclick="closeNav()">Mark Your Location On The Map</a>
 		</div>
 
 	</div>
@@ -48,15 +48,19 @@
 				<tr><td id="current-address"></td></tr>
 				<tr><td id="current-id"></td></tr>
                 <tr><td colspan="2"><span id="current-accept">I'll go there!</span><span id="end-here">End here</span></td></tr>
-				<tr><td colspan="2" height="500"><div id="current-reviews"></div></td></tr>
+				<tr><td colspan="2" height="480"><div id="current-reviews"></div></td></tr>
 				<tr><td id="current-statistics" colspan="2"><b>What's next??</b><br><table id="statistics"></table></td></tr>
 			</table>
 		</div>
         <div id="results-div">
-			<table id="results"></table>
+            <div style="height:100%;overflow-x: hidden;">
+                <table id="results"></table>
+            </div>
+            <span id="prev-page">&lt;&lt; Previous</span>
+            <span id="next-page">Next&gt;&gt;</span>
 		</div>
         <div id="most-popular">
-            <h3>People also searched</h3>
+            <b>Most Popular <span id="category-name"></span></b>
             <table id="popular-results" width="100%">
 
             </table>

@@ -21,12 +21,13 @@ function initMap() {
 
     // Place a green marker on the last place click by the user.
     google.maps.event.addListener(map, "click", function (event) {
+        lastSearch = enumSearchTypes.Marker;
+        markForSearch = true;
+
         var position = new google.maps.LatLng(event.latLng.lat(), event.latLng.lng());
-        //console.log( latitude + ', ' + longitude );
-        if (lastMapClickLocation) {
+        if (lastMapClickLocation)
             removeMarker(lastMapClickLocation);
-            markForSearch = true;
-        }
+
         lastMapClickLocation = createMarker(position, "Clicked here", "-1", true, enumMarkerColors.Current, 0);
     });
 
@@ -54,7 +55,7 @@ function initMap() {
 }
 
 function createMarker(LatLong, title, place_id, center, color, index) {
-    if ((markForSearch && !isSearchByText)) {
+    if (markForSearch && (lastSearch == enumSearchTypes.Marker)) {
         map.panTo(LatLong); // Center around marker.
         searchAroundMarker(LatLong.lat(),LatLong.lng());
         markForSearch = false;
