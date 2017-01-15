@@ -2,7 +2,7 @@ from db_utils import init_db_connection, init_db_cursor,execute_SFW_query,execut
 from whatsnext.models import Review, Place
 from exceptions import NotFoundInDb
 import MySQLdb as mdb
-from taudb.settings import RESOLUTION,LONDON_LATITUDE_DB_CONST
+from geo_utils import RESOLUTION,LONDON_LATITUDE_DB_CONST
 
 DEFAULT_RESULTS_AMOUNT = 10
 
@@ -410,9 +410,9 @@ def get_popular_places_for_category(category):
     # TODO: this should not be limited like this - need to decide on the requirement
     # TODO: current popularity is just the amount of times the place was chosen as a group of places
     query = 'SELECT                                                                           '\
-            '    places.id, '\
-            '	 places.name, '\
-            '	 SUM(search_properties.popularity) AS popularity      '\
+            '    places.id,                                                                   '\
+            '	 places.name,                                                                 '\
+            '	 SUM(search_properties.popularity) AS popularity                              '\
             '    places.name,                                                                 '\
             '    SUM(search_popularity.popularity) AS popularity                              '\
             'FROM                                                                             '\

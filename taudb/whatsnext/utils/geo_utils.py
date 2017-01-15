@@ -1,6 +1,5 @@
 from __future__ import division  # is needed to be able to divide like a human being....
 import math
-from taudb.settings import RESOLUTION, LATITUDE_DIST_DIV_ADJUSTMENT, LONGITUDE_DIST_DIV_ADJUSTMENT,LONDON_LATITUDE_DB_CONST
 
 '''
  for details:
@@ -53,4 +52,4 @@ def get_boundaries_by_center_and_distance(latitude, longitude, dist):
 
 # TODO: itzhaki - refactor this to get 1 point and do the conversion in dataaccess only
 def modify_longlat_for_db(latitude, longitude):
-    return (latitude-LONDON_LATITUDE_DB_CONST) * RESOLUTION, longitude * RESOLUTION
+    return (latitude - LONDON_LATITUDE_DB_CONST) * RESOLUTION, longitude * RESOLUTION
