@@ -410,9 +410,9 @@ def get_popular_places_for_category(category):
     # TODO: this should not be limited like this - need to decide on the requirement
     # TODO: current popularity is just the amount of times the place was chosen as a group of places
     query = 'SELECT                                                                           '\
-            '    places.id, 
-            	 places.name,
-            	 SUM(search_properties.popularity) AS popularity      '\
+            '    places.id, '\
+            '	 places.name, '\
+            '	 SUM(search_properties.popularity) AS popularity      '\
             '    places.name,                                                                 '\
             '    SUM(search_popularity.popularity) AS popularity                              '\
             'FROM                                                                             '\
