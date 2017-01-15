@@ -232,9 +232,11 @@ function getPlaceStatistics() {
 function updatePopularSearches() {
     console.log("started update popular search");
     var url = "/updatePopularSearches/";
+    placeIDsCurrentSearch = modifyCurrentSearchForServer()
     var search = {
-        places_id_list: currentSearch
+        places_id_list: placeIDsCurrentSearch
     };
+    console.log(placeIDsCurrentSearch);
     console.log(currentSearch);
 
     $.post(url,
@@ -243,9 +245,7 @@ function updatePopularSearches() {
         {
             console.log(response);
             console.log("updated successfuly :)");
-            while(currentSearch.length!=0){
-                currentSearch.pop();
-            }
+            clearArray(currentSearch);
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -254,7 +254,16 @@ function updatePopularSearches() {
     console.log("finished updated popular search");
 }
 
-//after each "what's next" we should use this function to update the currentSearch Array
-function addPlaceIDToCurrentSearch(place_id) {
-    currentSearch.push(place_id);
+
+function modifyCurrentSearchForServer(){
+    modifiedSearchArr = [];
+    tempArr = [];
+    currentSearch.reverse();
+    while(currentSearch.length != 0){
+        objectHolder = currentSearch.pop();
+        modifiedSearchArr.push(objectHolder["id"]);
+        tempArr.push(objectHolder);
+    }
+    currentSearch = tempArr;
+    return modifiedSearchArr;
 }
