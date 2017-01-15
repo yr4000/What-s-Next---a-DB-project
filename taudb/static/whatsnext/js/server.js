@@ -247,7 +247,10 @@ function updatePopularSearches() {
         {
             console.log(response);
             console.log("updated successfuly :)");
-            clearArray(currentSearch);
+
+            while (currentSearch.length!=0){
+                currentSearch.pop();
+            }
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
