@@ -10,6 +10,10 @@ returns the distance between 2 points in km
  works good comparing to this site:
  http://boulter.com/gps/distance/?from=51.531952%2C+0.003738&to=51.516887%2C+-0.267676&units=k
 '''
+RESOLUTION = 10000.0
+LATITUDE_DIST_DIV_ADJUSTMENT = 111.0  # distance must be in Km!
+LONGITUDE_DIST_DIV_ADJUSTMENT = 69.0
+LONDON_LATITUDE_DB_CONST = 51
 
 
 # returns the distance according to two points from type float
@@ -40,13 +44,13 @@ in longitude: the second digit from the dot is 0.69 km for each count 1 (up or d
 # TODO: i changed it yet it worked... why?
 def get_boundaries_by_center_and_distance(latitude, longitude, dist):
     dist /= 1000  # from meters to km
-    top = latitude + dist*RESOLUTION/LATITUDE_DIST_DIV_ADJUSTMENT
-    bottom = latitude - dist*RESOLUTION/LATITUDE_DIST_DIV_ADJUSTMENT
-    right = longitude + dist*RESOLUTION/LONGITUDE_DIST_DIV_ADJUSTMENT
-    left = longitude - dist*RESOLUTION/LONGITUDE_DIST_DIV_ADJUSTMENT
+    top = latitude + dist * RESOLUTION / LATITUDE_DIST_DIV_ADJUSTMENT
+    bottom = latitude - dist * RESOLUTION / LATITUDE_DIST_DIV_ADJUSTMENT
+    right = longitude + dist * RESOLUTION / LONGITUDE_DIST_DIV_ADJUSTMENT
+    left = longitude - dist * RESOLUTION / LONGITUDE_DIST_DIV_ADJUSTMENT
     return int(top), int(right), int(bottom), int(left)
 
 
 # TODO: itzhaki - refactor this to get 1 point and do the conversion in dataaccess only
 def modify_longlat_for_db(latitude, longitude):
-    return (latitude-LONDON_LATITUDE_DB_CONST)*RESOLUTION, longitude*RESOLUTION
+    return (latitude-LONDON_LATITUDE_DB_CONST) * RESOLUTION, longitude * RESOLUTION

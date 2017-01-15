@@ -14,7 +14,7 @@ from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
     search_places_near_location, search_places_by_name, exe_find_search_id_query, insert_new_search, \
-    update_search, get_popular_places_for_category,find_suggestion_near_location,exe_im_feeling_lucky_query
+    update_search, get_popular_places_for_category, find_suggestion_near_location, exe_im_feeling_lucky_query
 
 
 def homepage(request):
@@ -105,7 +105,7 @@ def pub_crawl(request):
     # initialize the first point in the track
     track_points[0][0], track_points[0][1], track_points[0][2] = latitude, longitude, "You are here"
 
-    for i in range(1,num_of_bars):
+    for i in range(1, num_of_bars):
         curr_min_dist = -1
         closest_point = [0, 0, ""]
         latitude,longitude = modify_longlat_for_db(latitude,longitude)
@@ -197,12 +197,11 @@ def update_popular_search(request):
 
     places_id_list = request_json["places_id_list"]
 
-
     search_id = exe_find_search_id_query(places_id_list)
-    #return JsonResponse({'update_status': update_status, 'search_is': len(search_id)}, status=200)
+    # return JsonResponse({'update_status': update_status, 'search_is': len(search_id)}, status=200)
 
     # if there is not search like that, insert it to search_popularity and searches_places
-    if len(search_id)==0:
+    if len(search_id) == 0:
         insert_new_search(places_id_list)
         update_status += "inserted new search"
     elif len(search_id) > 1:
@@ -245,9 +244,10 @@ def calc_top_places_for_category(request):
 
     return JsonResponse(top_places, status=200)
 
-#TODO: Yair finish
-def im_feeling_lucky(latitude,longitude):
-    latitude, longitude = modify_longlat_for_db(latitude,longitude)
-    top, right, bottom, left = get_boundaries_by_center_and_distance(latitude,longitude,DEFAULT_SEARCH_DISTANCE)
 
-    lucky_route = exe_im_feeling_lucky_query(top,right,bottom,left)
+#TODO: Yair finish
+def im_feeling_lucky(latitude, longitude, distance):
+    latitude, longitude = modify_longlat_for_db(latitude, longitude)
+    top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
+
+    lucky_route = exe_im_feeling_lucky_query(top, right, bottom, left)
