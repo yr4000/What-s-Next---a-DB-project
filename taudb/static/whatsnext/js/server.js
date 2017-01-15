@@ -173,14 +173,23 @@ function getPlaceDetails(place_id, index) {
 
         clearTable("current-reviews"); // Clear Old Reviews before inserting new ones.
 
-        for (var key in response.reviews) {
-            var review = response.reviews[key];
-            var reviewDiv = document.createElement("div");
-            reviewDiv.className = "review";
-            reviewDiv.innerHTML = "<b>Rating: " + review.rating + "</b></br>" + review.text +
-                                  "</br><b>By " + review.author + " on " + review.date + "</b>";
-            $("#current-reviews")[0].appendChild(reviewDiv);
+        if (response.reviews.length == 0) {
+            var apologyDiv = document.createElement("div");
+            apologyDiv.innerText = "We're sorry but there are no reviews available for this place. =\\";
+            apologyDiv.className = "apology";
+            $("#current-reviews")[0].appendChild(apologyDiv);
         }
+        else {
+            for (var key in response.reviews) {
+                var review = response.reviews[key];
+                var reviewDiv = document.createElement("div");
+                reviewDiv.className = "review";
+                reviewDiv.innerHTML = "<b>Rating: " + review.rating + "</b></br>" + review.text +
+                                      "</br><b>By " + review.author + " on " + review.date + "</b>";
+                $("#current-reviews")[0].appendChild(reviewDiv);
+            }
+        }
+
         getPlaceStatistics();
     },
         'json')

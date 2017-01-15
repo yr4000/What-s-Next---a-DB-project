@@ -134,7 +134,6 @@ input, select {
     top: 2%;
     background-color: rgb(255, 255, 255);
     background-color: rgba(255, 255, 255, 0.85);
-    overflow-x: hidden; /* Disable horizontal scroll */
     box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
     display: none;
 }
@@ -249,6 +248,14 @@ input, select {
 	font-weight:bold;
 }
 
+#current-reviews {
+	height:100%;
+	overflow-x: hidden;
+}
+.apology {
+	text-align: center;
+	padding-top: 240px;
+}
 .review {
 	font-size: 10pt;
 	padding: 4px;
