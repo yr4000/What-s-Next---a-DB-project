@@ -171,6 +171,8 @@ function getPlaceDetails(place_id, index) {
         $("#current-id").data("place-id", currentPlace.place_id);
         $("#current-address")[0].innerText = currentPlace.vicinity;
 
+        clearTable("current-reviews"); // Clear Old Reviews before inserting new ones.
+
         for (var key in response.reviews) {
             var review = response.reviews[key];
             var reviewDiv = document.createElement("div");
