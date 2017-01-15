@@ -82,31 +82,19 @@ CREATE TABLE places_categories (
 )  ENGINE=MyISAM DEFAULT CHARSET=UTF8;
 
 
-CREATE TABLE search_popularity
+CREATE TABLE search_properties
 (
 	search_id INT NOT NULL AUTO_INCREMENT,
-  po0pularity INT NOT NULL,
+  popularity INT NOT NULL,
+  search_size INT NOT NULL,
   CHECK (popularity>0),
+  CHECK (search_size>0),
   PRIMARY KEY (search_id)
 )
-
-ALTER TABLE search_popularity
-RENAME TO search_properties
-
-#TODO we should make sure it is also at least 1
-ALTER TABLE search_popularity
-ADD search_size INT
-
 
 CREATE TABLE searches_places
 (
 	search_id INT NOT NULL,
-    place_id INT NOT NULL
+  place_id INT NOT NULL,
+  FOREIGN KEY (search_id) REFERENCES search_properties(search_id)
 )
-
-# TODO remember to delete those values
-INSERT INTO search_popularity
-VALUES (1,5)
-
-INSERT INTO searches_places
-VALUES (1,1)

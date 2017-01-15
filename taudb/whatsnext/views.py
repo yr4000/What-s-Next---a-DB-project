@@ -14,7 +14,7 @@ from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
     search_places_near_location, search_places_by_name, exe_find_search_id_query, insert_new_search, \
-    update_search, get_popular_places_for_category,find_suggestion_near_location
+    update_search, get_popular_places_for_category,find_suggestion_near_location,exe_im_feeling_lucky_query
 
 
 def homepage(request):
@@ -244,3 +244,10 @@ def calc_top_places_for_category(request):
     top_places = get_popular_places_for_category(category)
 
     return JsonResponse(top_places, status=200)
+
+#TODO: Yair finish
+def im_feeling_lucky(latitude,longitude):
+    latitude, longitude = modify_longlat_for_db(latitude,longitude)
+    top, right, bottom, left = get_boundaries_by_center_and_distance(latitude,longitude,DEFAULT_SEARCH_DISTANCE)
+
+    lucky_route = exe_im_feeling_lucky_query(top,right,bottom,left)
