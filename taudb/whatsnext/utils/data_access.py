@@ -412,7 +412,7 @@ def get_popular_places_for_category(category):
     query = 'SELECT                                                                           '\
             '    places.id,                                                                   '\
             '    places.name,                                                                 '\
-            '    SUM(search_popularity.popularity) AS popularity                              '\
+            '    SUM(search_properties.popularity) AS popularity                              '\
             'FROM                                                                             '\
             '    places                                                                       '\
             '        INNER JOIN                                                               '\
