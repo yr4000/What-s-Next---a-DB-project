@@ -244,11 +244,11 @@ def get_categories_statistics(top, right, bottom, left, except_category):
             '    ROUND(AVG(places_rated.rating), 2) AS rating_average              ' \
             'FROM                                                                  ' \
             '    places                                                            ' \
-            '        JOIN                                                          ' \
+            '        INNER JOIN                                                    ' \
             '    places_categories ON places.id = places_categories.place_id       ' \
-            '        JOIN                                                          ' \
+            '        INNER JOIN                                                    ' \
             '    categories ON places_categories.category_id = categories.id       ' \
-            '        JOIN                                                          ' \
+            '        LEFT JOIN                                                     ' \
             '    (SELECT                                                           ' \
             '        places.id, places.rating                                      ' \
             '    FROM                                                              ' \
