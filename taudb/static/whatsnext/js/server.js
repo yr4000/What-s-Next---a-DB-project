@@ -122,20 +122,20 @@ function searchCombinationByPoint(latitude, longitude) {
                 var sugg = response[key]; // the current 4 places combo suggestion from query
 
                 addMarker(new google.maps.LatLng(sugg[0].latitude, sugg[0].longitude),
-                          sugg[0]["name"], sugg[0]["id"], false, enumMarkerColors[sugg[0]["category"]], i);
-                addLocationRow(sugg[0], sugg[0]["category"], i);
+                          sugg[0]["name"], sugg[0]["id"], false, enumMarkerColors["Hotel"], i);
+                addLocationRow(sugg[0], "Hotel", i);
 
                 addMarker(new google.maps.LatLng(sugg[1].latitude, sugg[1].longitude),
-                          sugg[1]["name"], sugg[1]["id"], false, enumMarkerColors[sugg[1]["category"]], i+1);
-                addLocationRow(sugg[1], sugg[1]["category"], i+1);
+                          sugg[1]["name"], sugg[1]["id"], false, enumMarkerColors["Restaurant"], i+1);
+                addLocationRow(sugg[1], "Restaurant", i+1);
 
                 addMarker(new google.maps.LatLng(sugg[2].latitude, sugg[2].longitude),
-                          sugg[2]["name"], sugg[2]["id"], false, enumMarkerColors[sugg[2]["category"]], i+2);
-                addLocationRow(sugg[2], sugg[2]["category"], i+2);
+                          sugg[2]["name"], sugg[2]["id"], false, enumMarkerColors["Bar"], i+2);
+                addLocationRow(sugg[2], "Bar", i+2);
 
                 addMarker(new google.maps.LatLng(sugg[3].latitude, sugg[3].longitude),
-                          sugg[3]["name"], sugg[3]["id"], false, enumMarkerColors[sugg[3]["category"]], i+3);
-                addLocationRow(sugg[3], sugg[3]["category"], i+3);
+                          sugg[3]["name"], sugg[3]["id"], false, enumMarkerColors["Museum"], i+3);
+                addLocationRow(sugg[3], "Museum", i+3);
 
                 i = i + 4;
             }
@@ -277,4 +277,36 @@ function modifyCurrentSearchForServer(){
     }
     currentSearch = tempArr;
     return modifiedSearchArr;
+}
+
+function drawLinesBetweenMarkers(){
+    cleanScreen();
+    showResults();
+
+    var tripPlanCoordinates = [];
+    var tempArr = [];
+    var i = 0;
+    //currentSearch.reverse
+    while (currentSearch.length != 0) {
+        var objectHolder = currentSearch.pop();
+        console.log(objectHolder)
+        var tempLatLng = new google.maps.LatLng(objectHolder["latitude"], objectHolder["longitude"]);
+        tripPlanCoordinates.push(tempLatLng);
+        addMarker(tempLatLng, objectHolder["name"], objectHolder["id"], false,
+                    enumMarkerColors[capitalizeFirstLetter(objectHolder["category"])], i);
+        addLocationRow(objectHolder, capitalizeFirstLetter(objectHolder["category"]), i);
+
+        tempArr.push(objectHolder)
+        i++;
+    }
+
+    var tripPath = new google.maps.Polyline({
+        path: tripPlanCoordinates,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+    });
+    currentSearch = tempArr
+    tripPath.setMap(map); // draw the line
 }

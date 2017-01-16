@@ -524,7 +524,6 @@ def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
         hotel["vicinity"] = result["hv"]
         hotel["latitude"] = (result["h_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
         hotel["longitude"] = result["h_lon"] / RESOLUTION
-        hotel["category"] = 'hotel'
 
         restaurant["id"] = result["rid"]
         restaurant["google_id"] = result["rgid"]
@@ -533,7 +532,6 @@ def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
         restaurant["vicinity"] = result["rv"]
         restaurant["latitude"] = (result["r_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
         restaurant["longitude"] = result["r_lon"] / RESOLUTION
-        restaurant["category"] = 'restaurant'
 
         bar["id"] = result["bid"]
         bar["google_id"] = result["bgid"]
@@ -542,7 +540,6 @@ def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
         bar["vicinity"] = result["bv"]
         bar["latitude"] = (result["b_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
         bar["longitude"] = result["b_lon"] / RESOLUTION
-        bar["category"] = 'bar'
 
         museum["id"] = result["muid"]
         museum["google_id"] = result["mdig"]
@@ -551,7 +548,6 @@ def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
         museum["vicinity"] = result["mv"]
         museum["latitude"] = (result["m_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
         museum["longitude"] = result["m_lon"] / RESOLUTION
-        museum["category"] = 'museum'
 
         places[i] = [hotel, restaurant, bar, museum]
         i += 1
