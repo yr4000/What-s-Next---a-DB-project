@@ -107,8 +107,8 @@ def search_places_by_name(search_word, search_category, page):
 
     cur = init_db_cursor()
 
-    # This query gets places with proper category and names matching the given search_word
-    # The results are ordered by relevance, based on the algorithm of match + against
+    # This query gets places with proper category and names matching given search_word, using boolean mode text search
+    # The results are then ordered by relevance, based the relevance score of match + against
     # To enable pagination, the result set is determined by a limit and an offset sent by caller
     query = 'SELECT                                                                 ' \
             '   places.id,                                                          ' \
@@ -122,19 +122,18 @@ def search_places_by_name(search_word, search_category, page):
             '   MATCH (places.name) AGAINST ("%s") AS relevance                     ' \
             'FROM                                                                   ' \
             '   places                                                              ' \
-            'INNER JOIN                                                             ' \
+            '      INNER JOIN                                                       ' \
             '   places_categories ON places.id = places_categories.place_id         ' \
-            'INNER JOIN                                                             ' \
+            '      INNER JOIN                                                       ' \
             '   categories ON categories.id = places_categories.category_id         ' \
             'WHERE                                                                  ' \
-            '   MATCH (places.name) AGAINST ("+%s" IN boolean mode)                 ' \
+            '   MATCH (places.name) AGAINST ("%s" IN boolean mode)                  ' \
             '   AND categories.name = %s                                            ' \
             'HAVING                                                                 ' \
             '   relevance > 0                                                       ' \
             'ORDER BY                                                               ' \
             '   relevance DESC                                                      ' \
-            'LIMIT                                                                  ' \
-            '   %s, %s                                                              '
+            'LIMIT %s, %s                                                           '
 
     cur.execute(query, (search_word, search_word, search_category, page * DEFAULT_RESULTS_AMOUNT,
                         DEFAULT_RESULTS_AMOUNT))
