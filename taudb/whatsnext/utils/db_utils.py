@@ -15,12 +15,13 @@ def init_db_cursor():
 
 
 # Given a query, returns the required rows
-def execute_SFW_query(query):
+def execute_sfw_query(query):
     cursor = init_db_cursor()
     cursor.execute(query)
     rows = cursor.fetchall()
     cursor.close()
     return rows
+
 
 # Given an UPDATE or INSERT query, commits it.
 def execute_writing_query(query):
@@ -31,8 +32,9 @@ def execute_writing_query(query):
     cursor.close()
     dbb.close()
 
-#returns a query string of a view according to relevant parameters
-def create_view_from_parameters(tables_list,columns_list = "*"):
+
+# returns a query string of a view according to relevant parameters
+def create_view_from_parameters(tables_list, columns_list="*"):
     query = "SELECT"
     for i in range(len(columns_list)):
         query += " " + columns_list[i] + ", "

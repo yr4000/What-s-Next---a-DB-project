@@ -1,4 +1,4 @@
-from db_utils import init_db_connection, init_db_cursor,execute_SFW_query,execute_writing_query
+from db_utils import init_db_connection, init_db_cursor,execute_sfw_query,execute_writing_query
 from whatsnext.models import Review, Place
 from exceptions import NotFoundInDb
 import MySQLdb as mdb
@@ -44,135 +44,14 @@ def get_place_by_place_id(place_id):
     return place
 
 
-def find_suggestion_near_location(center_latitude, center_longitude, page):
-
-    cur = init_db_cursor()
-    query = 'Select 	                                                                                            ' \
-            '   hotels.id As hid, hotels.google_id As hgid, hotels.name As hn, hotels.rating As hr,                 ' \
-            '   hotels.vicinity As hv, hotels.latitude As h_lat, hotels.longitude As h_lon,                         ' \
-            '   rid, rgid, rn, rr, rv, r_lat, r_lon,                                                                ' \
-            '   bid, bgid, bn, br, bv, b_lat, b_lon,                                                                ' \
-            '   muid, mdig, mn, mr, mv,	m_lat, m_lon,                                                               ' \
-            '   (sqrt((m_lat - %s)^2 / 100 + (m_lon - %s)^2 / 100) +                                                ' \
-            '   sqrt((b_lat - m_lat)^2 / 100 + (b_lon - m_lon)^2 / 100) +                                           ' \
-            '   sqrt((r_lat - b_lat)^2 / 100 + (r_lon - b_lon)^2 / 100) +                                           ' \
-            '   sqrt((hotels.latitude - r_lat)^2 / 100 + (hotels.longitude - r_lon)^2 / 100))                       ' \
-            '   As TotalDistAfterTransp                                                                             ' \
-            'From                                                                                                   ' \
-            '	places as hotels,                                                                                   ' \
-            '	places_categories as pc_hotels,                                                                     ' \
-            '	(Select                                                                                             ' \
-            '		restaurants.id As rid, restaurants.google_id As rgid, restaurants.name As rn,                   ' \
-            '       restaurants.rating As rr, restaurants.vicinity As rv, restaurants.latitude As r_lat,            ' \
-            '       restaurants.longitude As r_lon,bid, bgid, bn, br, bv, b_lat, b_lon,                             ' \
-            '       muid, mdig, mn, mr, mv,	m_lat, m_lon                                                            ' \
-            '		From                                                                                            ' \
-            '		places as restaurants,                                                                          ' \
-            '		places_categories as pc_restaurants,                                                            ' \
-            '		(Select                                                                                         ' \
-            '			bars.id As bid, bars.google_id As bgid, bars.name As bn, bars.rating As br,                 ' \
-            '           bars.vicinity As bv, bars.latitude As b_lat, bars.longitude As b_lon,                       ' \
-            '           muid, mdig, mn, mr, mv,	m_lat, m_lon                                                        ' \
-            '		From                                                                                            ' \
-            '			places as bars,                                                                             ' \
-            '			places_categories as pc_bars,                                                               ' \
-            '			(Select                                                                                     ' \
-            '				museums.id As muid, museums.google_id As mdig, museums.name as mn,                      ' \
-            '               museums.rating as mr, museums.vicinity as mv,museums.latitude As m_lat,                 ' \
-            '               museums.longitude As m_lon                                                              ' \
-            '				From                                                                                    ' \
-            '					places as museums,                                                                  ' \
-            '					places_categories as pc_museums	                                                    ' \
-            '			    Where                                                                                   ' \
-            '					museums.id = pc_museums.place_id                                                    ' \
-            '					And pc_museums.category_id = 4                                                      ' \
-            '                   And museums.latitude BETWEEN %s - 100 AND %s + 100                                  ' \
-            '                   And museums.longitude BETWEEN %s - 50 AND %s + 50 ) As museums                      ' \
-            '		Where                                                                                           ' \
-            '			bars.id = pc_bars.place_id                                                                  ' \
-            '			And pc_bars.category_id = 3 And bars.latitude BETWEEN m_lat - 10 AND m_lat + 10             ' \
-            '           And bars.longitude BETWEEN m_lon - 10 AND m_lat + 10 And bars.id <> muid ) As bars          ' \
-            '	Where                                                                                               ' \
-            '		restaurants.id = pc_restaurants.place_id                                                        ' \
-            '		And pc_restaurants.category_id = 2                                                              ' \
-            '       And restaurants.latitude BETWEEN b_lat - 10 AND b_lat + 10                                      ' \
-            '       AND restaurants.longitude BETWEEN b_lon - 10 AND b_lat + 10                                     ' \
-            '       And restaurants.id <> bid                                                                       ' \
-            '       AND restaurants.id <> muid ) As restaurants                                                     ' \
-            'Where                                                                                                  ' \
-            '	hotels.id = pc_hotels.place_id                                                                      ' \
-            '	And pc_hotels.category_id = 1                                                                       ' \
-            '   And hotels.latitude BETWEEN r_lat - 10 AND r_lat + 10                                               ' \
-            '   AND hotels.longitude BETWEEN r_lon - 10 AND r_lat + 10                                              ' \
-            '   And hotels.id <> rid                                                                                ' \
-            '   And hotels.id <> bid                                                                                ' \
-            '   And hotels.id <> muid                                                                               ' \
-            'Order By                                                                                               ' \
-            '	TotalDistAfterTransp                                                                                ' \
-            'Limit                                                                                                  ' \
-            '   %s, %s'
-
-    cur.execute(query, (center_longitude, center_longitude, center_latitude,
-                        center_latitude, center_longitude, center_longitude,
-                        page * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
-    rows = cur.fetchall()
-
-    places = dict()
-    i = 0
-    for result in rows:
-        hotel = dict()
-        restaurant = dict()
-        bar = dict()
-        museum = dict()
-
-        hotel["id"] = result["hid"]
-        hotel["google_id"] = result["hgid"]
-        hotel["name"] = result["hn"]
-        hotel["rating"] = result["hr"]
-        hotel["vicinity"] = result["hv"]
-        hotel["latitude"] = (result["h_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
-        hotel["longitude"] = result["h_lon"] / RESOLUTION
-        hotel["category"] = 'hotel'
-
-        restaurant["id"] = result["rid"]
-        restaurant["google_id"] = result["rgid"]
-        restaurant["name"] = result["rn"]
-        restaurant["rating"] = result["rr"]
-        restaurant["vicinity"] = result["rv"]
-        restaurant["latitude"] = (result["r_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
-        restaurant["longitude"] = result["r_lon"] / RESOLUTION
-        restaurant["category"] = 'restaurant'
-
-        bar["id"] = result["bid"]
-        bar["google_id"] = result["bgid"]
-        bar["name"] = result["bn"]
-        bar["rating"] = result["br"]
-        bar["vicinity"] = result["bv"]
-        bar["latitude"] = (result["b_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
-        bar["longitude"] = result["b_lon"] / RESOLUTION
-        bar["category"] = 'bar'
-
-        museum["id"] = result["muid"]
-        museum["google_id"] = result["mdig"]
-        museum["name"] = result["mn"]
-        museum["rating"] = result["mr"]
-        museum["vicinity"] = result["mv"]
-        museum["latitude"] = (result["m_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
-        museum["longitude"] = result["m_lon"] / RESOLUTION
-        museum["category"] = 'museum'
-
-        places[i] = [hotel, restaurant, bar, museum]
-        i += 1
-
-    cur.close()
-
-    return places
-
-
 def search_places_near_location(center_latitude, center_longitude, top, right, bottom, left, category, page):
 
     cur = init_db_cursor()
 
+    # This query gets places inside the square surrounding the location specified by center_latitude, center_longitude
+    # Also, only places with proper category are included in the result set
+    # The results are ordered by the distance of each place from the center
+    # To enable pagination, the result set is determined by a limit and an offset sent by caller
     query = 'SELECT                                                                    '\
             '    places.id,                                                            '\
             '    places.google_id,                                                     '\
@@ -194,7 +73,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
             '    AND latitude BETWEEN %s AND %s                                        '\
             '    AND longitude BETWEEN %s AND %s                                       '\
             'ORDER BY distance ASC                                                     '\
-            'LIMIT %s, %s                                                                  '
+            'LIMIT %s, %s                                                              '
 
     # TODO: this could easily become a more complicated query and be part of the required 6 (it's currently not!)
     cur.execute(query, (center_latitude, center_longitude, category, bottom, top, left, right,
@@ -228,8 +107,9 @@ def search_places_by_name(search_word, search_category, page):
 
     cur = init_db_cursor()
 
-    # search by the word and the category
-    # Ordered by relevance based on the algorithm of match+against
+    # This query gets places with proper category and names matching the given search_word
+    # The results are ordered by relevance, based on the algorithm of match + against
+    # To enable pagination, the result set is determined by a limit and an offset sent by caller
     query = 'SELECT                                                                 ' \
             '   places.id,                                                          ' \
             '   places.google_id,                                                   ' \
@@ -246,13 +126,13 @@ def search_places_by_name(search_word, search_category, page):
             '   places_categories ON places.id = places_categories.place_id         ' \
             'INNER JOIN                                                             ' \
             '   categories ON categories.id = places_categories.category_id         ' \
-            'Where                                                                  ' \
-            '   MATCH (places.name) AGAINST ("+%s" in boolean mode)                 ' \
-            '   And categories.name = %s                                            ' \
-            'Having                                                                 ' \
+            'WHERE                                                                  ' \
+            '   MATCH (places.name) AGAINST ("+%s" IN boolean mode)                 ' \
+            '   AND categories.name = %s                                            ' \
+            'HAVING                                                                 ' \
             '   relevance > 0                                                       ' \
-            'Order By                                                               ' \
-            '   relevance Desc                                                      ' \
+            'ORDER BY                                                               ' \
+            '   relevance DESC                                                      ' \
             'LIMIT                                                                  ' \
             '   %s, %s                                                              '
 
@@ -356,6 +236,9 @@ def get_categories_statistics(top, right, bottom, left, except_category):
 
     cur = init_db_cursor()
 
+    # This query gets statistics on all categories except a specific category sent by caller
+    # The first statistic is amount of places for each category surrounding a given location
+    # The second statistic is the average rating for each category surrounding a given location, excluding 0 ratings
     query = 'SELECT                                                                ' \
             '    categories.name AS category_name,                                 ' \
             '    COUNT(places.id) AS places_amount,                                ' \
@@ -485,36 +368,37 @@ def get_popular_places_for_category(category):
     return top_places
 
 
-
 # TODO: there should be a text box who autocomplete whenever the user starts a search
 # TODO: create an sql query to search if that search exists
 def find_popular_search(places_id_list):
     search_id = find_search_id_query(places_id_list)
-    find_popular_query = "SELECT sp.popularity FROM ("+ search_id+ ") AS S_ID, search_properties AS sp " \
-                          "WHERE S_ID.search_id = sp.search_id"
-    popularity_rate = execute_SFW_query(find_popular_query)
+    find_popular_query = "SELECT sp.popularity FROM (" + search_id + ") AS S_ID, search_properties AS sp " \
+                                                                     "WHERE S_ID.search_id = sp.search_id"
+    popularity_rate = execute_sfw_query(find_popular_query)
     return popularity_rate
 
 
 def exe_find_search_id_query(places_id_list):
-    return execute_SFW_query(find_search_id_query(places_id_list))
+    return execute_sfw_query(find_search_id_query(places_id_list))
 
-# this function returns a string that determains which search_id will return.
+
+# this function returns a string that determines which search_id will return.
 # it is vital it returns a string and not execute anything.
 def find_search_id_query(places_id_list):
     query = "SELECT DISTINCT sp.search_id " \
             "FROM (SELECT sp0.search_id " \
-                   "FROM searches_places AS sp0 "
-    places_str,inner_join = "",""
+            "FROM searches_places AS sp0 "
+    places_str, inner_join = "", ""
     for i in range(len(places_id_list)):
-        #this is ake sure we add the exact ammount of inner join needed.
-        if (i != len(places_id_list)-1):
-            inner_join += "INNER JOIN searches_places AS sp"+str(i+1)+" "
-        places_str  +="sp"+str(i)+".place_id = " + str(places_id_list[i]) + " AND "
-    places_str =inner_join + "WHERE " + places_str[:-5] #remove the last " ADD "
-    query += places_str +" ) AS possible_searches INNER JOIN search_properties AS sp " \
-                         "ON possible_searches.search_id = sp.search_id " \
-                         "WHERE sp.search_size = "+str(len(places_id_list))
+        # this is ake sure we add the exact amount of inner join needed.
+        if i != (len(places_id_list) - 1):
+            inner_join += "INNER JOIN searches_places AS sp" + str(i + 1) + " "
+        places_str += "sp" + str(i) + ".place_id = " + str(places_id_list[i]) + " AND "
+    # remove the last " ADD "
+    places_str = inner_join + "WHERE " + places_str[:-5]
+    query += places_str + " ) AS possible_searches INNER JOIN search_properties AS sp " \
+                          "ON possible_searches.search_id = sp.search_id " \
+                          "WHERE sp.search_size = " + str(len(places_id_list))
     return query
 
 '''
@@ -532,97 +416,285 @@ example for find_search_query_id_result:
 
 
 def insert_new_search(places_id_list):
-    execute_writing_query("INSERT INTO search_properties(popularity,search_size) VALUES (1," +str(len(places_id_list))+")") #creates new popularity
-    search_id = execute_SFW_query("SELECT MAX(search_id) AS search_id FROM search_properties") #returns the new popularity id
-    #return search_id
+    # creates new popularity
+    execute_writing_query(
+        "INSERT INTO search_properties(popularity,search_size) VALUES (1," + str(len(places_id_list)) + ")")
+    # returns the new popularity id
+    search_id = execute_sfw_query("SELECT MAX(search_id) AS search_id FROM search_properties")
+    # return search_id
     insert_to_searches_places = "INSERT INTO searches_places VALUES "
     for i in range(len(places_id_list)):
         insert_to_searches_places += "(" + str(search_id[0]['search_id']) + "," + str(places_id_list[i]) + "), "
-    execute_writing_query(insert_to_searches_places[:-2]) #insert this popularity into searches_places
+    # insert this popularity into searches_places
+    execute_writing_query(insert_to_searches_places[:-2])
 
 
 def update_search(search_id):
-    execute_writing_query("UPDATE search_properties SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))
+    execute_writing_query(
+        "UPDATE search_properties SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))
 
 
-#TODO: Yair finish
-def exe_im_feeling_lucky_query(top,right,bottom,left):
+def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
+
+    cur = init_db_cursor()
+
+    # TODO: This query... (describe like other queries)
+    query = 'Select 	                                                                                            ' \
+            '   hotels.id As hid, hotels.google_id As hgid, hotels.name As hn, hotels.rating As hr,                 ' \
+            '   hotels.vicinity As hv, hotels.latitude As h_lat, hotels.longitude As h_lon,                         ' \
+            '   rid, rgid, rn, rr, rv, r_lat, r_lon,                                                                ' \
+            '   bid, bgid, bn, br, bv, b_lat, b_lon,                                                                ' \
+            '   muid, mdig, mn, mr, mv,	m_lat, m_lon,                                                               ' \
+            '   (sqrt((m_lat - %s)^2 / 100 + (m_lon - %s)^2 / 100) +                                                ' \
+            '   sqrt((b_lat - m_lat)^2 / 100 + (b_lon - m_lon)^2 / 100) +                                           ' \
+            '   sqrt((r_lat - b_lat)^2 / 100 + (r_lon - b_lon)^2 / 100) +                                           ' \
+            '   sqrt((hotels.latitude - r_lat)^2 / 100 + (hotels.longitude - r_lon)^2 / 100))                       ' \
+            '   As TotalDistAfterTransp                                                                             ' \
+            'From                                                                                                   ' \
+            '	places as hotels,                                                                                   ' \
+            '	places_categories as pc_hotels,                                                                     ' \
+            '	(Select                                                                                             ' \
+            '		restaurants.id As rid, restaurants.google_id As rgid, restaurants.name As rn,                   ' \
+            '       restaurants.rating As rr, restaurants.vicinity As rv, restaurants.latitude As r_lat,            ' \
+            '       restaurants.longitude As r_lon,bid, bgid, bn, br, bv, b_lat, b_lon,                             ' \
+            '       muid, mdig, mn, mr, mv,	m_lat, m_lon                                                            ' \
+            '		From                                                                                            ' \
+            '		places as restaurants,                                                                          ' \
+            '		places_categories as pc_restaurants,                                                            ' \
+            '		(Select                                                                                         ' \
+            '			bars.id As bid, bars.google_id As bgid, bars.name As bn, bars.rating As br,                 ' \
+            '           bars.vicinity As bv, bars.latitude As b_lat, bars.longitude As b_lon,                       ' \
+            '           muid, mdig, mn, mr, mv,	m_lat, m_lon                                                        ' \
+            '		From                                                                                            ' \
+            '			places as bars,                                                                             ' \
+            '			places_categories as pc_bars,                                                               ' \
+            '			(Select                                                                                     ' \
+            '				museums.id As muid, museums.google_id As mdig, museums.name as mn,                      ' \
+            '               museums.rating as mr, museums.vicinity as mv,museums.latitude As m_lat,                 ' \
+            '               museums.longitude As m_lon                                                              ' \
+            '				From                                                                                    ' \
+            '					places as museums,                                                                  ' \
+            '					places_categories as pc_museums	                                                    ' \
+            '			    Where                                                                                   ' \
+            '					museums.id = pc_museums.place_id                                                    ' \
+            '					And pc_museums.category_id = 4                                                      ' \
+            '                   And museums.latitude BETWEEN %s - 100 AND %s + 100                                  ' \
+            '                   And museums.longitude BETWEEN %s - 50 AND %s + 50 ) As museums                      ' \
+            '		Where                                                                                           ' \
+            '			bars.id = pc_bars.place_id                                                                  ' \
+            '			And pc_bars.category_id = 3 And bars.latitude BETWEEN m_lat - 10 AND m_lat + 10             ' \
+            '           And bars.longitude BETWEEN m_lon - 10 AND m_lat + 10 And bars.id <> muid ) As bars          ' \
+            '	Where                                                                                               ' \
+            '		restaurants.id = pc_restaurants.place_id                                                        ' \
+            '		And pc_restaurants.category_id = 2                                                              ' \
+            '       And restaurants.latitude BETWEEN b_lat - 10 AND b_lat + 10                                      ' \
+            '       AND restaurants.longitude BETWEEN b_lon - 10 AND b_lat + 10                                     ' \
+            '       And restaurants.id <> bid                                                                       ' \
+            '       AND restaurants.id <> muid ) As restaurants                                                     ' \
+            'Where                                                                                                  ' \
+            '	hotels.id = pc_hotels.place_id                                                                      ' \
+            '	And pc_hotels.category_id = 1                                                                       ' \
+            '   And hotels.latitude BETWEEN r_lat - 10 AND r_lat + 10                                               ' \
+            '   AND hotels.longitude BETWEEN r_lon - 10 AND r_lat + 10                                              ' \
+            '   And hotels.id <> rid                                                                                ' \
+            '   And hotels.id <> bid                                                                                ' \
+            '   And hotels.id <> muid                                                                               ' \
+            'Order By                                                                                               ' \
+            '	TotalDistAfterTransp                                                                                ' \
+            'Limit                                                                                                  ' \
+            '   %s, %s'
+
+    cur.execute(query, (center_longitude, center_longitude, center_latitude,
+                        center_latitude, center_longitude, center_longitude,
+                        page * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
+    rows = cur.fetchall()
+
+    places = dict()
+    i = 0
+    for result in rows:
+        hotel = dict()
+        restaurant = dict()
+        bar = dict()
+        museum = dict()
+
+        hotel["id"] = result["hid"]
+        hotel["google_id"] = result["hgid"]
+        hotel["name"] = result["hn"]
+        hotel["rating"] = result["hr"]
+        hotel["vicinity"] = result["hv"]
+        hotel["latitude"] = (result["h_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+        hotel["longitude"] = result["h_lon"] / RESOLUTION
+        hotel["category"] = 'hotel'
+
+        restaurant["id"] = result["rid"]
+        restaurant["google_id"] = result["rgid"]
+        restaurant["name"] = result["rn"]
+        restaurant["rating"] = result["rr"]
+        restaurant["vicinity"] = result["rv"]
+        restaurant["latitude"] = (result["r_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+        restaurant["longitude"] = result["r_lon"] / RESOLUTION
+        restaurant["category"] = 'restaurant'
+
+        bar["id"] = result["bid"]
+        bar["google_id"] = result["bgid"]
+        bar["name"] = result["bn"]
+        bar["rating"] = result["br"]
+        bar["vicinity"] = result["bv"]
+        bar["latitude"] = (result["b_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+        bar["longitude"] = result["b_lon"] / RESOLUTION
+        bar["category"] = 'bar'
+
+        museum["id"] = result["muid"]
+        museum["google_id"] = result["mdig"]
+        museum["name"] = result["mn"]
+        museum["rating"] = result["mr"]
+        museum["vicinity"] = result["mv"]
+        museum["latitude"] = (result["m_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+        museum["longitude"] = result["m_lon"] / RESOLUTION
+        museum["category"] = 'museum'
+
+        places[i] = [hotel, restaurant, bar, museum]
+        i += 1
+
+    cur.close()
+
+    return places
+
+
+# TODO: Yair finish
+def crawl_by_location_highest_rating(top, right, bottom, left):
     ADD_HALF_KM_TO_LAT = str(0.5*10000/111.0)
     ADD_HALF_KM_TO_LONG = str(0.5*10000/69.0)
 
     cur = init_db_cursor()
 
-    '''
-    q3: returns best rated bar, restaurant and hotels
-     where the hotel is around a given spot,
-    the restaurant is around the hotel
-    and the bar is around the restaurant.
-    bassicaly, it simulates a three steps search process
-    '''
-    query = 'SELECT hotel_id, restaurant_id, p.id AS bar_id ' \
-    'FROM( ' \
-    ' ' \
-    '	#returns best rated hotel and restaurant ids, ' \
-    '	#restaurany latitude and longitude AND best bar rate ' \
-    '	SELECT best_restaurant.*,MAX(p.rating) as max_rate_of_bar ' \
-    '	FROM( ' \
-    ' ' \
-    '		# q2: returns best rated hotel and restaurant ids ' \
-    '		# and restaurany latitude and longitude ' \
-    '		SELECT best_hotel_and_restaurant_rate.hotel_id, p.id AS restaurant_id, ' \
-    '				p.latitude,p.longitude ' \
-    '		FROM( ' \
-    ' ' \
-    '			#get best rate restaurant and the hotel from q1 ' \
-    '			SELECT best_hotel.*,MAX(p.rating) as max_rate_of_restaurant ' \
-    '			FROM( ' \
-    ' ' \
-    '				#q1: get best rate hotel arround chosen point ' \
-    '				SELECT p.id AS hotel_id, p.name AS hotel_name, ' \
-    '						p.latitude,p.longitude ' \
-    '				FROM places AS p ' \
-    '				INNER JOIN ' \
-    '				places_categories AS pc ON p.id = pc.place_id ' \
-    '				WHERE p.latitude BETWEEN %s AND %s ' \
-    '					  AND p.longitude BETWEEN %s AND %s ' \
-    '					  AND pc.category_id = 1 ' \
-    '				ORDER BY rating DESC LIMIT 1 ' \
-    ' ' \
-    '				) as best_hotel, ' \
-    '			places AS p INNER JOIN ' \
-    '			places_categories AS pc ON p.id = pc.place_id ' \
-    '			WHERE p.latitude BETWEEN best_hotel.latitude - '+ ADD_HALF_KM_TO_LAT +\
-    '			AND best_hotel.latitude + ' + ADD_HALF_KM_TO_LAT + \
-    '			AND  p.longitude BETWEEN best_hotel.longitude - '+ ADD_HALF_KM_TO_LONG + \
-    '			AND best_hotel.longitude + '+ ADD_HALF_KM_TO_LONG + \
-    '			AND pc.category_id = 2 ' \
-    ' ' \
-    '				) AS best_hotel_and_restaurant_rate, ' \
-    '		places AS p INNER JOIN ' \
-    '		places_categories AS pc ON p.id = pc.place_id ' \
-    '		WHERE p.latitude BETWEEN best_hotel_and_restaurant_rate.latitude - '+ ADD_HALF_KM_TO_LAT + \
-    '		AND best_hotel_and_restaurant_rate.latitude + '+ ADD_HALF_KM_TO_LAT + \
-    '		AND  p.longitude BETWEEN best_hotel_and_restaurant_rate.longitude - '+ ADD_HALF_KM_TO_LONG + \
-    '		AND best_hotel_and_restaurant_rate.longitude + '+ ADD_HALF_KM_TO_LONG + \
-    '		AND pc.category_id = 2 ' \
-    '		AND p.rating = best_hotel_and_restaurant_rate.max_rate_of_restaurant ' \
-    '				)AS best_restaurant, ' \
-    '	places AS p INNER JOIN ' \
-    '	places_categories AS pc ON p.id = pc.place_id ' \
-    '	WHERE p.latitude BETWEEN best_restaurant.latitude - '+ ADD_HALF_KM_TO_LAT + \
-    '	AND best_restaurant.latitude +  '+ ADD_HALF_KM_TO_LAT + \
-    '	AND  p.longitude BETWEEN best_restaurant.longitude - '+ ADD_HALF_KM_TO_LONG + \
-    '	AND best_restaurant.longitude + '+ ADD_HALF_KM_TO_LONG + \
-    '	AND pc.category_id = 3 ' \
-    '               ) AS best_restaurant_and_bar_rate, ' \
-    'places AS p INNER JOIN ' \
-    'places_categories AS pc ON p.id = pc.place_id ' \
-    'WHERE p.latitude BETWEEN best_restaurant_and_bar_rate.latitude - '+ ADD_HALF_KM_TO_LAT + \
-    'AND best_restaurant_and_bar_rate.latitude + '+ ADD_HALF_KM_TO_LAT + \
-    'AND  p.longitude BETWEEN best_restaurant_and_bar_rate.longitude - '+ ADD_HALF_KM_TO_LONG + \
-    'AND best_restaurant_and_bar_rate.longitude + '+ ADD_HALF_KM_TO_LONG + \
-    'AND pc.category_id = 3  ' \
-    'AND p.rating = best_restaurant_and_bar_rate.max_rate_of_bar ' \
-    'LIMIT 1 '
+    # This crawl query returns best rated bar, restaurant and hotels where the hotel is near a given location,
+    # and the restaurant near the hotel and the bar is near the restaurant.
+    query = 'SELECT hotel_id, restaurant_id, p.id AS bar_id                                            '\
+            'FROM(                                                                                     '\
+            '	SELECT best_restaurant.*,MAX(p.rating) as max_rate_of_bar                              '\
+            '	FROM(                                                                                  '\
+            '		SELECT best_hotel_and_restaurant_rate.hotel_id, p.id AS restaurant_id,             '\
+            '				p.latitude,p.longitude                                                     '\
+            '		FROM(                                                                              '\
+            '                                                                                          '\
+            '			#get best rate restaurant and the hotel from q1                                '\
+            '			SELECT best_hotel.*,MAX(p.rating) as max_rate_of_restaurant                    '\
+            '			FROM(                                                                          '\
+            '			                                                                               '\
+            '				#q1: get best rate hotel in range                                          '\
+            '				SELECT p.id AS hotel_id, p.name AS hotel_name,                             '\
+            '						p.latitude,p.longitude                                             '\
+            '				FROM places AS p                                                           '\
+            '				INNER JOIN                                                                 '\
+            '				places_categories AS pc ON p.id = pc.place_id                              '\
+            '				WHERE p.latitude BETWEEN 5236 AND 5436                                     '\
+            '					  AND p.longitude BETWEEN -25 AND 175                                  '\
+            '					  AND pc.category_id = 1                                               '\
+            '				ORDER BY rating DESC LIMIT 1                                               '\
+            '				                                                                           '\
+            '				) as best_hotel,                                                           '\
+            '			places AS p INNER JOIN                                                         '\
+            '			places_categories AS pc ON p.id = pc.place_id                                  '\
+            '			WHERE p.latitude BETWEEN best_hotel.latitude - 0.5*10000/111.0                 '\
+            '			AND best_hotel.latitude + 0.5*10000/111.0                                      '\
+            '			AND  p.longitude BETWEEN best_hotel.longitude - 0.5*10000/69.0                 '\
+            '			AND best_hotel.longitude + 0.5*10000/69.0                                      '\
+            '			AND pc.category_id = 2                                                         '\
+            '				                                                                           '\
+            '				) AS best_hotel_and_restaurant_rate,                                       '\
+            '		places AS p INNER JOIN                                                             '\
+            '		places_categories AS pc ON p.id = pc.place_id                                      '\
+            '		WHERE p.latitude BETWEEN best_hotel_and_restaurant_rate.latitude - 0.5*10000/111.0 '\
+            '		AND best_hotel_and_restaurant_rate.latitude + 0.5*10000/111.0                      '\
+            '		AND  p.longitude BETWEEN best_hotel_and_restaurant_rate.longitude - 0.5*10000/69.0 '\
+            '		AND best_hotel_and_restaurant_rate.longitude + 0.5*10000/69.0                      '\
+            '		AND pc.category_id = 2                                                             '\
+            '		AND p.rating = best_hotel_and_restaurant_rate.max_rate_of_restaurant               '\
+            '				)AS best_restaurant,                                                       '\
+            '	places AS p INNER JOIN                                                                 '\
+            '	places_categories AS pc ON p.id = pc.place_id                                          '\
+            '	WHERE p.latitude BETWEEN best_restaurant.latitude - 0.5*10000/111.0                    '\
+            '	AND best_restaurant.latitude + 0.5*10000/111.0                                         '\
+            '	AND  p.longitude BETWEEN best_restaurant.longitude - 0.5*10000/69.0                    '\
+            '	AND best_restaurant.longitude + 0.5*10000/69.0                                         '\
+            '	AND pc.category_id = 3                                                                 '\
+            '                ) AS best_restaurant_and_bar_rate,                                        '\
+            'places AS p INNER JOIN                                                                    '\
+            'places_categories AS pc ON p.id = pc.place_id                                             '\
+            'WHERE p.latitude BETWEEN best_restaurant_and_bar_rate.latitude - 0.5*10000/111.0          '\
+            'AND best_restaurant_and_bar_rate.latitude + 0.5*10000/111.0                               '\
+            'AND  p.longitude BETWEEN best_restaurant_and_bar_rate.longitude - 0.5*10000/69.0          '\
+            'AND best_restaurant_and_bar_rate.longitude + 0.5*10000/69.0                               '\
+            'AND pc.category_id = 3                                                                    '\
+            'AND p.rating = best_restaurant_and_bar_rate.max_rate_of_bar                               '\
+            'LIMIT 1                                                                                   '
 
     cur.execute(query, (bottom, top, left, right))
+
+    # query = 'SELECT hotel_id, restaurant_id, p.id AS bar_id ' \
+    # 'FROM( ' \
+    # ' ' \
+    # '	#returns best rated hotel and restaurant ids, ' \
+    # '	#restaurany latitude and longitude AND best bar rate ' \
+    # '	SELECT best_restaurant.*,MAX(p.rating) as max_rate_of_bar ' \
+    # '	FROM( ' \
+    # ' ' \
+    # '		# q2: returns best rated hotel and restaurant ids ' \
+    # '		# and restaurany latitude and longitude ' \
+    # '		SELECT best_hotel_and_restaurant_rate.hotel_id, p.id AS restaurant_id, ' \
+    # '				p.latitude,p.longitude ' \
+    # '		FROM( ' \
+    # ' ' \
+    # '			#get best rate restaurant and the hotel from q1 ' \
+    # '			SELECT best_hotel.*,MAX(p.rating) as max_rate_of_restaurant ' \
+    # '			FROM( ' \
+    # ' ' \
+    # '				#q1: get best rate hotel arround chosen point ' \
+    # '				SELECT p.id AS hotel_id, p.name AS hotel_name, ' \
+    # '						p.latitude,p.longitude ' \
+    # '				FROM places AS p ' \
+    # '				INNER JOIN ' \
+    # '				places_categories AS pc ON p.id = pc.place_id ' \
+    # '				WHERE p.latitude BETWEEN %s AND %s ' \
+    # '					  AND p.longitude BETWEEN %s AND %s ' \
+    # '					  AND pc.category_id = 1 ' \
+    # '				ORDER BY rating DESC LIMIT 1 ' \
+    # ' ' \
+    # '				) as best_hotel, ' \
+    # '			places AS p INNER JOIN ' \
+    # '			places_categories AS pc ON p.id = pc.place_id ' \
+    # '			WHERE p.latitude BETWEEN best_hotel.latitude - '+ ADD_HALF_KM_TO_LAT +\
+    # '			AND best_hotel.latitude + ' + ADD_HALF_KM_TO_LAT + \
+    # '			AND  p.longitude BETWEEN best_hotel.longitude - '+ ADD_HALF_KM_TO_LONG + \
+    # '			AND best_hotel.longitude + '+ ADD_HALF_KM_TO_LONG + \
+    # '			AND pc.category_id = 2 ' \
+    # ' ' \
+    # '				) AS best_hotel_and_restaurant_rate, ' \
+    # '		places AS p INNER JOIN ' \
+    # '		places_categories AS pc ON p.id = pc.place_id ' \
+    # '		WHERE p.latitude BETWEEN best_hotel_and_restaurant_rate.latitude - '+ ADD_HALF_KM_TO_LAT + \
+    # '		AND best_hotel_and_restaurant_rate.latitude + '+ ADD_HALF_KM_TO_LAT + \
+    # '		AND  p.longitude BETWEEN best_hotel_and_restaurant_rate.longitude - '+ ADD_HALF_KM_TO_LONG + \
+    # '		AND best_hotel_and_restaurant_rate.longitude + '+ ADD_HALF_KM_TO_LONG + \
+    # '		AND pc.category_id = 2 ' \
+    # '		AND p.rating = best_hotel_and_restaurant_rate.max_rate_of_restaurant ' \
+    # '				)AS best_restaurant, ' \
+    # '	places AS p INNER JOIN ' \
+    # '	places_categories AS pc ON p.id = pc.place_id ' \
+    # '	WHERE p.latitude BETWEEN best_restaurant.latitude - '+ ADD_HALF_KM_TO_LAT + \
+    # '	AND best_restaurant.latitude +  '+ ADD_HALF_KM_TO_LAT + \
+    # '	AND  p.longitude BETWEEN best_restaurant.longitude - '+ ADD_HALF_KM_TO_LONG + \
+    # '	AND best_restaurant.longitude + '+ ADD_HALF_KM_TO_LONG + \
+    # '	AND pc.category_id = 3 ' \
+    # '               ) AS best_restaurant_and_bar_rate, ' \
+    # 'places AS p INNER JOIN ' \
+    # 'places_categories AS pc ON p.id = pc.place_id ' \
+    # 'WHERE p.latitude BETWEEN best_restaurant_and_bar_rate.latitude - '+ ADD_HALF_KM_TO_LAT + \
+    # 'AND best_restaurant_and_bar_rate.latitude + '+ ADD_HALF_KM_TO_LAT + \
+    # 'AND  p.longitude BETWEEN best_restaurant_and_bar_rate.longitude - '+ ADD_HALF_KM_TO_LONG + \
+    # 'AND best_restaurant_and_bar_rate.longitude + '+ ADD_HALF_KM_TO_LONG + \
+    # 'AND pc.category_id = 3  ' \
+    # 'AND p.rating = best_restaurant_and_bar_rate.max_rate_of_bar ' \
+    # 'LIMIT 1 '
+

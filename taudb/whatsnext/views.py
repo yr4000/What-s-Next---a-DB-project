@@ -14,12 +14,12 @@ from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
     search_places_near_location, search_places_by_name, exe_find_search_id_query, insert_new_search, \
-    update_search, get_popular_places_for_category, find_suggestion_near_location, exe_im_feeling_lucky_query
+    update_search, get_popular_places_for_category, crawl_by_location_shortest_path, crawl_by_location_highest_rating
 
 
 def homepage(request):
     categories = []
-    categories_results = execute_SFW_query("SELECT * FROM categories")
+    categories_results = execute_sfw_query("SELECT * FROM categories")
     for category in categories_results:
         categories.append(category["name"].capitalize())
 
@@ -57,7 +57,7 @@ def find_suggestion_by_point(request):
     longitude = request_json["longitude"]
     page = request_json["page"]
 
-    places = find_suggestion_near_location(latitude, longitude, page)
+    places = crawl_by_location_shortest_path(latitude, longitude, page)
 
     return JsonResponse(places, status=200)
 
@@ -131,7 +131,7 @@ def pub_crawl(request):
         for x in range(i):
             query = query + " AND latitude != " + str(exclude_lats[x]) \
                             + " AND longitude != " + str(exclude_longs[x])
-        rows = execute_SFW_query(query)
+        rows = execute_sfw_query(query)
         if len(rows) == 0:
             break
 
@@ -250,4 +250,4 @@ def im_feeling_lucky(latitude, longitude, distance):
     latitude, longitude = modify_longlat_for_db(latitude, longitude)
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
 
-    lucky_route = exe_im_feeling_lucky_query(top, right, bottom, left)
+    lucky_route = crawl_by_location_highest_rating(top, right, bottom, left)
