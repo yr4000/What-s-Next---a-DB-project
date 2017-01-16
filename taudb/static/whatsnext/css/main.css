@@ -210,6 +210,7 @@ input, select {
 }
 
 #results {
+	width: 100%;
 }
 
 #prev-page {
@@ -283,7 +284,7 @@ input, select {
 
 .apology {
 	text-align: center;
-	padding-top: 240px;
+	padding-top: 140px;
 }
 .review {
 	font-size: 10pt;
@@ -292,6 +293,15 @@ input, select {
 
 #statistics {
 	width: 100%;
+}
+
+#past-search {
+	display: none;
+}
+
+#past-results {
+	width: 100%;
+	border-top: solid 1px black;
 }
 
 #current-search {

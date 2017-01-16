@@ -67,6 +67,10 @@ $(document).ready(function () {
     $("#end-here").on("click", function(e) {
         updatePopularSearches();
     });
+
+    $("#current-search").on("click", function(e) {
+       togglePastResults();
+    });
 });
 
 function changeSearchCategory(newCategory) {
@@ -87,6 +91,7 @@ function closeNav() {
 
 function showResults() {
     $("#place-div").hide();
+    $("#past-search").hide();
     $("#results-div").show();
     $("#most-popular").show();
     // map.setZoom(enumZoomLevels.Districts);
@@ -144,6 +149,39 @@ function addLocationRow(location, type, index) {
     ratingCell.className = "place-rating";
 }
 
+function addSearchLocationRow(place, step) {
+    var resultsTable = document.getElementById("past-results");
+
+    var placeRow = resultsTable.insertRow(-1);
+    var i = 0;
+    var markerCell = placeRow.insertCell(i++);
+    markerCell.className = "marker-cell";
+    markerCell.rowSpan = 2;
+    markerCell.innerHTML = '<img src="' + iconFolderPath + enumMarkerColors[capitalizeFirstLetter(place.category)] +
+        String.fromCharCode((step % 26) + 65) + '.png">';
+    var titleCell = placeRow.insertCell(i++);
+    titleCell.innerText = place.name;
+    titleCell.className = "place-title";
+    var deleteCell = placeRow.insertCell(i++);
+    deleteCell.innerHTML = "&times;";
+    deleteCell.onclick = function(e) {
+        currentSearch.splice(step, 1);
+        showPastResults();
+        e.stopPropagation();
+    };
+    placeRow.onclick = function() {
+      getPlaceDetails(place.id, step);
+    };
+
+    placeRow = resultsTable.insertRow(-1);
+    i = 0;
+    var addressCell = placeRow.insertCell(i++);
+    addressCell.innerText = place.vicinity;
+    addressCell.className = "place-address";
+    var ratingCell = placeRow.insertCell(i++);
+    ratingCell.innerText = (place.rating > 0) ? place.rating : "-";
+    ratingCell.className = "place-rating";
+}
 
 function clearTable(table_name) {
     var table = document.getElementById(table_name);
@@ -191,4 +229,29 @@ function showSearchResults(results) {
     }
 
     requestPage++;
+}
+
+function showPastResults() {
+    clearTable("past-results");
+
+    for (var i = 0; i < currentSearch.length; i++) {
+        var place = currentSearch[i];
+        addSearchLocationRow(place, i);
+    }
+}
+
+function togglePastResults() {
+    if ($("#past-results").is(":visible")) {
+        if ($("#results-div").is(":visible"))
+            $("#most-popular").show();
+        $("#past-search").hide();
+    }
+    else {
+        if (!currentSearch.length)
+            return;
+
+        $("#most-popular").hide();
+        $("#past-search").show();
+        showPastResults()
+    }
 }

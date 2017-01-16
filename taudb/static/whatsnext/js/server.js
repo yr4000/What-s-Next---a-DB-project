@@ -159,6 +159,7 @@ function getPlaceDetails(place_id, index) {
 
         $("#results-div").hide();
         $("#most-popular").hide();
+        $("#past-search").hide();
         $("#place-div").show();
 
         $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(currentPlace.category)] +
