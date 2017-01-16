@@ -37,12 +37,12 @@ def search_by_name(request):
 
     search_word = request_json["word"]
     search_category = request_json["category"].lower()
-    offset_for_paging = request_json["page"]
+    page = request_json["page"]
 
     print "Searching for a " + search_category + " with " + search_word + \
-          " in it's name [Page " + str(offset_for_paging) + "]"
+          " in it's name [Page " + str(page) + "]"
 
-    places = search_places_by_name(search_word, search_category, offset_for_paging)
+    places = search_places_by_name(search_word, search_category, page)
 
     return JsonResponse(places, status=200)
 
@@ -55,9 +55,9 @@ def find_suggestion_by_point(request):
 
     latitude = request_json["latitude"]
     longitude = request_json["longitude"]
-    offset_for_paging = request_json["page"]
+    page = request_json["page"]
 
-    places = find_suggestion_near_location(latitude, longitude, offset_for_paging)
+    places = find_suggestion_near_location(latitude, longitude, page)
 
     return JsonResponse(places, status=200)
 
@@ -74,7 +74,7 @@ def search_places_by_point(request):
     longitude = request_json["longitude"]
     distance = request_json["distance"]
     category = request_json["category"].lower()
-    limit = request_json["limit"]
+    page = request_json["page"]
 
     # modify the longitude and the latitude to be workable with DB.
     latitude, longitude = modify_longlat_for_db(latitude, longitude)
@@ -82,7 +82,7 @@ def search_places_by_point(request):
     #  returns a 4*distance**2 square around the selected point.
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude,longitude, distance)
 
-    places = search_places_near_location(latitude, longitude, top, right, bottom, left, category, limit)
+    places = search_places_near_location(latitude, longitude, top, right, bottom, left, category, page)
 
     return JsonResponse(places, status=200)
 

@@ -44,7 +44,7 @@ def get_place_by_place_id(place_id):
     return place
 
 
-def find_suggestion_near_location(center_latitude, center_longitude, offset_for_paging):
+def find_suggestion_near_location(center_latitude, center_longitude, page):
 
     cur = init_db_cursor()
     query = 'Select 	                                                                                            ' \
@@ -114,7 +114,7 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
 
     cur.execute(query, (center_longitude, center_longitude, center_latitude,
                         center_latitude, center_longitude, center_longitude,
-                        offset_for_paging * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
+                        page * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
     rows = cur.fetchall()
 
     places = dict()
@@ -169,7 +169,7 @@ def find_suggestion_near_location(center_latitude, center_longitude, offset_for_
     return places
 
 
-def search_places_near_location(center_latitude, center_longitude, top, right, bottom, left, category, limit):
+def search_places_near_location(center_latitude, center_longitude, top, right, bottom, left, category, page):
 
     cur = init_db_cursor()
 
@@ -194,11 +194,12 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
             '    AND latitude BETWEEN %s AND %s                                        '\
             '    AND longitude BETWEEN %s AND %s                                       '\
             'ORDER BY distance ASC                                                     '\
-            'LIMIT %s                                                                  '
+            'LIMIT %s, %s                                                                  '
 
     # TODO: why do we have a limit set from the client? why do we have a limit at all?
     # TODO: this could easily become a more complicated query and be part of the required 6 (it's currently not!)
-    cur.execute(query, (center_latitude, center_longitude, category, bottom, top, left, right, limit))
+    cur.execute(query, (center_latitude, center_longitude, category, bottom, top, left, right,
+                        page * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
     rows = cur.fetchall()
 
     places = dict()
@@ -224,7 +225,7 @@ def query_results_to_dict(result):
     return place
 
 
-def search_places_by_name(search_word, search_category, offset_for_paging):
+def search_places_by_name(search_word, search_category, page):
 
     cur = init_db_cursor()
 
@@ -261,8 +262,7 @@ def search_places_by_name(search_word, search_category, offset_for_paging):
             '    categories.name = %s                                                          ' \
             'LIMIT %s, %s                                                                      '
 
-    cur.execute(query, (search_word, search_category,
-                        offset_for_paging * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
+    cur.execute(query, (search_word, search_category, page * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
 
     rows = cur.fetchall()
 
