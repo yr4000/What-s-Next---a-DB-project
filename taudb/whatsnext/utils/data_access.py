@@ -162,7 +162,7 @@ def find_suggestion_near_location(center_latitude, center_longitude, page):
         museum["category"] = 'museum'
 
         places[i] = [hotel, restaurant, bar, museum]
-        i = i+1
+        i += 1
 
     cur.close()
 
@@ -196,7 +196,6 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
             'ORDER BY distance ASC                                                     '\
             'LIMIT %s, %s                                                                  '
 
-    # TODO: why do we have a limit set from the client? why do we have a limit at all?
     # TODO: this could easily become a more complicated query and be part of the required 6 (it's currently not!)
     cur.execute(query, (center_latitude, center_longitude, category, bottom, top, left, right,
                         page * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
@@ -250,7 +249,7 @@ def search_places_by_name(search_word, search_category, page):
             'Where                                                                  ' \
             '   MATCH (places.name) AGAINST ("+%s" in boolean mode)                 ' \
             '   And categories.name = %s                                            ' \
-            ' Having                                                                ' \
+            'Having                                                                 ' \
             '   relevance > 0                                                       ' \
             'Order By                                                               ' \
             '   relevance Desc                                                      ' \
