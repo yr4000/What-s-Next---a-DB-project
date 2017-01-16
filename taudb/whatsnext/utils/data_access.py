@@ -230,39 +230,34 @@ def search_places_by_name(search_word, search_category, page):
     cur = init_db_cursor()
 
     # search by the word and the category
-    # Query is divided into a subquery using match-against due to differences in DB engine,
-    # which if put together into one queries causes a major slow-down.
-    query = 'SELECT                                                                            ' \
-            '    full_text_results.id,                                                         ' \
-            '    full_text_results.google_id,                                                  ' \
-            '    full_text_results.name,                                                       ' \
-            '    full_text_results.rating,                                                     ' \
-            '    full_text_results.vicinity,                                                   ' \
-            '    full_text_results.latitude,                                                   ' \
-            '    full_text_results.longitude,                                                  ' \
-            '    categories.name AS category                                                   ' \
-            'FROM                                                                              ' \
-            '    (SELECT                                                                       ' \
-            '        places.id,                                                                ' \
-            '        places.google_id,                                                         ' \
-            '        places.rating,                                                            ' \
-            '        places.vicinity,                                                          ' \
-            '        places.name,                                                              ' \
-            '        places.latitude,                                                          ' \
-            '        places.longitude                                                          ' \
-            '    FROM                                                                          ' \
-            '        places                                                                    ' \
-            '    WHERE                                                                         ' \
-            '        MATCH (places.name) AGAINST ("+%s" IN BOOLEAN MODE)) AS full_text_results ' \
-            '        INNER JOIN                                                                ' \
-            '    places_categories ON full_text_results.id = places_categories.place_id        ' \
-            '        INNER JOIN                                                                ' \
-            '    categories ON categories.id = places_categories.category_id                   ' \
-            'WHERE                                                                             ' \
-            '    categories.name = %s                                                          ' \
-            'LIMIT %s, %s                                                                      '
+    # Ordered by relevance based on the algorithm of match+against
+    query = 'SELECT                                                                 ' \
+            '   places.id,                                                          ' \
+            '   places.google_id,                                                   ' \
+            '   places.rating,                                                      ' \
+            '   places.vicinity,                                                    ' \
+            '   places.name,                                                        ' \
+            '   places.latitude,                                                    ' \
+            '   places.longitude,                                                   ' \
+            '   MATCH (places.name) AGAINST ("%s") AS relevance                     ' \
+            'FROM                                                                   ' \
+            '   places                                                              ' \
+            'INNER JOIN                                                             ' \
+            '   places_categories ON places.id = places_categories.place_id         ' \
+            'INNER JOIN                                                             ' \
+            '   categories ON categories.id = places_categories.category_id         ' \
+            'Where                                                                  ' \
+            '   MATCH (places.name) AGAINST ("+%s" in boolean mode)                 ' \
+            '   And categories.name = %s                                            ' \
+            ' Having                                                                ' \
+            '   relevance > 0                                                       ' \
+            'Order By                                                               ' \
+            '   relevance Desc                                                      ' \
+            'LIMIT                                                                  ' \
+            '   %s, %s                                                              '
 
-    cur.execute(query, (search_word, search_category, page * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
+    cur.execute(query, (search_word, search_word, search_category, page * DEFAULT_RESULTS_AMOUNT,
+                        DEFAULT_RESULTS_AMOUNT))
 
     rows = cur.fetchall()
 
