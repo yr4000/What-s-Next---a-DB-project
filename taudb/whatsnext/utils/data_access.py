@@ -239,6 +239,7 @@ def search_places_by_name(search_word, search_category, page):
             '   places.name,                                                        ' \
             '   places.latitude,                                                    ' \
             '   places.longitude,                                                   ' \
+            '   categories.name AS category,                                        ' \
             '   MATCH (places.name) AGAINST ("%s") AS relevance                     ' \
             'FROM                                                                   ' \
             '   places                                                              ' \
