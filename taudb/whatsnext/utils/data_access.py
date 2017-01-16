@@ -305,50 +305,50 @@ def get_popular_places_for_category(category):
     #         'ORDER BY popularity DESC                                                         '\
     #         'LIMIT 5                                                                          '
 
-    # This query dynamically calculates popularity on a scale of 1 to 10 according to the following formula:
-    #       9 * ((x - min_p) / (max_p - min_p)) + 1
+    # This query dynamically calculates popularity on a scale of 1 to 5 according to the following formula:
+    #       4 * ((x - min_p) / (max_p - min_p)) + 1
     # where:
     #       x       = current place popularity
     #       min_p   = minimal popularity (while ignoring 0 as a possible value, i.e: ignoring places not chosen at all)
     #       max_p   = maximal popularity
-    # Meaning, this formula scales values to a range of 1-10 without assumptions on raw min and max popular values
-    query = 'SELECT places.id,                                                                       '\
-            '       places.name,                                                                     '\
-            '       ROUND((9 * ( ( Sum(search_properties.popularity) -                               '\
-            '               extreme_popularities.min_raw_popularity ) /                              '\
-            '               (                                                                        '\
-            '                   extreme_popularities.max_raw_popularity -                            '\
-            '                   extreme_popularities.min_raw_popularity ) ) + 1), 2) as popularity   '\
-            'FROM   (places                                                                          '\
-            '        INNER JOIN searches_places                                                      '\
-            '                ON places.id = searches_places.place_id                                 '\
-            '        INNER JOIN search_properties                                                    '\
-            '                ON searches_places.search_id = search_properties.search_id              '\
-            '        INNER JOIN places_categories                                                    '\
-            '                ON places.id = places_categories.place_id                               '\
-            '        INNER JOIN categories                                                           '\
-            '                ON places_categories.category_id = categories.id),                      '\
-            '       (SELECT Max(raw_popularity) AS max_raw_popularity,                               '\
-            '               Min(raw_popularity) AS min_raw_popularity                                '\
-            '        FROM   (SELECT places.id                         AS place_id,                   '\
-            '                       Sum(search_properties.popularity) AS raw_popularity              '\
-            '                FROM   places                                                           '\
-            '                       INNER JOIN searches_places                                       '\
-            '                               ON places.id = searches_places.place_id                  '\
-            '                       INNER JOIN search_properties                                     '\
-            '                               ON searches_places.search_id =                           '\
-            '                                  search_properties.search_id                           '\
-            '                       INNER JOIN places_categories                                     '\
-            '                               ON places.id = places_categories.place_id                '\
-            '                       INNER JOIN categories                                            '\
-            '                               ON places_categories.category_id = categories.id         '\
-            '                WHERE  categories.name = %s                                             '\
-            '                GROUP  BY places.id) AS raw_popularities) AS extreme_popularities       '\
-            'WHERE  categories.name = %s                                                             '\
-            'GROUP  BY places.id,                                                                    '\
-            '          places.name                                                                   '\
-            'ORDER  BY popularity DESC                                                               '\
-            'LIMIT 5                                                                                 '
+    # Meaning, this formula scales values to a range of 1-5 without assumptions on raw min and max popular values
+    # Result set includes the top 5 chosen places in the specific category sent by caller
+    query = 'SELECT places.id,                                                                          '\
+            '       places.name,                                                                        '\
+            '       ROUND((4 * ( ( Sum(search_properties.popularity) -                                  '\
+            '               extreme_popularities.min_raw_popularity ) /                                 '\
+            '               (                                                                           '\
+            '                   extreme_popularities.max_raw_popularity -                               '\
+            '                   extreme_popularities.min_raw_popularity ) ) + 1), 2) as popularity      '\
+            'FROM   (places                                                                             '\
+            '        INNER JOIN searches_places                                                         '\
+            '                ON places.id = searches_places.place_id                                    '\
+            '        INNER JOIN search_properties                                                       '\
+            '                ON searches_places.search_id = search_properties.search_id                 '\
+            '        INNER JOIN places_categories                                                       '\
+            '                ON places.id = places_categories.place_id                                  '\
+            '        INNER JOIN categories                                                              '\
+            '                ON places_categories.category_id = categories.id),                         '\
+            '       (SELECT Max(raw_popularity) AS max_raw_popularity,                                  '\
+            '               Min(raw_popularity) AS min_raw_popularity                                   '\
+            '        FROM   (SELECT places.id                         AS place_id,                      '\
+            '                       Sum(search_properties.popularity) AS raw_popularity                 '\
+            '                FROM   places                                                              '\
+            '                       INNER JOIN searches_places                                          '\
+            '                               ON places.id = searches_places.place_id                     '\
+            '                       INNER JOIN search_properties                                        '\
+            '                               ON searches_places.search_id =  search_properties.search_id '\
+            '                       INNER JOIN places_categories                                        '\
+            '                               ON places.id = places_categories.place_id                   '\
+            '                       INNER JOIN categories                                               '\
+            '                               ON places_categories.category_id = categories.id            '\
+            '                WHERE  categories.name = %s                                                '\
+            '                GROUP  BY places.id) AS raw_popularities) AS extreme_popularities          '\
+            'WHERE  categories.name = %s                                                                '\
+            'GROUP  BY places.id,                                                                       '\
+            '          places.name                                                                      '\
+            'ORDER  BY popularity DESC                                                                  '\
+            'LIMIT 5                                                                                    '
 
     cur.execute(query, (category, category))
 
