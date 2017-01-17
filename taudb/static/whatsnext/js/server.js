@@ -114,8 +114,7 @@ function searchCombinationByPoint(latitude, longitude) {
                 clearResultsTable();
             }
 
-            $("#place-div").hide();
-            $("#results-div").show();
+            showResultTab("place-div");
 
             var i = 0;
             for (var key in response) {
@@ -152,15 +151,9 @@ function getPlaceDetails(place_id, index) {
     $.getJSON(url,
     "",
     function(response) {
-        console.log(response);
-
-        //map.setZoom(enumZoomLevels.Streets);
         currentPlace = response.place;
 
-        $("#results-div").hide();
-        $("#most-popular").hide();
-        $("#past-search").hide();
-        $("#place-div").show();
+        showResultTab("place-div");
 
         $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(currentPlace.category)] +
                                     String.fromCharCode((index % 26) + 65) + ".png";
@@ -287,7 +280,7 @@ function modifyCurrentSearchForServer(){
 }
 
 function drawLinesBetweenMarkers(){
-    cleanScreen();
+    cleanPastResults();
     showResults();
 
     var tripPlanCoordinates = [];

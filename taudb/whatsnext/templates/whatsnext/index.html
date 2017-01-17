@@ -10,7 +10,9 @@
 </head>
 </head>
 <body>
+    <!-- Div for Google Map -->
     <div id="map"></div>
+    <!-- Div holding the landing screen overlay -->
 	<div id="myNav" class="overlay">
         <a href="javascript:void(0)" id="closebtn" onclick="closeNav()">&times;</a>
 		<div class="overlay-content">
@@ -28,64 +30,73 @@
 		</div>
 
 	</div>
+    <!-- Nav bar holding.... Everything -->
     <div class="nav">
+        <!-- Different Tabs -->
+        <div id="results-options-bar">
+            <span id="search-results" class="tab-option">Search</span>
+            <span id="popular-searches" class="tab-option">Popular Searches</span>
+            <span id="lucky-results" class="tab-option">Feeling lucky</span>
+            <span id="my-results" class="tab-option">My Destinations</span>
+        </div>
+        <!-- Dynamically generating the category choice bar.-->
         <div id="serach-options-bar">
             {% for cat in categories %}
 				<span id="search-{{ cat }}" class="search-category" onclick="selectForSearch(this)">{{ cat }}</span>
 			{% endfor %}
         </div>
-        <div id ="search-div">
+        <div id="search-div" class="tab">
             <span id="search-around" class="search-way">Distance</span>
             <span id="search-name" class="search-way"><input type="text" id="place-name" placeholder="Search Location named..."></span>
 		</div>
-        <div id="explanation-div">
+        <!-- Div holding the initial explanation about using the app -->
+        <div id="explanation-div" class="tab">
             <h2>Select a location on the map to search for places around it</h2>
         </div>
-        <div id="place-div">
-			<div onclick="showResults()"><< Back to Results</div>
+        <!-- Div holding the Place Details view -->
+        <div id="place-div" class="tab">
+			<div onclick="showResultTab('results-div')">&lt;&lt; Back to Results</div>
 			<table width="100%">
 				<tr><td rowspan="3"><img src="" id="current-icon"></td><td id="current-name"></td></tr>
 				<tr><td id="current-address"></td></tr>
 				<tr><td id="current-id"></td></tr>
                 <tr><td colspan="2"><span id="current-accept">I'll go there!</span><span id="end-here">End here</span></td></tr>
-				<tr><td colspan="2" height="300"><div id="current-reviews"></div></td></tr>
+				<tr><td colspan="2" height="540"><div id="current-reviews"></div></td></tr>
 				<tr><td id="current-statistics" colspan="2"><b>Available around</b><br><table id="statistics"></table></td></tr>
 			</table>
 		</div>
-        <div id="results-div">
-            <div style="height:100%;overflow-x: hidden;">
+        <!-- Div holding the search results -->
+        <div id="results-div" class="tab">
+            <div id="results-scrollable">
                 <table id="results"></table>
             </div>
             <span id="prev-page">&lt;&lt; Previous</span>
             <span id="next-page">Next&gt;&gt;</span>
-		</div>
-        <div id="most-popular">
             <b>Most Popular <span id="category-name"></span></b>
-            <table id="popular-results" width="100%">
-
-            </table>
-        </div>
-        <div id="past-search">
+            <table id="popular-results"></table>
+		</div>
+        <!-- Div holding the users "choosen" destinations so far -->
+        <div id="past-search" class="tab">
             <table id="past-results"></table>
         </div>
-        <div id="current-search">
-            Search so far...
-        </div>
     </div>
-
+    <!-- Pop-up div for choosing the category of your next destination search -->
     <div class="next-nav">
         <h1>Great choice! What's next?</h1><br>
         {% for cat in categories %}
             <span class="next-category" onclick="nextCategory('{{ cat }}')">{{ cat }}</span>
         {% endfor %}
     </div>
+    <!-- Includes of JS files -->
 	<script>var iconFolderPath = "{% static 'whatsnext/images/Markers/' %}";</script>
     <script src="{% static 'whatsnext/js/jquery.min.js' %}" type="text/javascript"></script>
 	<script src="{% static 'whatsnext/js/jquery.cookie.js' %}" type="text/javascript"></script>
     <script src="{% static 'whatsnext/js/map_styles.js' %}" type="text/javascript"></script>
 	<script src="{% static 'whatsnext/js/map_utils.js' %}" type="text/javascript"></script>
 	<script src="{% static 'whatsnext/js/html_utils.js' %}" type="text/javascript"></script>
+    <script src="{% static 'whatsnext/js/views.js' %}" type="text/javascript"></script>
     <script src="{% static 'whatsnext/js/server.js' %}" type="text/javascript"></script>
+    <!-- Include needed for the Map -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWjLmus3tD8KBTbgDdwadQmWZHldu0P4&callback=initMap" type="text/javascript"></script>
 </html>
 

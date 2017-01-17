@@ -7,7 +7,7 @@ $(document).ready(function () {
     document.addEventListener("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if ((keyPressed == 27) && $("#myNav").is(":visible")) {
-             closeNav();
+            closeNav();
             document.removeEventListener("keyup", this);
         }
     });
@@ -32,7 +32,25 @@ $(document).ready(function () {
             $("#search-div").css('display','none');
         }
     });
-    
+
+    $(".tab-option").on("click", function(e) {
+        $(".tab-option").removeClass("selected-tab");
+        $(this).addClass("selected-tab");
+
+        switch(this.id) {
+            case "search-results":
+                showResultTab();
+                break;
+            case "popular-searches":
+                break;
+            case "lucky-results":
+                break;
+            case "my-results":
+                showPastResults();
+                break;
+        }
+    });
+
     $("#prev-page").on("click", function(e) {
         if (requestPage <= 1)
             return;
@@ -67,10 +85,6 @@ $(document).ready(function () {
     $("#end-here").on("click", function(e) {
         updatePopularSearches();
     });
-
-    $("#current-search").on("click", function(e) {
-       togglePastResults();
-    });
 });
 
 function changeSearchCategory(newCategory) {
@@ -82,6 +96,9 @@ function changeSearchCategory(newCategory) {
     $("#search-" + newCategory).addClass("selected");
     $(".started").removeClass("started");
     $("#start-" + newCategory).addClass("started");
+    
+    $("#category-name")[0].innerText = searchCategory;
+    getMostPopular();
 }
 
 function closeNav() {
@@ -89,12 +106,9 @@ function closeNav() {
     $(".nav").show();
 }
 
-function showResults() {
-    $("#place-div").hide();
-    $("#past-search").hide();
-    $("#results-div").show();
-    $("#most-popular").show();
-    // map.setZoom(enumZoomLevels.Districts);
+function showTab(tabName) {
+    $(".tab").hide();
+    $("#" + tabName).show();
 }
 
 function searchBarShow() {
@@ -120,7 +134,7 @@ function nextCategory(category) {
     $(".next-nav").hide();
     changeSearchCategory(category);
     searchAroundMarker(currentPlace.latitude, currentPlace.longitude);
-}
+}   
 
 function addLocationRow(location, type, index) {
     var resultsTable = document.getElementById("results");
@@ -199,59 +213,10 @@ function capitalizeFirstLetter(string)
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-function cleanScreen() {
+function cleanPastResults() {
     if ($("#explanation-div").is(":visible"))
         $("#explanation-div").hide();
     clearArray(markersArray);
     clearTable("results");
-    //map.setZoom(enumZoomLevels.Districts);
 }
 
-function showSearchResults(results) {
-    if (!Object.keys(results).length)
-        return; // If no results were returned do nothing.
-
-    cleanScreen();
-    showResults();
-
-    var i = 0;
-    for (var key in results) {
-        var place = results[key];
-        addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                  place["name"], place["id"], false, enumMarkerColors[searchCategory], i);
-        addLocationRow(place, searchCategory, i);
-        i++;
-    }
-
-    if (requestPage == 0) {
-        $("#category-name")[0].innerText = searchCategory;
-        getMostPopular();
-    }
-
-    requestPage++;
-}
-
-function showPastResults() {
-    clearTable("past-results");
-
-    for (var i = 0; i < currentSearch.length; i++) {
-        var place = currentSearch[i];
-        addSearchLocationRow(place, i);
-    }
-}
-
-function togglePastResults() {
-    if ($("#past-results").is(":visible")) {
-        if ($("#results-div").is(":visible"))
-            $("#most-popular").show();
-        $("#past-search").hide();
-    }
-    else {
-        if (!currentSearch.length)
-            return;
-
-        $("#most-popular").hide();
-        $("#past-search").show();
-        showPastResults()
-    }
-}

@@ -39,3 +39,6 @@ var lastMarkerSearched = null;
 
 // Hold the last word search in searchByFullWord.
 var lastWordSearched = null;
+
+// Did the user last see a single place or a list of results.
+var resultsOrPlace = null;
