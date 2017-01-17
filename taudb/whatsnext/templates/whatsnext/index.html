@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,7 +34,7 @@
     <div class="nav">
         <!-- Different Tabs -->
         <div id="results-options-bar">
-            <span id="search-results" class="tab-option">Search</span>
+            <span id="search-results" class="tab-option selected-tab">Search</span>
             <span id="popular-searches" class="tab-option">Popular Searches</span>
             <span id="lucky-results" class="tab-option">Feeling lucky</span>
             <span id="my-results" class="tab-option">My Destinations</span>
@@ -45,10 +45,12 @@
 				<span id="search-{{ cat }}" class="search-category" onclick="selectForSearch(this)">{{ cat }}</span>
 			{% endfor %}
         </div>
-        <div id="search-div" class="tab">
-            <span id="search-around" class="search-way">Distance</span>
-            <span id="search-name" class="search-way"><input type="text" id="place-name" placeholder="Search Location named..."></span>
+        <div id="search-div">
+            <span id="search-around" class="search-way" onclick="showMarkerInput()">Search Around Marker</span>
+            <span id="search-name" class="search-way" onclick="showFullTextInput()">Search By Word</span>
 		</div>
+        <div id="input-around">Find places <input type="text" id="search-radius" placeholder="5000">m around the marker (Click on map)</div>
+        <div id="input-fulltext"><input type="text" id="place-name" placeholder="Search Location named..."></div>
         <!-- Div holding the initial explanation about using the app -->
         <div id="explanation-div" class="tab">
             <h2>Select a location on the map to search for places around it</h2>

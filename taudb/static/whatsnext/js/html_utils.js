@@ -29,6 +29,16 @@ $(document).ready(function () {
         changeSearchCategory($("#overlay-search-category").find(":selected").text())
     });
 
+    $("#search-radius").on("input",function() {
+        var searchRadius = $(this).val();
+        if (isNaN(parseInt(searchRadius))) {
+            alert("Search radius should consist of numbers only!");
+        }
+        else {
+            searchDistance = parseInt(searchRadius);
+        }
+    });
+
     $("#place-name").on("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
@@ -121,11 +131,24 @@ function showTab(tabName) {
 }
 
 function searchBarShow() {
+    if ($("#input-around").is(":visible") || $("#input-fulltext").is(":visible"))
+        return;
+
     $("#search-div").css('display','table');
 }
 
 function searchBarHide() {
     $("#search-div").css('display','none');
+}
+
+function showMarkerInput() {
+    $("#search-div").hide();
+    $("#input-around").show();
+}
+
+function showFullTextInput() {
+    $("#search-div").hide();
+    $("#input-fulltext").show();
 }
 
 function selectForSearch(categoryDiv) {
@@ -225,6 +248,11 @@ function capitalizeFirstLetter(string)
 function cleanPastResults() {
     if ($("#explanation-div").is(":visible"))
         $("#explanation-div").hide();
+
+    $("#search-div").hide();
+    $("#input-around").hide();
+    $("#input-fulltext").hide();
+
     clearArray(markersArray);
     clearTable("results");
 }
