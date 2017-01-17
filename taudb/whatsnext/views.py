@@ -55,6 +55,7 @@ def find_suggestion_by_point(request):
 
     latitude = request_json["latitude"]
     longitude = request_json["longitude"]
+    latitude, longitude = modify_longlat_for_db(latitude, longitude)
     page = request_json["page"]
 
     places = crawl_by_location_shortest_path(latitude, longitude, page)
