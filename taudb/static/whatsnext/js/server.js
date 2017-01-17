@@ -241,10 +241,17 @@ function getPlaceStatistics() {
 function updatePopularSearches() {
     console.log("started update popular search");
     var url = "/updatePopularSearches/";
+
+    if(currentSearch.length == 0){
+        console.log("Search is empty, no update was made");
+        return;
+    }
+
     placeIDsCurrentSearch = modifyCurrentSearchForServer()
     var search = {
         places_id_list: placeIDsCurrentSearch
     };
+
     console.log(placeIDsCurrentSearch);
     console.log(currentSearch);
 

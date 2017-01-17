@@ -185,7 +185,7 @@ def get_place_details(request, place_id):
     return JsonResponse({'place': place, 'reviews': reviews_dicts}, status=200)
 
 
-# TODO: should be called whenever a search is being made
+# TODO: should be called whenever a search is ended
 def update_popular_search(request):
 
     update_status = ""
