@@ -23,7 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'zv%8hm)_jzd@%ph2$3l5&__r0%tyu@x*_t_-wp2d%(xspu$qsx'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'delta-tomcat-vm.cs.tau.ac.il'
+]
 
 
 # Application definition
