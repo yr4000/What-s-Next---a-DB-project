@@ -40,7 +40,7 @@
             <span id="my-results" class="tab-option">My Destinations</span>
         </div>
         <!-- Dynamically generating the category choice bar.-->
-        <div id="serach-options-bar">
+        <div id="search-options-bar">
             {% for cat in categories %}
 				<span id="search-{{ cat }}" class="search-category" onclick="selectForSearch(this)">{{ cat }}</span>
 			{% endfor %}
