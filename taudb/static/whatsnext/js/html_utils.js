@@ -94,9 +94,14 @@ $(document).ready(function () {
     });
 
     $("#current-accept").on("click", function(e) {
-        // Remembering choice. TODO need to push the place id, for some reason it pushes nan
+        // Remembering choice.
+        if (currentSearch.length == MAXIMUM_DESTINATIONS_LIST_LENGTH) {
+            alert("Can't store anymore destinations. Sorry.");
+            showTab("past-search");
+            return;
+        }
+        
         currentSearch.push(currentPlace);
-        console.log(currentSearch);
         // Asking what's next
         $(".next-nav").show();
     });
