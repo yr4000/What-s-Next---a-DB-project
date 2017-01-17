@@ -118,7 +118,7 @@ DB_CHARSET = 'utf8'
 if platform.system() == 'Linux':
     DB_HOST = "mysqlsrv.cs.tau.ac.il"
     DB_PORT = 3306
-    DEBUG = False
+    DEBUG = True
 elif platform.system() == 'Windows' or platform.system() == 'Darwin':
     DB_HOST = "127.0.0.1"
     DB_PORT = 3305
