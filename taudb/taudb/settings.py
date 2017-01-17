@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'zv%8hm)_jzd@%ph2$3l5&__r0%tyu@x*_t_-wp2d%(xspu$qsx'
 
 ALLOWED_HOSTS = [
-    'delta-tomcat-vm.cs.tau.ac.il'
+    'delta-tomcat-vm.cs.tau.ac.il:40782'
 ]
 
 
