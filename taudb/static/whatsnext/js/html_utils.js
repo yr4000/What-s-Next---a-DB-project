@@ -15,7 +15,12 @@ $(document).ready(function () {
     $("#overlay-place-name").on("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
-            searchByFullText($("#overlay-place-name").val());
+            var searchValue = $("#overlay-place-name").val()
+            if (searchValue.length <= 4) {
+                alert("Word length should be more then 4 letters!")
+                return;
+            }
+            searchByFullText(searchValue);
             closeNav();
         }
     });
@@ -28,6 +33,10 @@ $(document).ready(function () {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
             var searchValue = $("#place-name").val();
+            if (searchValue.length <= 4) {
+                alert("Word length should be more then 4 letters!")
+                return;
+            }
             searchByFullText(searchValue);
             $("#search-div").css('display','none');
         }
@@ -134,7 +143,7 @@ function nextCategory(category) {
     $(".next-nav").hide();
     changeSearchCategory(category);
     searchAroundMarker(currentPlace.latitude, currentPlace.longitude);
-}   
+}
 
 function addLocationRow(location, type, index) {
     var resultsTable = document.getElementById("results");
