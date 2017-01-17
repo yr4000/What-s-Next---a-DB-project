@@ -284,32 +284,11 @@ def get_categories_statistics(top, right, bottom, left, except_category):
 
 def get_popular_places_for_category(category):
     if not category:
-        raise ValueError('category arguments must be not None')
+        raise ValueError('category argument must be not None')
 
     cur = init_db_cursor()
 
-    # TODO: current popularity is just the amount of times the place was chosen as a group of places
-    # query = 'SELECT                                                                           '\
-    #         '    places.id,                                                                   '\
-    #         '    places.name,                                                                 '\
-    #         '    SUM(search_properties.popularity) AS popularity                              '\
-    #         'FROM                                                                             '\
-    #         '    places                                                                       '\
-    #         '        INNER JOIN                                                               '\
-    #         '    searches_places ON places.id = searches_places.place_id                      '\
-    #         '        INNER JOIN                                                               '\
-    #         '    search_properties ON searches_places.search_id = search_properties.search_id '\
-    #         '        INNER JOIN                                                               '\
-    #         '    places_categories on places.id = places_categories.place_id                  '\
-    #         '        INNER JOIN                                                               '\
-    #         '    categories on places_categories.category_id = categories.id                  '\
-    #         'WHERE                                                                            '\
-    #         '    categories.name = %s                                                         '\
-    #         'GROUP BY places.id, places.name                                                  '\
-    #         'ORDER BY popularity DESC                                                         '\
-    #         'LIMIT 5                                                                          '
-
-    # This query dynamically calculates popularity on a scale of 1 to 5 according to the following formula:
+    # This query dynamically calculates places popularity on a scale of 1 to 5 according to the following formula:
     #       4 * ((x - min_p) / (max_p - min_p)) + 1
     # where:
     #       x       = current place popularity
@@ -371,70 +350,160 @@ def get_popular_places_for_category(category):
     return top_places
 
 
-# TODO: there should be a text box who autocomplete whenever the user starts a search
-# TODO: create an sql query to search if that search exists
-def find_popular_search(places_id_list):
-    search_id = find_search_id_query(places_id_list)
-    find_popular_query = "SELECT sp.popularity FROM (" + search_id + ") AS S_ID, search_properties AS sp " \
-                                                                     "WHERE S_ID.search_id = sp.search_id"
-    popularity_rate = execute_sfw_query(find_popular_query)
-    return popularity_rate
+def get_popular_searches():
+    cur = init_db_cursor()
+
+    # This query dynamically calculates top choices popularity on a scale of 1 to 5 according to the following formula:
+    #       4 * ((x - min_p) / (max_p - min_p)) + 1
+    # where:
+    #       x       = current place popularity
+    #       min_p   = minimal popularity (while ignoring 0 as a possible value, i.e: ignoring places not chosen at all)
+    #       max_p   = maximal popularity
+    # Meaning, this formula scales values to a range of 1-5 without assumptions on raw min and max popular values
+    # Result set includes the places included in the top 5 chosen sets of places 
+    query = 'SELECT places.id,                                                            '\
+            '       places.google_id,                                                     '\
+            '       places.name,                                                          '\
+            '       places.vicinity,                                                      '\
+            '       places.rating,                                                        '\
+            '       places.latitude,                                                      '\
+            '       places.longitude,                                                     '\
+            '       categories.name AS category,                                          '\
+            '       top_searches.search_id,                                               '\
+            '       top_searches.popularity                                               '\
+            'FROM   (SELECT search_id,                                                    '\
+            '               Round(( 4 * ( ( popularity - min_raw_popularity ) / (         '\
+            '                                     max_raw_popularity - min_raw_popularity '\
+            '                                       ) ) + 1 ), 2) AS popularity           '\
+            '        FROM   search_properties,                                            '\
+            '               (SELECT Max(popularity) AS max_raw_popularity                 '\
+            '                FROM   search_properties) AS max_popularity,                 '\
+            '               (SELECT Min(popularity) AS min_raw_popularity                 '\
+            '                FROM   search_properties) AS min_popularity                  '\
+            '        ORDER  BY popularity DESC                                            '\
+            '        LIMIT  5) AS top_searches                                            '\
+            '       INNER JOIN searches_places                                            '\
+            '               ON top_searches.search_id = searches_places.search_id         '\
+            '       INNER JOIN places                                                     '\
+            '               ON searches_places.place_id = places.id                       '\
+            '       INNER JOIN places_categories                                          '\
+            '               ON places.id = places_categories.place_id                     '\
+            '       INNER JOIN categories                                                 '\
+            '               ON places_categories.category_id = categories.id              '\
+            'ORDER  BY top_searches.popularity DESC,                                      '\
+            '          top_searches.search_id DESC;                                       '
+
+    cur.execute(query)
+
+    records = cur.fetchall()
+
+    top_choices = dict()
+    for record in records:
+        place = dict()
+        place['id'] = record['id']
+        place['google_id'] = record['google_id']
+        place['name'] = record['name']
+        place['longitude'] = record['longitude'] / RESOLUTION
+        place['latitude'] = (record['latitude'] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
+        place['rating'] = record['rating']
+        place['vicinity'] = record['vicinity']
+        place['category'] = record['category']
+        search_id = record['search_id']
+        popularity = record['popularity']
+
+        if search_id in top_choices:
+            existing_choice = top_choices[search_id]
+            choice_places = existing_choice['choice_places']
+            choice_places[place['id']] = place
+        else:
+            choice_places = dict()
+            choice_places[place['id']] = place
+            top_choices[search_id] = {
+                'search_id': search_id,
+                'popularity': popularity,
+                'choice_places': choice_places
+            }
+
+    cur.close()
+    return top_choices
 
 
-def exe_find_search_id_query(places_id_list):
-    return execute_sfw_query(find_search_id_query(places_id_list))
+def lookup_search_by_places_set(places_ids_str):
+    if not places_ids_str:
+        raise ValueError('places_ids_str arguments must be not None')
+
+    cur = init_db_cursor()
+
+    # This query returns the single choice_id, if exists, that includes the exact same set of places sent from caller.
+    # The argument places_ids_str is a str containing the relevant set of places, ordered ascending by place_id,
+    # to allow checking string equality with the sorted group of places for each choice from db.
+    query = 'SELECT                                                                    '\
+            '    lookup_results.search_id                                              '\
+            'FROM                                                                      '\
+            '    (SELECT                                                               '\
+            '        IF(%s = GROUP_CONCAT(place_id ORDER BY place_id SEPARATOR \' \'), '\
+            '            search_id,                                                    '\
+            '            - 1) AS search_id                                             '\
+            '    FROM                                                                  '\
+            '        searches_places                                                   '\
+            '    GROUP BY search_id) AS lookup_results                                 '\
+            'WHERE                                                                     '\
+            '    lookup_results.search_id >= 0;                                        '
+
+    cur.execute(query, (places_ids_str, ))
+
+    if cur.rowcount > 0:
+        record = cur.fetchone() # expecting a single record because of the "group by search_id" in the query
+        search_id = record['search_id']
+    else:
+        search_id = None
+
+    cur.close()
+    return search_id
 
 
-# this function returns a string that determines which search_id will return.
-# it is vital it returns a string and not execute anything.
-def find_search_id_query(places_id_list):
-    query = "SELECT DISTINCT sp.search_id " \
-            "FROM (SELECT sp0.search_id " \
-            "FROM searches_places AS sp0 "
-    places_str, inner_join = "", ""
-    for i in range(len(places_id_list)):
-        # this is ake sure we add the exact amount of inner join needed.
-        if i != (len(places_id_list) - 1):
-            inner_join += "INNER JOIN searches_places AS sp" + str(i + 1) + " "
-        places_str += "sp" + str(i) + ".place_id = " + str(places_id_list[i]) + " AND "
-    # remove the last " ADD "
-    places_str = inner_join + "WHERE " + places_str[:-5]
-    query += places_str + " ) AS possible_searches INNER JOIN search_properties AS sp " \
-                          "ON possible_searches.search_id = sp.search_id " \
-                          "WHERE sp.search_size = " + str(len(places_id_list))
-    return query
+def insert_new_search(places_ids_list):
 
-'''
-example for find_search_query_id_result:
-    SELECT DISTINCT sp.search_id
-    FROM   (SELECT sp0.search_id
-            FROM searches_places AS sp1
-            INNER JOIN searches_places AS sp1
-            INNER JOIN searches_places AS sp2
-            WHERE sp0.place_id = 1 AND sp2.place_id = 2 AND sp3.place_id = 3
-            ) as possible_searches INNER JOIN search_properties AS sp
-            ON possible_searches.search_id = sp.search_id
-    WHERE sp.search_size = 3
-'''
+    conn = init_db_connection()
+    cur = conn.cursor(mdb.cursors.DictCursor)
 
+    try:
+        # insert a new search with the initial popularity=1, and get the new search_id
+        choice_query = 'INSERT INTO search_properties (`popularity`) VALUES (1)'
+        cur.execute(choice_query)
 
-def insert_new_search(places_id_list):
-    # creates new popularity
-    execute_writing_query(
-        "INSERT INTO search_properties(popularity,search_size) VALUES (1," + str(len(places_id_list)) + ")")
-    # returns the new popularity id
-    search_id = execute_sfw_query("SELECT MAX(search_id) AS search_id FROM search_properties")
-    # return search_id
-    insert_to_searches_places = "INSERT INTO searches_places VALUES "
-    for i in range(len(places_id_list)):
-        insert_to_searches_places += "(" + str(search_id[0]['search_id']) + "," + str(places_id_list[i]) + "), "
-    # insert this popularity into searches_places
-    execute_writing_query(insert_to_searches_places[:-2])
+        # use the new search_id and the parameter places_ids_list to build the arguments for next insert
+        search_id = cur.lastrowid
+        places_ids_list_of_tuples = [(search_id, place_id) for place_id in places_ids_list]
+
+        # insert the searches-places records of the new search to db
+        choice_places_query = 'INSERT INTO searches_places (`search_id`, `place_id`) VALUES (search_id, %s)'
+        cur.executemany(choice_places_query, places_ids_list_of_tuples)
+
+        conn.commit()
+
+    except:
+        # if either queries failed - rollback everything
+        conn.rollback()
+
+    cur.close()
 
 
 def update_search(search_id):
-    execute_writing_query(
-        "UPDATE search_properties SET popularity = popularity+1 WHERE search_id = " + str(search_id[0]["search_id"]))
+    if not search_id:
+        raise ValueError('search_id argument must be not None')
+
+    conn = init_db_connection()
+    cur = conn.cursor(mdb.cursors.DictCursor)
+
+    query = 'UPDATE search_properties SET popularity = popularity + 1 WHERE search_id = %s'
+    try:
+        cur.execute(query, (search_id,))
+        conn.commit()
+    except:
+        conn.rollback()
+
+    cur.close()
 
 
 def crawl_by_location_shortest_path(center_latitude, center_longitude, page):

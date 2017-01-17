@@ -13,8 +13,9 @@ from utils.google_maps_access import fetch_reviews_from_google
 from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
-    search_places_near_location, search_places_by_name, exe_find_search_id_query, insert_new_search, \
-    update_search, get_popular_places_for_category, crawl_by_location_shortest_path, crawl_by_location_highest_rating
+    search_places_near_location, search_places_by_name, lookup_search_by_places_set, insert_new_search, \
+    update_search, get_popular_places_for_category, crawl_by_location_shortest_path, crawl_by_location_highest_rating, \
+    get_popular_searches
 
 
 def homepage(request):
@@ -188,29 +189,24 @@ def get_place_details(request, place_id):
 
 # TODO: should be called whenever a search is ended
 def update_popular_search(request):
-
-    update_status = ""
-
     if request.is_ajax() is False:
         raise Http404
 
     request_json = json.loads(request.body)
 
-    places_id_list = request_json["places_id_list"]
+    places_id_list = request_json['places_id_list']
 
-    search_id = exe_find_search_id_query(places_id_list)
+    search_id = lookup_search_by_places_set(places_id_list)
     # return JsonResponse({'update_status': update_status, 'search_is': len(search_id)}, status=200)
 
     # if there is not search like that, insert it to search_popularity and searches_places
-    if len(search_id) == 0:
-        insert_new_search(places_id_list)
-        update_status += "inserted new search"
-    elif len(search_id) > 1:
-        return JsonResponse({'error': 'this search has more than one ID'}, status=404)
-    else:
+    if search_id:
         update_search(search_id)
-        update_status += "updated search"
-    return JsonResponse({'update_status' : update_status}, status=200) #for debug
+        update_status = 'updated search popularity'
+    else:
+        insert_new_search(places_id_list)
+        update_status = 'inserted new search'
+    return JsonResponse({'update_status': update_status}, status=200)
 
 
 def calc_categories_statistics(request):
@@ -232,6 +228,12 @@ def calc_categories_statistics(request):
     statistics = get_categories_statistics(top, right, bottom, left, except_category)
 
     return JsonResponse(statistics, status=200)
+
+
+def calc_top_choices(request):
+    top_choices = get_popular_searches()
+
+    return JsonResponse(top_choices, status=200)
 
 
 def calc_top_places_for_category(request):
