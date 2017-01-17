@@ -63,12 +63,13 @@ CREATE TABLE places (
     `longitude` MEDIUMINT NOT NULL,
     PRIMARY KEY (`id`),
     KEY `idx_google_id` (`google_id`),
-    KEY `idx_name` (`name`),
     KEY `idx_rating` (`rating`),
-    KEY `idx_address` (`vicinity`),
     KEY `idx_latitude` (`latitude`),
     KEY `idx_longitude` (`longitude`)
 )  ENGINE=MyISAM DEFAULT CHARSET=UTF8;
+
+ALTER TABLE places
+    ADD FULLTEXT INDEX `fulltext_idx_name` (`name`);
 
 -- TODO: MyISAM does NOT support foreign keys, need to recreate this table
 CREATE TABLE places_categories (
