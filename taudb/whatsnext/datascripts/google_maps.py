@@ -110,6 +110,7 @@ def check_response_status(json_response):
         raise Exception('response status was bad: {status}'.format(status=status))
 
 
+# TODO: add a try-except clause for commit and rollback incase of failure
 def write_data_to_db(place, category):
     places_added = 0
     mappings_added = 0

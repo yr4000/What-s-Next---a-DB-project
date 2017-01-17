@@ -199,10 +199,12 @@ def insert_new_reviews(reviews):
     query = 'INSERT INTO reviews (`place_id`, `author`, `rating`, `text`, `date`) '\
             'VALUES (%s, %s, %s, %s, %s)                                          '
 
-    # TODO: check what happens if review.date is None
-    cur.executemany(query, reviews_tuples_list)
-
-    conn.commit()
+    try:
+        # TODO: check what happens if review.date is None
+        cur.executemany(query, reviews_tuples_list)
+        conn.commit()
+    except:
+        conn.rollback()
 
     cur.close()
 
@@ -221,10 +223,12 @@ def update_place_rating(new_rating, place_id):
             'WHERE           '\
             '    id = %s     '
 
-    # TODO: check what happens if review.date is None
-    cur.execute(query, (new_rating, place_id))
-
-    conn.commit()
+    try:
+        # TODO: check what happens if review.date is None
+        cur.execute(query, (new_rating, place_id))
+        conn.commit()
+    except:
+        conn.rollback()
 
     cur.close()
 
