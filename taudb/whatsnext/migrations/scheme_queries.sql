@@ -88,8 +88,7 @@ CREATE TABLE places_categories_v3 (
     `place_id` INT NOT NULL,
     `category_id` INT NOT NULL,
     PRIMARY KEY (`place_id`, `category_id`),
-    CONSTRAINT `fgn_pc3_place_id` FOREIGN KEY (`place_id`) REFERENCES places (`id`),
-    CONSTRAINT `fgn_pc3_category_id` FOREIGN KEY (`category_id`) REFERENCES categories (`id`),
+    CONSTRAINT `fgn_pc3_category_id` FOREIGN KEY (`category_id`) REFERENCES categories (`id`)
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 
@@ -129,6 +128,5 @@ CREATE TABLE choices_places (
   `choice_id` int NOT NULL,
   `place_id` int NOT NULL,
   PRIMARY KEY (`choice_id`,`place_id`),
-  CONSTRAINT `choices_places_ibfk_1` FOREIGN KEY (`choice_id`) REFERENCES `choices` (`choice_id`),
-  CONSTRAINT `choices_places_ibfk_2` FOREIGN KEY (`place_id`) REFERENCES `places` (`id`)
+  CONSTRAINT `choices_places_ibfk_1` FOREIGN KEY (`choice_id`) REFERENCES `choices` (`choice_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
