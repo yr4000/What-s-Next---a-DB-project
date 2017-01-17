@@ -196,12 +196,11 @@ def update_popular_search(request):
 
     places_id_list = request_json['places_id_list']
 
-    search_id = lookup_search_by_places_set(places_id_list)
-    # return JsonResponse({'update_status': update_status, 'search_is': len(search_id)}, status=200)
+    choice_id = lookup_search_by_places_set(places_id_list)
 
-    # if there is not search like that, insert it to search_popularity and searches_places
-    if search_id:
-        update_search(search_id)
+    # if there is not search like that, insert it to search_popularity and choices_places
+    if choice_id:
+        update_search(choice_id)
         update_status = 'updated search popularity'
     else:
         insert_new_search(places_id_list)
