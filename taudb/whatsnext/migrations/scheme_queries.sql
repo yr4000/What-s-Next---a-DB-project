@@ -28,7 +28,8 @@ INSERT INTO categories (`name`) VALUES ('restaurant');
 INSERT INTO categories (`name`) VALUES ('bar');
 INSERT INTO categories (`name`) VALUES ('museum');
 
--- This is the old version of places_categories
+-- This is the 1st version of places_categories
+-- TODO: delete this
 -- CREATE TABLE places_categories_old (
 --     `id` INT NOT NULL AUTO_INCREMENT,
 --     `place_id` INT NOT NULL,
@@ -65,37 +66,69 @@ CREATE TABLE places (
     KEY `idx_google_id` (`google_id`),
     KEY `idx_rating` (`rating`),
     KEY `idx_latitude` (`latitude`),
-    KEY `idx_longitude` (`longitude`)
+    KEY `idx_longitude` (`longitude`),
+    FULLTEXT KEY `name` (`name`)
 )  ENGINE=MyISAM DEFAULT CHARSET=UTF8;
 
-ALTER TABLE places
-    ADD FULLTEXT INDEX `fulltext_idx_name` (`name`);
 
--- TODO: MyISAM does NOT support foreign keys, need to recreate this table
-CREATE TABLE places_categories (
-    `id` INT NOT NULL AUTO_INCREMENT,
+-- This is the 2nd version of places_categories
+-- TODO: delete this
+-- CREATE TABLE places_categories (
+--     `id` INT NOT NULL AUTO_INCREMENT,
+--     `place_id` INT NOT NULL,
+--     `category_id` INT NOT NULL,
+--     PRIMARY KEY (`id`),
+--     CONSTRAINT `fgn_pc2_place_id` FOREIGN KEY (`place_id`) REFERENCES places (`id`),
+--     CONSTRAINT `fgn_pc2_category_id` FOREIGN KEY (`category_id`) REFERENCES categories (`id`),
+-- 	UNIQUE KEY `place_id_category_id` (`place_id`,`category_id`)
+-- )  ENGINE=MyISAM DEFAULT CHARSET=UTF8;
+
+
+CREATE TABLE places_categories_v3 (
     `place_id` INT NOT NULL,
     `category_id` INT NOT NULL,
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fgn_pc2_place_id` FOREIGN KEY (`place_id`) REFERENCES places (`id`),
-    CONSTRAINT `fgn_pc2_category_id` FOREIGN KEY (`category_id`) REFERENCES categories (`id`),
-	UNIQUE KEY `place_id_category_id` (`place_id`,`category_id`)
-)  ENGINE=MyISAM DEFAULT CHARSET=UTF8;
+    PRIMARY KEY (`place_id`, `category_id`),
+    CONSTRAINT `fgn_pc3_place_id` FOREIGN KEY (`place_id`) REFERENCES places (`id`),
+    CONSTRAINT `fgn_pc3_category_id` FOREIGN KEY (`category_id`) REFERENCES categories (`id`),
+)  ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 
-CREATE TABLE search_properties
-(
-	search_id INT NOT NULL AUTO_INCREMENT,
+-- This is the 1st version of search_properties
+-- TODO: delete this
+-- CREATE TABLE search_properties
+-- (
+-- 	search_id INT NOT NULL AUTO_INCREMENT,
+--   popularity INT NOT NULL,
+--   search_size INT NOT NULL,
+--   CHECK (popularity>0),
+--   CHECK (search_size>0),
+--   PRIMARY KEY (search_id)
+-- )
+
+
+CREATE TABLE choices (
+	choice_id INT NOT NULL AUTO_INCREMENT,
   popularity INT NOT NULL,
-  search_size INT NOT NULL,
+  PRIMARY KEY (choice_id),
   CHECK (popularity>0),
-  CHECK (search_size>0),
-  PRIMARY KEY (search_id)
-)
+  KEY `idx_popularity` (`popularity`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-CREATE TABLE searches_places
-(
-	search_id INT NOT NULL,
-  place_id INT NOT NULL,
-  FOREIGN KEY (search_id) REFERENCES search_properties(search_id)
-)
+
+-- This is the 1st version of searches_places
+-- TODO: delete this
+-- CREATE TABLE searches_places
+-- (
+-- 	search_id INT NOT NULL,
+--   place_id INT NOT NULL,
+--   FOREIGN KEY (search_id) REFERENCES search_properties(search_id)
+-- )
+
+
+CREATE TABLE choices_places (
+  `choice_id` int NOT NULL,
+  `place_id` int NOT NULL,
+  PRIMARY KEY (`choice_id`,`place_id`),
+  CONSTRAINT `choices_places_ibfk_1` FOREIGN KEY (`choice_id`) REFERENCES `choices` (`choice_id`),
+  CONSTRAINT `choices_places_ibfk_2` FOREIGN KEY (`place_id`) REFERENCES `places` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
