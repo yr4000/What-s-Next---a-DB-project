@@ -21,14 +21,15 @@ function initMap() {
 
     // Place a green marker on the last place click by the user.
     google.maps.event.addListener(map, "click", function (event) {
-        lastSearch = enumSearchTypes.Marker;
+        if (lastSearch == enumSearchTypes.FullText)
+            lastSearch = enumSearchTypes.Marker;
         markForSearch = true;
 
         var position = new google.maps.LatLng(event.latLng.lat(), event.latLng.lng());
         if (lastMapClickLocation)
             removeMarker(lastMapClickLocation);
 
-        lastMapClickLocation = createMarker(position, "Clicked here", "-1", true, enumMarkerColors.Current, 0);
+        lastMapClickLocation = createMarker(position, "Clicked here", "-1", true, enumMarkerColors.current, 0);
     });
 
     // init bounds of the desired area
@@ -55,11 +56,18 @@ function initMap() {
 }
 
 function createMarker(LatLong, title, place_id, center, color, index) {
-    if (markForSearch && (lastSearch == enumSearchTypes.Marker)) {
-        map.panTo(LatLong); // Center around marker.
-        requestPage = 0;
-        searchAroundMarker(LatLong.lat(),LatLong.lng());
-        markForSearch = false;
+    if (markForSearch) {
+        if (lastSearch == enumSearchTypes.Marker) {
+            map.panTo(LatLong); // Center around marker.
+            requestPage = 0;
+            searchAroundMarker(LatLong.lat(),LatLong.lng());
+            markForSearch = false;
+        } else if (lastSearch == enumSearchTypes.FeelingLucky) {
+            map.panTo(LatLong);
+            requestPage = 0;
+            ImFeelingLucky(LatLong.lat(),LatLong.lng());
+            markForSearch = false;
+        }
     }
     if (center) {
         map.panTo(LatLong);

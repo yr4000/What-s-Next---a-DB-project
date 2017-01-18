@@ -65,7 +65,7 @@ $(document).ready(function () {
             case "popular-searches":
                 break;
             case "lucky-search":
-                showTab("lucky-tab");
+                tryAndGetLucky();
                 break;
             case "my-results":
                 showPastResults();
@@ -181,8 +181,8 @@ function nextCategory(category) {
     searchAroundMarker(currentPlace.latitude, currentPlace.longitude);
 }
 
-function addLocationRow(location, type, index) {
-    var resultsTable = document.getElementById("results");
+function addLocationRow(tableName, location, type, index) {
+    var resultsTable = document.getElementById(tableName);
 
     var placeRow = resultsTable.insertRow(-1);
     var i = 0;
@@ -261,7 +261,7 @@ function capitalizeFirstLetter(string)
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-function cleanPastResults() {
+function cleanPastResults(table) {
     if ($("#explanation-div").is(":visible"))
         $("#explanation-div").hide();
 
@@ -270,7 +270,7 @@ function cleanPastResults() {
     $("#input-fulltext").hide();
 
     clearArray(markersArray);
-    clearTable("results");
+    clearTable(table);
 }
 
 function modifyCurrentSearchForServer(){

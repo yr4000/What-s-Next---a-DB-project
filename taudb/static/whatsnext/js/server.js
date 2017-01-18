@@ -32,7 +32,7 @@ function searchAroundMarker(latitude, longitude) {
         {
             lastSearch = enumSearchTypes.Marker;
             lastMarkerSearched = {latitude: latitude, longitude: longitude};
-            showSearchResults(response);
+            showSearchResults("results-div", "results", response);
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -56,7 +56,7 @@ function searchByFullText(word) {
         {
             lastSearch = enumSearchTypes.FullText;
             lastWordSearched = word;
-            showSearchResults(response);
+            showSearchResults("results-div", "results", response);
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -288,13 +288,13 @@ function ImFeelingLucky(latitude, longitude) {
         function(response)
         {
             console.log(response);
-            lastSearch = enumSearchTypes.Marker;
+            lastSearch = enumSearchTypes.FeelingLucky;
             lastMarkerSearched = {latitude: latitude, longitude: longitude};
-            showSearchResults(response);
+            showSearchResults("lucky-tab", "lucky-results", response);
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to Search around Marker");
+         console.log("Failed to find luck");
     });
 }
 

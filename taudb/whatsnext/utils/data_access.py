@@ -737,7 +737,7 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             "rating": result["hotel_rating"],
             "latitude": (result["hotel_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST,
             "longitude": result["hotel_long"] / RESOLUTION,
-            "category": "Hotel"
+            "category": "hotel"
         }
 
         best_rate_places[result["rest_id"]] = {
@@ -747,7 +747,7 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             "rating": result["rest_rating"],
             "latitude": (result["rest_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST,
             "longitude": result["rest_long"] / RESOLUTION,
-            "category": "Restaurant"
+            "category": "restaurant"
         }
 
         best_rate_places[result["bar_id"]] = {
@@ -757,7 +757,7 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             "rating": result["bar_rating"],
             "latitude": (result["bar_lat"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST,
             "longitude": result["bar_long"] / RESOLUTION,
-            "category": "Bar"
+            "category": "bar"
         }
 
     cur.close()

@@ -18,7 +18,8 @@ var enumMarkerColors = {
 
 var enumSearchTypes = {
     Marker : "Marker",
-    FullText : "FullText"
+    FullText : "FullText",
+    FeelingLucky : "FeelingLucky"
 };
 
 var DEFAULT_MAP_CENTER = {lat: 51.509865, lng: -0.118092};
