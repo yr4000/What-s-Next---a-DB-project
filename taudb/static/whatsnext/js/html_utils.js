@@ -64,7 +64,8 @@ $(document).ready(function () {
                 break;
             case "popular-searches":
                 break;
-            case "lucky-results":
+            case "lucky-search":
+                showTab("lucky-tab");
                 break;
             case "my-results":
                 showPastResults();

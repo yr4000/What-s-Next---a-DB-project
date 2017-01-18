@@ -127,17 +127,18 @@ input, select {
 }
 
 .nav {
-    height: 100%;
-    width: 500px;
+    height: 98%;
+    width: 420px;
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
+    left: 2%;
+    top: 1%;
     background-color: rgb(255, 255, 255);
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
 	overflow-x: hidden;
     display: none;
+	border: solid 1px black;
 }
 
 #overlayTitle {
