@@ -23,7 +23,7 @@ CREATE TABLE categories (
     PRIMARY KEY (`id`)
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
-INSERT INTO categories (`name`) VALUES ('lodging');
+INSERT INTO categories (`name`) VALUES ('hotel');
 INSERT INTO categories (`name`) VALUES ('restaurant');
 INSERT INTO categories (`name`) VALUES ('bar');
 INSERT INTO categories (`name`) VALUES ('museum');
