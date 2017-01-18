@@ -15,9 +15,9 @@ $(document).ready(function () {
     $("#overlay-place-name").on("keyup", function(e) {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
-            var searchValue = $("#overlay-place-name").val()
-            if (searchValue.length <= 4) {
-                alert("Word length should be more then 4 letters!")
+            var searchValue = $("#overlay-place-name").val();
+            if (searchValue.length < 4) {
+                alert("Search word must contain at least 4 letters");
                 return;
             }
             searchByFullText(searchValue);
@@ -43,8 +43,8 @@ $(document).ready(function () {
         var keyPressed = (e.keyCode ? e.keyCode : e.which);
         if(keyPressed == 13) {
             var searchValue = $("#place-name").val();
-            if (searchValue.length <= 4) {
-                alert("Word length should be more then 4 letters!")
+            if (searchValue.length < 4) {
+                alert("Search word must contain at least 4 letters");
                 return;
             }
             searchByFullText(searchValue);
