@@ -96,7 +96,8 @@ $(document).ready(function () {
     $("#current-accept").on("click", function(e) {
         // Remembering choice.
         if (currentSearch.length == MAXIMUM_DESTINATIONS_LIST_LENGTH) {
-            alert("Can't store anymore destinations. Sorry.");
+            // TODO: can this be a proper div rather than an alert?
+            alert("You cannot choose more than " + MAXIMUM_DESTINATIONS_LIST_LENGTH + " destinations");
             showTab("past-search");
             return;
         }
