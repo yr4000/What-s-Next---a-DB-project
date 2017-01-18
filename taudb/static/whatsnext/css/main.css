@@ -346,7 +346,14 @@ input, select {
 
 #past-results {
 	width: 100%;
-	border-top: solid 1px black;
+}
+
+#lucky-tab {
+	display: none;
+}
+
+#lucky-results {
+	width: 100%;
 }
 
 #current-search {

@@ -9,8 +9,8 @@ function showSearchResults(results) {
     for (var key in results) {
         var place = results[key];
         addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                  place["name"], place["id"], false, enumMarkerColors[searchCategory], i);
-        addLocationRow(place, searchCategory, i);
+                  place["name"], place["id"], false, enumMarkerColors[place.category], i);
+        addLocationRow(place, place.category, i);
         i++;
     }
 

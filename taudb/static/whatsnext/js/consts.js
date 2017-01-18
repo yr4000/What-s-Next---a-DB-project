@@ -9,11 +9,11 @@ var enumZoomLevels = {
 };
 
 var enumMarkerColors = {
-    Restaurant : "red/red_Marker",
-    Hotel : "blue/blue_Marker",
-    Bar : "purple/purple_Marker",
-    Museum : "orange/orange_Marker",
-    Current : "darkgreen/darkgreen_Marker"
+    restaurant : "red/red_Marker",
+    hotel : "blue/blue_Marker",
+    bar : "purple/purple_Marker",
+    museum : "orange/orange_Marker",
+    current : "darkgreen/darkgreen_Marker"
 };
 
 var enumSearchTypes = {

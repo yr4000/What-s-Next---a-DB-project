@@ -275,7 +275,6 @@ function updatePopularSearches() {
 
 //    url(r'^ImFeelingLucky', views.im_feeling_lucky)
 function ImFeelingLucky(latitude, longitude) {
-    console.log("starting ImFeelingLucky");
     var url = "/ImFeelingLucky/";
 
     var search_values = {
