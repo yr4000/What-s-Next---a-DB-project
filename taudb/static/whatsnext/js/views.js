@@ -15,6 +15,8 @@ function showSearchResults(results) {
     }
 
     requestPage++;
+
+    resultsOrPlace = "results-div";
 }
 
 function showPastResults() {
