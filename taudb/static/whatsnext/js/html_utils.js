@@ -165,6 +165,10 @@ function selectForSearch(categoryDiv) {
 
 function setFirstCategory(categorySpan) {
     var newCategory = $(categorySpan).text();
+
+    var placeholderText = "Search for a " + newCategory.toLowerCase() + " called...";
+    $("#overlay-place-name").attr("placeholder", placeholderText);
+
     changeSearchCategory(newCategory);
 }
 

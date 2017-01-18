@@ -56,17 +56,17 @@ input, select {
 
 .overlay-content > input {
 	background-color: rgba(255,255,255, 0.2);
+	background-image: url(/static/whatsnext/images/icon_search_white.png);
+    background-position: 12px 12px;
+	background-repeat: no-repeat;
+	background-size: 30px;
+	padding-left: 55px;
 	height: 60px;
 	width: 680px;
 	size: 20px;
-	color: rgb(0,0,0);
-	padding: 10px;
-	border-top: 0px;
-	border-left: 0px;
-	border-right: 0px;
-	font-family: Georgia, sans-serif;
+	color: #ffffff;
+	border: 3px solid #3f3f3f;
 	font-size: 14pt;
-	font-weight: bold;
 }
 
 #closebtn {
@@ -81,6 +81,7 @@ input, select {
 #closebtn:hover {
 	color: #f1f1f1;
 }
+
 .start-category {
     width: 150px;
     display: inline-table;
@@ -90,26 +91,26 @@ input, select {
 }
 
 #start-Hotel:hover {
-    color: blue;
-    border-bottom: solid 2px blue;
+    color: #bfbfbf;
+    border-bottom: solid 2px white;
 }
 #start-Hotel.started {
-    color: blue;
-    border-bottom: solid 2px blue;
+    color: orange;
+    border-bottom: solid 2px orange;
 }
 
 #start-Restaurant:hover {
-    color: red;
-    border-bottom: solid 2px red;
+    color: #bfbfbf;
+    border-bottom: solid 2px #bfbfbf;
 }
 #start-Restaurant.started {
-    color: red;
-    border-bottom: solid 2px red;
+    color: orange;
+    border-bottom: solid 2px orange;
 }
 
 #start-Museum:hover {
-    color: orange;
-    border-bottom: solid 2px orange;
+    color: #bfbfbf;
+    border-bottom: solid 2px #bfbfbf;
 }
 #start-Museum.started {
     color: orange;
@@ -117,12 +118,12 @@ input, select {
 }
 
 #start-Bar:hover {
-    color: purple;
-    border-botttom: solid 2px purple;
+    color: #bfbfbf;
+    border-botttom: solid 2px #bfbfbf;
 }
 #start-Bar.started {
-    color: purple;
-    border-botttom: solid 2px purple;
+    color: orange;
+    border-botttom: solid 2px orange;
 }
 
 .nav {
