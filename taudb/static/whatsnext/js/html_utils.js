@@ -29,6 +29,8 @@ $(document).ready(function () {
         changeSearchCategory($("#overlay-search-category").find(":selected").text())
     });
 
+    $("#search-radius")[0].placeholder = DEFAULT_SEARCH_DISTANCE;
+
     $("#search-radius").on("input",function() {
         var searchRadius = $(this).val();
         if (isNaN(parseInt(searchRadius))) {

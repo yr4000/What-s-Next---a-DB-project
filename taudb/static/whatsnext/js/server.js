@@ -79,13 +79,13 @@ function getMostPopular() {
                 var result = response[key];
                 var resultRow = resultsTable.insertRow(-1);
                 var iconCell = resultRow.insertCell(0);
-                iconCell.innerHTML = '<img src="' + iconFolderPath + enumMarkerColors[searchCategory] +
+                iconCell.innerHTML = '<img src="' + iconFolderPath + enumMarkerColors[result.category] +
                                      String.fromCharCode((resultNum % 26) + 65) + '.png">';
                 var nameCell = resultRow.insertCell(1);
-                nameCell.innerText = result.place_name;
+                nameCell.innerText = result.name;
                 var popularityCell = resultRow.insertCell(2);
                 popularityCell.innerText = result.popularity;
-                $(resultRow).data("place", {id:result.place_id, icon:resultNum});
+                $(resultRow).data("place", {id:result.id, icon:resultNum});
                 resultRow.onclick = function(e) {
                     getPlaceDetails($(this).data("place").id, $(this).data("place").icon);
                 };
