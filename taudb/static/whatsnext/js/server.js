@@ -36,7 +36,7 @@ function searchAroundMarker(latitude, longitude) {
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to Search around Marker");
+         console.log("Failed to POSTform Search around Marker");
     });
 }
 
@@ -60,7 +60,7 @@ function searchByFullText(word) {
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to preform Full Text Search");
+         console.log("Failed to POSTform Full Text Search");
     });
 }
 
@@ -94,7 +94,7 @@ function getMostPopular() {
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to get Most Popular Places.");
+         console.log("Failed to GET Most Popular Places.");
     });
 }
 
@@ -190,7 +190,7 @@ function getPlaceDetails(place_id, index) {
     },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to fetch Place Details");
+         console.log("Failed to GET Place Details");
     });
 }
 
@@ -233,7 +233,7 @@ function getPlaceStatistics() {
     },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to fetch Place Statistics");
+         console.log("Failed to GET Place Statistics");
     });
 }
 
@@ -299,3 +299,41 @@ function ImFeelingLucky(latitude, longitude) {
 }
 
 //    url(r'^stats/top_choices', views.calc_top_choices)
+function getTopChoices() {
+    var url = "/stats/top_choices";
+
+    $.getJSON(url,
+        "",
+        function(response) {
+            if (!Object.keys(response).length)
+                return; // If no results were returned do nothing.
+
+            markForSearch = false;
+
+            cleanPastResults("choices-results");
+            var resultsTable = document.getElementById("choices-results");
+
+            var i = 0;
+            for (var set_id in response) {
+                var choice_set = response[set_id];
+
+                var setRow = resultsTable.insertRow(-1);
+                var setHeader = setRow.insertCell(0);
+                setHeader.innerHTML = "<br><b>Choice set " + set_id + " popularity " + choice_set.popularity + "</b>";
+                setHeader.colSpan = 3;
+
+                for (var place_id in choice_set.choice_places) {
+                    var place = choice_set.choice_places[place_id];
+                    addMarker(new google.maps.LatLng(place.latitude, place.longitude),
+                              place["name"], place["id"], false, enumMarkerColors[place.category], i);
+                    addLocationRow("choices-results", place, place.category, i);
+                }
+                i++;
+            }
+            showTab("top-choices-tab");
+        }
+        ,"json")
+    .fail(function(jgXHR, textStatus, errorThrown) {
+         console.log("Failed to GET Top Choices");
+    });
+}

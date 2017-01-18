@@ -63,6 +63,7 @@ $(document).ready(function () {
                 showResultTab();
                 break;
             case "popular-searches":
+                getTopChoices();
                 break;
             case "lucky-search":
                 tryAndGetLucky();
