@@ -198,6 +198,9 @@ function addLocationRow(location, type, index) {
     var ratingCell = placeRow.insertCell(i++);
     ratingCell.innerText = (location.rating > 0) ? location.rating : "-";
     ratingCell.className = "place-rating";
+    placeRow.onclick = function() {
+      getPlaceDetails(location.id, index);
+    };
 }
 
 function addSearchLocationRow(place, step) {
