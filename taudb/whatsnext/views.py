@@ -13,8 +13,8 @@ from utils.google_maps_access import fetch_reviews_from_google
 from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
-    search_places_near_location, search_places_by_name, lookup_choice_by_places_set, insert_new_search, \
-    update_search, get_popular_places_for_category, crawl_by_location_shortest_path, crawl_by_location_highest_rating, \
+    search_places_near_location, search_places_by_name, lookup_choice_by_places_set, insert_new_choice, \
+    update_choice, get_popular_places_for_category, crawl_by_location_shortest_path, crawl_by_location_highest_rating, \
     get_popular_searches
 
 
@@ -200,10 +200,10 @@ def update_popular_search(request):
 
     # if there is not search like that, insert it to search_popularity and choices_places
     if choice_id:
-        update_search(choice_id)
+        update_choice(choice_id)
         update_status = 'updated search popularity'
     else:
-        insert_new_search(places_id_list)
+        insert_new_choice(places_id_list)
         update_status = 'inserted new search'
     return JsonResponse({'update_status': update_status}, status=200)
 

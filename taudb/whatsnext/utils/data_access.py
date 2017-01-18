@@ -468,7 +468,7 @@ def lookup_choice_by_places_set(places_ids_list):
     return choice_id
 
 
-def insert_new_search(places_ids_list):
+def insert_new_choice(places_ids_list):
 
     conn = init_db_connection()
     cur = conn.cursor(mdb.cursors.DictCursor)
@@ -495,7 +495,7 @@ def insert_new_search(places_ids_list):
     cur.close()
 
 
-def update_search(choice_id):
+def update_choice(choice_id):
     if not choice_id:
         raise ValueError('choice_id argument must be not None')
 
