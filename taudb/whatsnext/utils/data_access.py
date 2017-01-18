@@ -301,6 +301,12 @@ def get_popular_places_for_category(category):
     # Result set includes the top 5 chosen places in the specific category sent by caller
     query = 'SELECT places.id,                                                                          '\
             '       places.name,                                                                        '\
+            '       places.google_id,                                                                   '\
+            '       places.rating,                                                                      '\
+            '       places.vicinity,                                                                    '\
+            '       places.latitude,                                                                    '\
+            '       places.longitude,                                                                   '\
+            '       categories.name AS category,                                                        '\
             '       ROUND((4 * ( ( Sum(choices.popularity) -                                            '\
             '               extreme_popularities.min_raw_popularity ) /                                 '\
             '               (                                                                           '\
@@ -342,11 +348,10 @@ def get_popular_places_for_category(category):
 
     top_places = dict()
     for record in records:
-        place_id = record['id']
-        place_name = record['name']
-        popularity = record['popularity']
+        place_dict = query_results_to_dict(record)
+        place_dict['popularity'] = record['popularity']
 
-        top_places[place_id] = {'place_id': place_id, 'place_name': place_name, 'popularity': popularity}
+        top_places[place_dict['id']] = place_dict
 
     cur.close()
 
