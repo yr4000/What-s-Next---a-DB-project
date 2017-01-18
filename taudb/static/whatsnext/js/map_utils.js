@@ -58,6 +58,8 @@ function createMarker(LatLong, title, place_id, center, color, index) {
     if (markForSearch && (lastSearch == enumSearchTypes.Marker)) {
         map.panTo(LatLong); // Center around marker.
         searchAroundMarker(LatLong.lat(),LatLong.lng());
+        //TODO: for test, delete when done
+        //ImFeelingLucky(LatLong.lat(),LatLong.lng());
         markForSearch = false;
     }
     if (center) {

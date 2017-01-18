@@ -4,6 +4,9 @@ from exceptions import NotFoundInDb
 import MySQLdb as mdb
 from geo_utils import RESOLUTION,LONDON_LATITUDE_DB_CONST
 
+import json
+from django.http import HttpResponse, JsonResponse, Http404
+
 DEFAULT_RESULTS_AMOUNT = 10
 
 
@@ -510,8 +513,8 @@ def update_search(choice_id):
 
 
 def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
-    ADD_HALF_KM_TO_LAT = str(0.5*10000/111.0)
-    ADD_HALF_KM_TO_LONG = str(0.5*10000/69.0)
+    ADD_HALF_KM_TO_LAT = str(1*10000/111.0)
+    ADD_HALF_KM_TO_LONG = str(1*10000/69.0)
 
     cur = init_db_cursor()
 
@@ -649,24 +652,21 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
 
     # This crawl query returns best rated bar, restaurant and hotels where the hotel is near a given location,
     # and the restaurant near the hotel and the bar is near the restaurant.
-    query = 'SELECT hotel_id, hotel_name, hotel_lat, hotel_long,                                       ' \
-            'rest_id,rest_name,rest_lat,rest_long,                                                     ' \
-            'p.id AS bar_id, p.name AS bar_name,p.latitude As bar_lat, p.longitude AS long_lat         '\
+    query = 'SELECT hotel_id, hotel_name, hotel_lat, hotel_long,                                       '\
+            'rest_id,rest_name,rest_lat,rest_long,                                                     '\
+            'p.id AS bar_id, p.name AS bar_name,p.latitude As bar_lat, p.longitude AS bar_long         '\
             'FROM(                                                                                     '\
-            '	SELECT hotel_id,hotel_name,hotel_lat,hotel_long,                                       ' \
-            '    p.id AS rest_id,p.name AS rest_name, p.latitude AS rest_lat ,p.longitude AS rest_long '\
+            '	SELECT best_restaurant.*,MAX(p.rating) as max_rate_of_bar                              '\
             '	FROM(                                                                                  '\
-            '		SELECT best_hotel_and_restaurant_rate.hotel_id, p.id AS restaurant_id,             '\
-            '				p.latitude,p.longitude                                                     '\
+            '		SELECT hotel_id, hotel_name, hotel_lat,hotel_long, p.id AS rest_id,                '\
+            '				p.name AS rest_name, p.latitude AS rest_lat, p.longitude AS rest_long      '\
             '		FROM(                                                                              '\
             '                                                                                          '\
-            '			#get best rate restaurant and the hotel from q1                                '\
             '			SELECT best_hotel.*,MAX(p.rating) as max_rate_of_restaurant                    '\
             '			FROM(                                                                          '\
             '			                                                                               '\
-            '				#q1: get best rate hotel in range                                          '\
-            '				SELECT p.id AS hotel_id, p.name AS hotel_name,                             ' \
-            '                      p.latitude AS hotel_lat ,p.longitude AS hotel_long                                             '\
+            '				SELECT p.id AS hotel_id, p.name AS hotel_name,                             '\
+            '                      p.latitude AS hotel_lat ,p.longitude AS hotel_long                  '\
             '				FROM places AS p                                                           '\
             '				INNER JOIN                                                                 '\
             '				places_categories AS pc ON p.id = pc.place_id                              '\
@@ -682,6 +682,7 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             '			AND hotel_lat + '+ADD_HALF_KM_TO_LAT+'                                         '\
             '			AND  p.longitude BETWEEN hotel_long - '+ADD_HALF_KM_TO_LONG+'                  '\
             '			AND hotel_long + '+ADD_HALF_KM_TO_LONG+'                                       '\
+            '           AND p.id != hotel_id                                                           '\
             '			AND pc.category_id = 2                                                         '\
             '				                                                                           '\
             '				) AS best_hotel_and_restaurant_rate,                                       '\
@@ -692,7 +693,9 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             '		AND  p.longitude BETWEEN hotel_long - '+ADD_HALF_KM_TO_LONG+'                      '\
             '		AND hotel_long + '+ADD_HALF_KM_TO_LONG+'                                           '\
             '		AND pc.category_id = 2                                                             '\
+            '       AND p.id != hotel_id                                                               '\
             '		AND p.rating = max_rate_of_restaurant                                              '\
+            '       LIMIT 1                                                                            '\
             '				)AS best_restaurant,                                                       '\
             '	places AS p INNER JOIN                                                                 '\
             '	places_categories AS pc ON p.id = pc.place_id                                          '\
@@ -700,6 +703,7 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             '	AND rest_lat + '+ADD_HALF_KM_TO_LAT+'                                                  '\
             '	AND  p.longitude BETWEEN rest_long - '+ADD_HALF_KM_TO_LONG+'                           '\
             '	AND rest_long + '+ADD_HALF_KM_TO_LONG+'                                                '\
+            '   AND p.id != rest_id                                                                    '\
             '	AND pc.category_id = 3                                                                 '\
             '                ) AS best_restaurant_and_bar_rate,                                        '\
             'places AS p INNER JOIN                                                                    '\
@@ -708,37 +712,40 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             'AND rest_lat + '+ADD_HALF_KM_TO_LAT+'                                                     '\
             'AND  p.longitude BETWEEN rest_long - '+ADD_HALF_KM_TO_LONG+'                              '\
             'AND rest_long + '+ADD_HALF_KM_TO_LONG+'                                                   '\
+            'AND p.id != rest_id                                                                       '\
             'AND pc.category_id = 3                                                                    '\
             'AND p.rating = max_rate_of_bar                                                            '\
             'LIMIT 1                                                                                   '
 
     cur.execute(query, (bottom, top, left, right))
-    result = cur.fetchall()
+    rows = cur.fetchall()
+
 
     best_rate_places = {}
-    best_rate_places[result["hotel_id"]] = {
-        "id" : result["hotel_id"],
-        "name" : result["hotel_name"],
-        "latitude" : result["hotel_id"],
-        "longitude" : result["hotel_id"],
-        "category_id" : 1
-    }
+    for result in rows:
+        best_rate_places[result["hotel_id"]] = {
+            "id" : result["hotel_id"],
+            "name" : result["hotel_name"],
+            "latitude" : (result["hotel_lat"]/RESOLUTION) + LONDON_LATITUDE_DB_CONST,
+            "longitude" : result["hotel_long"]/ RESOLUTION,
+            "category_id" : "hotel"
+        }
 
-    best_rate_places[result["rest_id"]] = {
-        "id" : result["rest_id"],
-        "name" : result["rest_name"],
-        "latitude" : result["rest_id"],
-        "longitude" : result["rest_id"],
-        "category_id" : 2
-    }
+        best_rate_places[result["rest_id"]] = {
+            "id" : result["rest_id"],
+            "name" : result["rest_name"],
+            "latitude" : (result["rest_lat"]/RESOLUTION) + LONDON_LATITUDE_DB_CONST,
+            "longitude" : result["rest_long"]/ RESOLUTION,
+            "category_id" : "restaurant"
+        }
 
-    best_rate_places[result["bar_id"]] = {
-        "id" : result["bar_id"],
-        "name" : result["bar_name"],
-        "latitude" : result["bar_id"],
-        "longitude" : result["bar_id"],
-        "category_id" : 3
-    }
+        best_rate_places[result["bar_id"]] = {
+            "id" : result["bar_id"],
+            "name" : result["bar_name"],
+            "latitude" : (result["bar_lat"]/RESOLUTION) + LONDON_LATITUDE_DB_CONST,
+            "longitude" : result["bar_long"]/ RESOLUTION,
+            "category_id" : "bar"
+        }
 
     cur.close()
 

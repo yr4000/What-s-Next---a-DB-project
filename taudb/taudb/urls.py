@@ -28,5 +28,5 @@ urlpatterns = [
     url(r'^stats/top_places', views.calc_top_places_for_category),
     url(r'^stats/top_choices', views.calc_top_choices),
     url(r'^updatePopularSearches', views.update_popular_search),
-url(r'^ImFeelingLucky', views.im_feeling_lucky)
+    url(r'^ImFeelingLucky', views.im_feeling_lucky)
     ]

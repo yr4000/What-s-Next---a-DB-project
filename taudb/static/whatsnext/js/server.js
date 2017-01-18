@@ -327,8 +327,8 @@ function ImFeelingLucky(latitude, longitude) {
         function(response)
         {
             console.log(response)
-            //lastSearch = enumSearchTypes.Marker;
-            //lastMarkerSearched = {latitude: latitude, longitude: longitude};
+            lastSearch = enumSearchTypes.Marker;
+            lastMarkerSearched = {latitude: latitude, longitude: longitude};
             showSearchResults(response);
         },
         'json')
