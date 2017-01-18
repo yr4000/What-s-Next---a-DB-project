@@ -428,9 +428,12 @@ def get_popular_searches():
     return top_choices
 
 
-def lookup_search_by_places_set(places_ids_str):
-    if not places_ids_str:
-        raise ValueError('places_ids_str arguments must be not None')
+def lookup_choice_by_places_set(places_ids_list):
+    if not places_ids_list:
+        raise ValueError('places_ids_list argument must be not None nor empty')
+
+    # create a sorted string of the ids, joined with a space separator
+    places_ids_str = ' '.join([str(place_id) for place_id in sorted(places_ids_list)])
 
     cur = init_db_cursor()
 
