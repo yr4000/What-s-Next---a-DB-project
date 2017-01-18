@@ -510,6 +510,8 @@ def update_search(choice_id):
 
 
 def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
+    ADD_HALF_KM_TO_LAT = str(0.5*10000/111.0)
+    ADD_HALF_KM_TO_LONG = str(0.5*10000/69.0)
 
     cur = init_db_cursor()
 
@@ -553,24 +555,30 @@ def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
             '			    Where                                                                                   ' \
             '					museums.id = pc_museums.place_id                                                    ' \
             '					And pc_museums.category_id = 4                                                      ' \
-            '                   And museums.latitude BETWEEN %s - 100 AND %s + 100                                  ' \
-            '                   And museums.longitude BETWEEN %s - 50 AND %s + 50 ) As museums                      ' \
+            '                   And museums.latitude BETWEEN %s - '+ADD_HALF_KM_TO_LAT+'                            ' \
+            '                   AND %s + '+ADD_HALF_KM_TO_LAT+'                                                     ' \
+            '                   And museums.longitude BETWEEN %s - '+ADD_HALF_KM_TO_LONG+'                          ' \
+            '                   AND %s + '+ADD_HALF_KM_TO_LONG+' ) As museums                                       ' \
             '		Where                                                                                           ' \
             '			bars.id = pc_bars.place_id                                                                  ' \
-            '			And pc_bars.category_id = 3 And bars.latitude BETWEEN m_lat - 10 AND m_lat + 10             ' \
-            '           And bars.longitude BETWEEN m_lon - 10 AND m_lat + 10 And bars.id <> muid ) As bars          ' \
+            '			And pc_bars.category_id = 3 And bars.latitude BETWEEN m_lat - '+ADD_HALF_KM_TO_LAT+'        ' \
+            '           AND m_lat + '+ADD_HALF_KM_TO_LAT+'                                                          ' \
+            '           And bars.longitude BETWEEN m_lon - '+ADD_HALF_KM_TO_LONG+'                                  ' \
+            '           AND m_lat + '+ADD_HALF_KM_TO_LONG+' And bars.id <> muid ) As bars                           '\
             '	Where                                                                                               ' \
             '		restaurants.id = pc_restaurants.place_id                                                        ' \
             '		And pc_restaurants.category_id = 2                                                              ' \
-            '       And restaurants.latitude BETWEEN b_lat - 10 AND b_lat + 10                                      ' \
-            '       AND restaurants.longitude BETWEEN b_lon - 10 AND b_lat + 10                                     ' \
+            '       And restaurants.latitude BETWEEN b_lat - '+ADD_HALF_KM_TO_LAT+'                                 ' \
+            '       AND b_lat + '+ADD_HALF_KM_TO_LAT+'                                                              ' \
+            '       AND restaurants.longitude BETWEEN b_lon - '+ADD_HALF_KM_TO_LONG+'                               ' \
+            '       AND b_lat + '+ADD_HALF_KM_TO_LONG+'                                                             ' \
             '       And restaurants.id <> bid                                                                       ' \
             '       AND restaurants.id <> muid ) As restaurants                                                     ' \
             'Where                                                                                                  ' \
             '	hotels.id = pc_hotels.place_id                                                                      ' \
             '	And pc_hotels.category_id = 1                                                                       ' \
-            '   And hotels.latitude BETWEEN r_lat - 10 AND r_lat + 10                                               ' \
-            '   AND hotels.longitude BETWEEN r_lon - 10 AND r_lat + 10                                              ' \
+            '   And hotels.latitude BETWEEN r_lat - '+ADD_HALF_KM_TO_LAT+' AND r_lat + '+ADD_HALF_KM_TO_LAT+'       ' \
+            '   AND hotels.longitude BETWEEN r_lon - '+ADD_HALF_KM_TO_LONG+' AND r_lat + '+ADD_HALF_KM_TO_LONG+'    ' \
             '   And hotels.id <> rid                                                                                ' \
             '   And hotels.id <> bid                                                                                ' \
             '   And hotels.id <> muid                                                                               ' \
@@ -641,9 +649,12 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
 
     # This crawl query returns best rated bar, restaurant and hotels where the hotel is near a given location,
     # and the restaurant near the hotel and the bar is near the restaurant.
-    query = 'SELECT hotel_id, restaurant_id, p.id AS bar_id                                            '\
+    query = 'SELECT hotel_id, hotel_name, hotel_lat, hotel_long,                                       ' \
+            'rest_id,rest_name,rest_lat,rest_long,                                                     ' \
+            'p.id AS bar_id, p.name AS bar_name,p.latitude As bar_lat, p.longitude AS long_lat         '\
             'FROM(                                                                                     '\
-            '	SELECT best_restaurant.*,MAX(p.rating) as max_rate_of_bar                              '\
+            '	SELECT hotel_id,hotel_name,hotel_lat,hotel_long,                                       ' \
+            '    p.id AS rest_id,p.name AS rest_name, p.latitude AS rest_lat ,p.longitude AS rest_long '\
             '	FROM(                                                                                  '\
             '		SELECT best_hotel_and_restaurant_rate.hotel_id, p.id AS restaurant_id,             '\
             '				p.latitude,p.longitude                                                     '\
@@ -654,8 +665,8 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             '			FROM(                                                                          '\
             '			                                                                               '\
             '				#q1: get best rate hotel in range                                          '\
-            '				SELECT p.id AS hotel_id, p.name AS hotel_name,                             '\
-            '						p.latitude,p.longitude                                             '\
+            '				SELECT p.id AS hotel_id, p.name AS hotel_name,                             ' \
+            '                      p.latitude AS hotel_lat ,p.longitude AS hotel_long                                             '\
             '				FROM places AS p                                                           '\
             '				INNER JOIN                                                                 '\
             '				places_categories AS pc ON p.id = pc.place_id                              '\
@@ -667,38 +678,68 @@ def crawl_by_location_highest_rating(top, right, bottom, left):
             '				) as best_hotel,                                                           '\
             '			places AS p INNER JOIN                                                         '\
             '			places_categories AS pc ON p.id = pc.place_id                                  '\
-            '			WHERE p.latitude BETWEEN best_hotel.latitude - '+ADD_HALF_KM_TO_LAT+'          '\
-            '			AND best_hotel.latitude + '+ADD_HALF_KM_TO_LAT+'                               '\
-            '			AND  p.longitude BETWEEN best_hotel.longitude - '+ADD_HALF_KM_TO_LONG+'        '\
-            '			AND best_hotel.longitude + '+ADD_HALF_KM_TO_LONG+'                             '\
+            '			WHERE p.latitude BETWEEN hotel_lat - '+ADD_HALF_KM_TO_LAT+'                    '\
+            '			AND hotel_lat + '+ADD_HALF_KM_TO_LAT+'                                         '\
+            '			AND  p.longitude BETWEEN hotel_long - '+ADD_HALF_KM_TO_LONG+'                  '\
+            '			AND hotel_long + '+ADD_HALF_KM_TO_LONG+'                                       '\
             '			AND pc.category_id = 2                                                         '\
             '				                                                                           '\
             '				) AS best_hotel_and_restaurant_rate,                                       '\
             '		places AS p INNER JOIN                                                             '\
             '		places_categories AS pc ON p.id = pc.place_id                                      '\
-            '		WHERE p.latitude BETWEEN best_hotel_and_restaurant_rate.latitude - '+ADD_HALF_KM_TO_LAT+' '\
-            '		AND best_hotel_and_restaurant_rate.latitude + '+ADD_HALF_KM_TO_LAT+'               '\
-            '		AND  p.longitude BETWEEN best_hotel_and_restaurant_rate.longitude - '+ADD_HALF_KM_TO_LONG+' '\
-            '		AND best_hotel_and_restaurant_rate.longitude + '+ADD_HALF_KM_TO_LONG+'             '\
+            '		WHERE p.latitude BETWEEN hotel_lat - '+ADD_HALF_KM_TO_LAT+'                        '\
+            '		AND hotel_lat + '+ADD_HALF_KM_TO_LAT+'                                             '\
+            '		AND  p.longitude BETWEEN hotel_long - '+ADD_HALF_KM_TO_LONG+'                      '\
+            '		AND hotel_long + '+ADD_HALF_KM_TO_LONG+'                                           '\
             '		AND pc.category_id = 2                                                             '\
-            '		AND p.rating = best_hotel_and_restaurant_rate.max_rate_of_restaurant               '\
+            '		AND p.rating = max_rate_of_restaurant                                              '\
             '				)AS best_restaurant,                                                       '\
             '	places AS p INNER JOIN                                                                 '\
             '	places_categories AS pc ON p.id = pc.place_id                                          '\
-            '	WHERE p.latitude BETWEEN best_restaurant.latitude - '+ADD_HALF_KM_TO_LAT+'             '\
-            '	AND best_restaurant.latitude + '+ADD_HALF_KM_TO_LAT+'                                  '\
-            '	AND  p.longitude BETWEEN best_restaurant.longitude - '+ADD_HALF_KM_TO_LONG+'           '\
-            '	AND best_restaurant.longitude + '+ADD_HALF_KM_TO_LONG+'                                '\
+            '	WHERE p.latitude BETWEEN rest_lat - '+ADD_HALF_KM_TO_LAT+'                             '\
+            '	AND rest_lat + '+ADD_HALF_KM_TO_LAT+'                                                  '\
+            '	AND  p.longitude BETWEEN rest_long - '+ADD_HALF_KM_TO_LONG+'                           '\
+            '	AND rest_long + '+ADD_HALF_KM_TO_LONG+'                                                '\
             '	AND pc.category_id = 3                                                                 '\
             '                ) AS best_restaurant_and_bar_rate,                                        '\
             'places AS p INNER JOIN                                                                    '\
             'places_categories AS pc ON p.id = pc.place_id                                             '\
-            'WHERE p.latitude BETWEEN best_restaurant_and_bar_rate.latitude - '+ADD_HALF_KM_TO_LAT+'   '\
-            'AND best_restaurant_and_bar_rate.latitude + '+ADD_HALF_KM_TO_LAT+'                        '\
-            'AND  p.longitude BETWEEN best_restaurant_and_bar_rate.longitude - '+ADD_HALF_KM_TO_LONG+' '\
-            'AND best_restaurant_and_bar_rate.longitude + '+ADD_HALF_KM_TO_LONG+'                      '\
+            'WHERE p.latitude BETWEEN rest_lat - '+ADD_HALF_KM_TO_LAT+'                                '\
+            'AND rest_lat + '+ADD_HALF_KM_TO_LAT+'                                                     '\
+            'AND  p.longitude BETWEEN rest_long - '+ADD_HALF_KM_TO_LONG+'                              '\
+            'AND rest_long + '+ADD_HALF_KM_TO_LONG+'                                                   '\
             'AND pc.category_id = 3                                                                    '\
-            'AND p.rating = best_restaurant_and_bar_rate.max_rate_of_bar                               '\
+            'AND p.rating = max_rate_of_bar                                                            '\
             'LIMIT 1                                                                                   '
 
     cur.execute(query, (bottom, top, left, right))
+    result = cur.fetchall()
+
+    best_rate_places = {}
+    best_rate_places[result["hotel_id"]] = {
+        "id" : result["hotel_id"],
+        "name" : result["hotel_name"],
+        "latitude" : result["hotel_id"],
+        "longitude" : result["hotel_id"],
+        "category_id" : 1
+    }
+
+    best_rate_places[result["rest_id"]] = {
+        "id" : result["rest_id"],
+        "name" : result["rest_name"],
+        "latitude" : result["rest_id"],
+        "longitude" : result["rest_id"],
+        "category_id" : 2
+    }
+
+    best_rate_places[result["bar_id"]] = {
+        "id" : result["bar_id"],
+        "name" : result["bar_name"],
+        "latitude" : result["bar_id"],
+        "longitude" : result["bar_id"],
+        "category_id" : 3
+    }
+
+    cur.close()
+
+    return best_rate_places

@@ -310,3 +310,29 @@ function drawLinesBetweenMarkers(){
     currentSearch = tempArr
     tripPath.setMap(map); // draw the line
 }
+
+
+function ImFeelingLucky(latitude, longitude) {
+    console.log("starting ImFeelingLucky");
+    var url = "/ImFeelingLucky/";
+
+    var search_values = {
+        latitude: latitude,
+        longitude: longitude,
+        distance: searchDistance,
+    };
+
+    $.post(url,
+        JSON.stringify(search_values),
+        function(response)
+        {
+            console.log(response)
+            //lastSearch = enumSearchTypes.Marker;
+            //lastMarkerSearched = {latitude: latitude, longitude: longitude};
+            showSearchResults(response);
+        },
+        'json')
+    .fail(function(jgXHR, textStatus, errorThrown) {
+         console.log("Failed to Search around Marker");
+    });
+}

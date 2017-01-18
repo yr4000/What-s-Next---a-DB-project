@@ -248,8 +248,19 @@ def calc_top_places_for_category(request):
 
 
 #TODO: Yair finish
-def im_feeling_lucky(latitude, longitude, distance):
+def im_feeling_lucky(request):
+    if request.is_ajax() is False:
+        raise Http404
+
+    request_json = json.loads(request.body)
+
+    latitude = request_json["latitude"]
+    longitude = request_json["longitude"]
+    distance = request_json["distance"]
+
     latitude, longitude = modify_longlat_for_db(latitude, longitude)
     top, right, bottom, left = get_boundaries_by_center_and_distance(latitude, longitude, distance)
 
     lucky_route = crawl_by_location_highest_rating(top, right, bottom, left)
+
+    return JsonResponse(lucky_route,status=200)
