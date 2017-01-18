@@ -111,3 +111,35 @@ function removeAllMarkersExceptChosenOne(anakin) {
     }
     console.log("end chosen one")
 }
+
+function drawLinesBetweenMarkers(){
+    cleanPastResults();
+    showResults();
+
+    var tripPlanCoordinates = [];
+    var tempArr = [];
+    var i = 0;
+    //currentSearch.reverse
+    while (currentSearch.length != 0) {
+        var objectHolder = currentSearch.pop();
+        console.log(objectHolder);
+        var tempLatLng = new google.maps.LatLng(objectHolder["latitude"], objectHolder["longitude"]);
+        tripPlanCoordinates.push(tempLatLng);
+        addMarker(tempLatLng, objectHolder["name"], objectHolder["id"], false,
+                    enumMarkerColors[capitalizeFirstLetter(objectHolder["category"])], i);
+        addLocationRow(objectHolder, capitalizeFirstLetter(objectHolder["category"]), i);
+
+        tempArr.push(objectHolder);
+        i++;
+    }
+
+    var tripPath = new google.maps.Polyline({
+        path: tripPlanCoordinates,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+    });
+    currentSearch = tempArr;
+    tripPath.setMap(map); // draw the line
+}

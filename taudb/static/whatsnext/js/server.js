@@ -13,6 +13,7 @@ $.ajaxSetup({
     }
 });
 
+//    url(r'^place/get_around_marker/', views.search_places_by_point)
 function searchAroundMarker(latitude, longitude) {
     var url = "/place/get_around_marker/";
 
@@ -39,6 +40,7 @@ function searchAroundMarker(latitude, longitude) {
     });
 }
 
+//    url(r'^searchByFullText', views.search_by_name)
 function searchByFullText(word) {
     var url = "/searchByFullText/";
 
@@ -62,6 +64,7 @@ function searchByFullText(word) {
     });
 }
 
+//    url(r'^stats/top_places', views.calc_top_places_for_category)
 function getMostPopular() {
     var url = "/stats/top_places?category=" + searchCategory;
 
@@ -95,6 +98,7 @@ function getMostPopular() {
     });
 }
 
+//    url(r'^searchCombinationByPoint', views.find_suggestion_by_point)
 function searchCombinationByPoint(latitude, longitude) {
     var url = "/searchCombinationByPoint/";
     //isSearchByText = false; // TODO Alon add to enumSearchTypes if needed.
@@ -145,6 +149,7 @@ function searchCombinationByPoint(latitude, longitude) {
     });
 }
 
+//    url(r'^stats/top_places', views.calc_top_places_for_category)
 function getPlaceDetails(place_id, index) {
     var url="/place/" + place_id + "/details/";
 
@@ -189,6 +194,7 @@ function getPlaceDetails(place_id, index) {
     });
 }
 
+//    url(r'^stats/categories', views.calc_categories_statistics)
 function getPlaceStatistics() {
     var url="/stats/categories?latitude=" + currentPlace.latitude + "&longitude=" + currentPlace.longitude +
         "&distance=" + DEFAULT_SEARCH_DISTANCE + "&except_category=" + currentPlace.category;
@@ -231,6 +237,7 @@ function getPlaceStatistics() {
     });
 }
 
+//    url(r'^updatePopularSearches', views.update_popular_search)
 function updatePopularSearches() {
     console.log("started update popular search");
     var url = "/updatePopularSearches/";
@@ -266,52 +273,7 @@ function updatePopularSearches() {
     console.log("finished updated popular search");
 }
 
-function modifyCurrentSearchForServer(){
-    var modifiedSearchArr = [];
-    var tempArr = [];
-    currentSearch.reverse();
-    while(currentSearch.length != 0){
-        var objectHolder = currentSearch.pop();
-        modifiedSearchArr.push(objectHolder["id"]);
-        tempArr.push(objectHolder);
-    }
-    currentSearch = tempArr;
-    return modifiedSearchArr;
-}
-
-function drawLinesBetweenMarkers(){
-    cleanPastResults();
-    showResults();
-
-    var tripPlanCoordinates = [];
-    var tempArr = [];
-    var i = 0;
-    //currentSearch.reverse
-    while (currentSearch.length != 0) {
-        var objectHolder = currentSearch.pop();
-        console.log(objectHolder)
-        var tempLatLng = new google.maps.LatLng(objectHolder["latitude"], objectHolder["longitude"]);
-        tripPlanCoordinates.push(tempLatLng);
-        addMarker(tempLatLng, objectHolder["name"], objectHolder["id"], false,
-                    enumMarkerColors[capitalizeFirstLetter(objectHolder["category"])], i);
-        addLocationRow(objectHolder, capitalizeFirstLetter(objectHolder["category"]), i);
-
-        tempArr.push(objectHolder)
-        i++;
-    }
-
-    var tripPath = new google.maps.Polyline({
-        path: tripPlanCoordinates,
-        geodesic: true,
-        strokeColor: '#FF0000',
-        strokeOpacity: 1.0,
-        strokeWeight: 2
-    });
-    currentSearch = tempArr
-    tripPath.setMap(map); // draw the line
-}
-
-
+//    url(r'^ImFeelingLucky', views.im_feeling_lucky)
 function ImFeelingLucky(latitude, longitude) {
     console.log("starting ImFeelingLucky");
     var url = "/ImFeelingLucky/";
@@ -319,14 +281,14 @@ function ImFeelingLucky(latitude, longitude) {
     var search_values = {
         latitude: latitude,
         longitude: longitude,
-        distance: searchDistance,
+        distance: searchDistance
     };
 
     $.post(url,
         JSON.stringify(search_values),
         function(response)
         {
-            console.log(response)
+            console.log(response);
             lastSearch = enumSearchTypes.Marker;
             lastMarkerSearched = {latitude: latitude, longitude: longitude};
             showSearchResults(response);
@@ -336,3 +298,5 @@ function ImFeelingLucky(latitude, longitude) {
          console.log("Failed to Search around Marker");
     });
 }
+
+//    url(r'^stats/top_choices', views.calc_top_choices)

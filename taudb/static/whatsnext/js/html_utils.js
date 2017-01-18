@@ -266,3 +266,15 @@ function cleanPastResults() {
     clearTable("results");
 }
 
+function modifyCurrentSearchForServer(){
+    var modifiedSearchArr = [];
+    var tempArr = [];
+    currentSearch.reverse();
+    while(currentSearch.length != 0){
+        var objectHolder = currentSearch.pop();
+        modifiedSearchArr.push(objectHolder["id"]);
+        tempArr.push(objectHolder);
+    }
+    currentSearch = tempArr;
+    return modifiedSearchArr;
+}
