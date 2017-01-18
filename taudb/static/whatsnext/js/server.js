@@ -160,7 +160,7 @@ function getPlaceDetails(place_id, index) {
 
         showResultTab("place-div");
 
-        $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[capitalizeFirstLetter(currentPlace.category)] +
+        $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[currentPlace.category] +
                                     String.fromCharCode((index % 26) + 65) + ".png";
         $("#current-name")[0].innerHTML = currentPlace.name;
         $("#current-id")[0].innerText = "Internal: " + currentPlace.id + "| Google: " + currentPlace.google_id;

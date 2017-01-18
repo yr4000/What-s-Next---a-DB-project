@@ -274,7 +274,7 @@ def get_categories_statistics(top, right, bottom, left, except_category):
 
     statistics = dict()
     for record in records:
-        category_name = record['category_name'].capitalize()
+        category_name = record['category_name']
         places_amount = record['places_amount']
         rating_average = record['rating_average']
 
