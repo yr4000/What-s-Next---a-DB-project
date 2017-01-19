@@ -49,8 +49,7 @@ CREATE TABLE reviews (
     `date` DATE DEFAULT NULL,
     `text` TEXT NOT NULL,
     PRIMARY KEY (`id`),
-    KEY `idx_review_place_id` (`place_id`),
-    CONSTRAINT `fgn_place_id_reviews` FOREIGN KEY (`place_id`) REFERENCES places (`id`)
+    KEY `idx_review_place_id` (`place_id`)
 )  ENGINE=INNODB DEFAULT CHARSET=UTF8;
 
 
