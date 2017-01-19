@@ -1,3 +1,63 @@
+@font-face {
+    font-family: "jura-regular";
+    src:url(/static/whatsnext/fonts/Jura-Regular.ttf);
+}
+
+@font-face {
+    font-family: "jura-light";
+    src:url(/static/whatsnext/fonts/Jura-Light.ttf);
+}
+
+@font-face {
+    font-family: "jura-medium";
+    src:url(/static/whatsnext/fonts/Jura-Medium.ttf);
+}
+
+@font-face {
+    font-family: "amaranth-regular";
+    src:url(/static/whatsnext/fonts/Amaranth-Regular.ttf);
+}
+
+@font-face {
+    font-family: "amaranth-bold";
+    src:url(/static/whatsnext/fonts/Amaranth-Bold.ttf);
+}
+
+@font-face {
+    font-family: "raleway-medium";
+    src:url(/static/whatsnext/fonts/Raleway-Medium.ttf);
+}
+
+@font-face {
+    font-family: "raleway-regular";
+    src:url(/static/whatsnext/fonts/Raleway-Regular.ttf);
+}
+
+@font-face {
+    font-family: "raleway-bold";
+    src:url(/static/whatsnext/fonts/Raleway-Bold.ttf);
+}
+
+@font-face {
+    font-family: "raleway-light";
+    src:url(/static/whatsnext/fonts/Raleway-Light.ttf);
+}
+
+@font-face {
+    font-family: "raleway-medium";
+    src:url(/static/whatsnext/fonts/Raleway-Medium.ttf);
+}
+
+@font-face {
+    font-family: "fingerpaint";
+    src:url(/static/whatsnext/fonts/FingerPaint-Regular.ttf);
+}
+
+@font-face {
+    font-family: "irishgrover";
+    src:url(/static/whatsnext/fonts/IrishGrover.ttf);
+}
+
 body {
 	font-family: Georgia, sans-serif;
 }
@@ -42,6 +102,14 @@ input, select {
 	background-color: rgba(0,0,0, 0.5);
 	color: #ee6109;
 	font-size: 24pt;
+	font-family: amaranth-regular;
+	font-weight: bold;
+}
+
+#overlayTitle {
+	color: #ee6109;
+	font-size: 24pt;
+	font-family: irishgrover, Georgia, sans-serif;
 	font-weight: bold;
 }
 
@@ -67,6 +135,7 @@ input, select {
 	color: #ffffff;
 	border: 3px solid #3f3f3f;
 	font-size: 14pt;
+	font-family: raleway-regular, arial;
 }
 
 #closebtn {
@@ -83,7 +152,7 @@ input, select {
 }
 
 .start-category {
-    width: 150px;
+    width: 162px;
     display: inline-table;
     color: #818181;
     border-bottom: solid 2px;
@@ -91,39 +160,39 @@ input, select {
 }
 
 #start-Hotel:hover {
-    color: #bfbfbf;
-    border-bottom: solid 2px white;
+    color: #a4a4a4;
+    border-bottom: solid 2px #A4A4A4;
 }
 #start-Hotel.started {
-    color: orange;
-    border-bottom: solid 2px orange;
+    color: #FFCF75;
+    border-bottom: solid 2px #FFCF75;
 }
 
 #start-Restaurant:hover {
-    color: #bfbfbf;
-    border-bottom: solid 2px #bfbfbf;
+    color: #A4A4A4;
+    border-bottom: solid 2px #A4A4A4;
 }
 #start-Restaurant.started {
-    color: orange;
-    border-bottom: solid 2px orange;
+    color: #FFCF75;
+    border-bottom: solid 2px #FFCF75;
 }
 
 #start-Museum:hover {
-    color: #bfbfbf;
-    border-bottom: solid 2px #bfbfbf;
+    color: #A4A4A4;
+    border-bottom: solid 2px #A4A4A4;
 }
 #start-Museum.started {
-    color: orange;
-    border-bottom: solid 2px orange;
+    color: #FFCF75;
+    border-bottom: solid 2px #FFCF75;
 }
 
 #start-Bar:hover {
-    color: #bfbfbf;
-    border-botttom: solid 2px #bfbfbf;
+    color: #A4A4A4;
+    border-bottom: solid 2px #A4A4A4;
 }
 #start-Bar.started {
-    color: orange;
-    border-botttom: solid 2px orange;
+    color: #FFCF75;
+    border-bottom: solid 2px #FFCF75;
 }
 
 .nav {
