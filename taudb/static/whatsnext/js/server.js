@@ -180,8 +180,9 @@ function getPlaceDetails(place_id, index) {
                 var review = response.reviews[key];
                 var reviewDiv = document.createElement("div");
                 reviewDiv.className = "review";
-                reviewDiv.innerHTML = "<b>Rating: " + review.rating + "</b></br>" + review.text +
-                                      "</br><b>By " + review.author + " on " + review.date + "</b>";
+                reviewDiv.innerHTML = "<span class='review-meta'>Rating: " + review.rating + "</span>" +
+                    "</br>" + review.text + "</br>" +
+                    "<span class='review-meta'>By " + review.author + " on " + review.date + "</span></br>";
                 $("#current-reviews")[0].appendChild(reviewDiv);
             }
         }

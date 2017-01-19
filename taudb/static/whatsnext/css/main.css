@@ -359,11 +359,13 @@ input, select {
 
 .place-address {
     border-bottom: dashed 1px black;
+	font-family: raleway-light;
 }
 
 .place-rating {
 	font-weight: bold;
     border-bottom: dashed 1px black;
+	font-family: raleway-regular;
 }
 
 #current-name {
@@ -384,7 +386,7 @@ input, select {
 	width: 50%;
 	background: green;
 	color: white;
-	font-weight:bold;
+	text-align: center;
 }
 
 #end-here {
@@ -392,7 +394,7 @@ input, select {
 	width:50%;
 	background: black;
 	color: white;
-	font-weight:bold;
+	text-align: center;
 }
 
 #current-reviews {
@@ -404,9 +406,17 @@ input, select {
 	text-align: center;
 	padding-top: 140px;
 }
+
 .review {
 	font-size: 10pt;
 	padding: 4px 4px 4px 10px;
+	font-family: raleway-light;
+}
+
+.review-meta {
+	font-size: 11pt;
+	padding: 4px 4px 4px 10px;
+	font-family: raleway-medium;
 }
 
 #statistics {
