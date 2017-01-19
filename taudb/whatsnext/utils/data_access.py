@@ -358,7 +358,7 @@ def get_popular_places_for_category(category):
     return top_places
 
 
-def get_popular_searches():
+def get_popular_choices():
     cur = init_db_cursor()
 
     # This query dynamically calculates top choices popularity on a scale of 1 to 5 according to the following formula:
@@ -377,8 +377,8 @@ def get_popular_searches():
             '       places.latitude,                                                      '\
             '       places.longitude,                                                     '\
             '       categories.name AS category,                                          '\
-            '       top_searches.choice_id,                                               '\
-            '       top_searches.popularity                                               '\
+            '       top_choices.choice_id,                                                '\
+            '       top_choices.popularity                                                '\
             'FROM   (SELECT choice_id,                                                    '\
             '               Round(( 4 * ( ( popularity - min_raw_popularity ) / (         '\
             '                                     max_raw_popularity - min_raw_popularity '\
@@ -389,17 +389,17 @@ def get_popular_searches():
             '               (SELECT Min(popularity) AS min_raw_popularity                 '\
             '                FROM   choices) AS min_popularity                            '\
             '        ORDER  BY popularity DESC                                            '\
-            '        LIMIT  5) AS top_searches                                            '\
+            '        LIMIT  5) AS top_choices                                             '\
             '       INNER JOIN choices_places                                             '\
-            '               ON top_searches.choice_id = choices_places.choice_id          '\
+            '               ON top_choices.choice_id = choices_places.choice_id           '\
             '       INNER JOIN places                                                     '\
             '               ON choices_places.place_id = places.id                        '\
             '       INNER JOIN places_categories                                          '\
             '               ON places.id = places_categories.place_id                     '\
             '       INNER JOIN categories                                                 '\
             '               ON places_categories.category_id = categories.id              '\
-            'ORDER  BY top_searches.popularity DESC,                                      '\
-            '          top_searches.choice_id DESC;                                       '
+            'ORDER  BY top_choices.popularity DESC,                                       '\
+            '          top_choices.choice_id DESC;                                        '
 
     cur.execute(query)
 
@@ -479,7 +479,7 @@ def insert_new_choice(places_ids_list):
     cur = conn.cursor(mdb.cursors.DictCursor)
 
     try:
-        # insert a new search with the initial popularity=1, and get the new choice_id
+        # insert a new choice with the initial popularity=1, and get the new choice_id
         choice_query = 'INSERT INTO choices (`popularity`) VALUES (1)'
         cur.execute(choice_query)
 
@@ -487,7 +487,7 @@ def insert_new_choice(places_ids_list):
         choice_id = cur.lastrowid
         places_ids_list_of_tuples = [(choice_id, place_id) for place_id in places_ids_list]
 
-        # insert the searches-places records of the new search to db
+        # insert the choices-places records of the new choice to db
         choice_places_query = 'INSERT INTO choices_places (`choice_id`, `place_id`) VALUES (choice_id, %s)'
         cur.executemany(choice_places_query, places_ids_list_of_tuples)
 

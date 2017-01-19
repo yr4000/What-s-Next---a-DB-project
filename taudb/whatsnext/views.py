@@ -15,7 +15,7 @@ from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
     search_places_near_location, search_places_by_name, lookup_choice_by_places_set, insert_new_choice, \
     update_choice, get_popular_places_for_category, crawl_by_location_shortest_path, crawl_by_location_highest_rating, \
-    get_popular_searches
+    get_popular_choices
 
 
 def homepage(request):
@@ -230,7 +230,7 @@ def calc_categories_statistics(request):
 
 
 def calc_top_choices(request):
-    top_choices = get_popular_searches()
+    top_choices = get_popular_choices()
 
     return JsonResponse(top_choices, status=200)
 
