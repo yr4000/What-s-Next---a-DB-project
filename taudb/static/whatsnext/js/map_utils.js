@@ -119,34 +119,44 @@ function removeAllMarkersExceptChosenOne(anakin) {
     console.log("end chosen one")
 }
 
-function drawLinesBetweenMarkers(){
-    cleanPastResults();
-    showResults();
+function showRouteOnMap(locationsArr) {
+     // TODO: Alon M, this is a temporary arr just for POC, so just pass an array of LatLng objects to the function
+    locationsArr = [new google.maps.LatLng(51.668403, -0.176567),
+        new google.maps.LatLng(51.398291, -0.049449),
+        new google.maps.LatLng(51.566181, 0.111744)];
 
-    var tripPlanCoordinates = [];
-    var tempArr = [];
-    var i = 0;
-    //currentSearch.reverse
-    while (currentSearch.length != 0) {
-        var objectHolder = currentSearch.pop();
-        console.log(objectHolder);
-        var tempLatLng = new google.maps.LatLng(objectHolder["latitude"], objectHolder["longitude"]);
-        tripPlanCoordinates.push(tempLatLng);
-        addMarker(tempLatLng, objectHolder["name"], objectHolder["id"], false,
-                    enumMarkerColors[capitalizeFirstLetter(objectHolder["category"])], i);
-        addLocationRow(objectHolder, capitalizeFirstLetter(objectHolder["category"]), i);
-
-        tempArr.push(objectHolder);
-        i++;
+    // function requires at least 2 locations (otherwise can't show a route on the map)
+    if (locationsArr.length < 2) {
+        return;
     }
 
-    var tripPath = new google.maps.Polyline({
-        path: tripPlanCoordinates,
-        geodesic: true,
-        strokeColor: '#FF0000',
-        strokeOpacity: 1.0,
-        strokeWeight: 2
+    var directionsService = new google.maps.DirectionsService();
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(map);
+
+    // set the waypoints for the route only if there are any (at least 3 locations)
+    var waypoints = [];
+    if (locationsArr.length >= 3) {
+        for (var i = 1; i < locationsArr.length - 1; i++) {
+            waypoints.push({
+                location: locationsArr[i],
+                stopover: true
+            });
+        }
+    }
+
+    //  the Google Directions API request
+    var request = {
+        origin: locationsArr[0],
+        destination: locationsArr[locationsArr.length - 1],
+        waypoints: waypoints,
+        travelMode: google.maps.DirectionsTravelMode.DRIVING // TODO: if we have time, ask user input for travel mode
+    };
+
+    // send the request and handle the response - show the route on map
+    directionsService.route(request, function (response, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(response);
+        }
     });
-    currentSearch = tempArr;
-    tripPath.setMap(map); // draw the line
 }
