@@ -98,57 +98,6 @@ function getMostPopular() {
     });
 }
 
-//    url(r'^searchCombinationByPoint', views.find_suggestion_by_point)
-function searchCombinationByPoint(latitude, longitude) {
-    var url = "/searchCombinationByPoint/";
-    //isSearchByText = false; // TODO Alon add to enumSearchTypes if needed.
-
-    var search_values = {
-        latitude: latitude,
-        longitude: longitude,
-        page: requestPage
-    };
-
-    $.post(url,
-        JSON.stringify(search_values),
-        function(response)
-        {
-            if(markersArray.length !=0){
-                clearArray(markersArray);
-                clearResultsTable();
-            }
-
-            showResultTab("place-div");
-
-            var i = 0;
-            for (var key in response) {
-                var sugg = response[key]; // the current 4 places combo suggestion from query
-
-                addMarker(new google.maps.LatLng(sugg[0].latitude, sugg[0].longitude),
-                          sugg[0]["name"], sugg[0]["id"], false, enumMarkerColors["Hotel"], i);
-                addLocationRow(sugg[0], "Hotel", i);
-
-                addMarker(new google.maps.LatLng(sugg[1].latitude, sugg[1].longitude),
-                          sugg[1]["name"], sugg[1]["id"], false, enumMarkerColors["Restaurant"], i+1);
-                addLocationRow(sugg[1], "Restaurant", i+1);
-
-                addMarker(new google.maps.LatLng(sugg[2].latitude, sugg[2].longitude),
-                          sugg[2]["name"], sugg[2]["id"], false, enumMarkerColors["Bar"], i+2);
-                addLocationRow(sugg[2], "Bar", i+2);
-
-                addMarker(new google.maps.LatLng(sugg[3].latitude, sugg[3].longitude),
-                          sugg[3]["name"], sugg[3]["id"], false, enumMarkerColors["Museum"], i+3);
-                addLocationRow(sugg[3], "Museum", i+3);
-
-                i = i + 4;
-            }
-        },
-        'json')
-    .fail(function(jgXHR, textStatus, errorThrown) {
-         console.log("Failed to preform search combination by point");
-    });
-}
-
 //    url(r'^stats/top_places', views.calc_top_places_for_category)
 function getPlaceDetails(place_id, index) {
     var url="/place/" + place_id + "/details/";
