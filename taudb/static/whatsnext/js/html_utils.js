@@ -50,7 +50,7 @@ $(document).ready(function () {
                 return;
             }
             searchByFullText(searchValue);
-            $("#search-div").css('display','none');
+            $("#search-div").show();
         }
     });
 
@@ -144,11 +144,7 @@ function searchBarShow() {
     if ($("#input-around").is(":visible") || $("#input-fulltext").is(":visible"))
         return;
 
-    $("#search-div").css('display','table');
-}
-
-function searchBarHide() {
-    $("#search-div").css('display','none');
+    $("#search-div").show();
 }
 
 function showMarkerInput() {
@@ -266,7 +262,7 @@ function cleanPastResults(table) {
     if ($("#explanation-div").is(":visible"))
         $("#explanation-div").hide();
 
-    $("#search-div").hide();
+    $("#search-div").show();
     $("#input-around").hide();
     $("#input-fulltext").hide();
 
