@@ -367,7 +367,6 @@ def get_popular_choices():
             '       places.rating,                                                        '\
             '       places.latitude,                                                      '\
             '       places.longitude,                                                     '\
-            '       categories.name AS category,                                          '\
             '       top_choices.choice_id,                                                '\
             '       top_choices.popularity                                                '\
             'FROM   (SELECT choice_id,                                                    '\
@@ -384,10 +383,6 @@ def get_popular_choices():
             '               ON top_choices.choice_id = choices_places.choice_id           '\
             '       INNER JOIN places                                                     '\
             '               ON choices_places.place_id = places.id                        '\
-            '       INNER JOIN places_categories                                          '\
-            '               ON places.id = places_categories.place_id                     '\
-            '       INNER JOIN categories                                                 '\
-            '               ON places_categories.category_id = categories.id              '\
             'ORDER  BY top_choices.popularity DESC,                                       '\
             '          top_choices.choice_id DESC;                                        '
 
@@ -405,7 +400,6 @@ def get_popular_choices():
         place['latitude'] = (record['latitude'] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
         place['rating'] = record['rating']
         place['vicinity'] = record['vicinity']
-        place['category'] = record['category']
         choice_id = record['choice_id']
         popularity = record['popularity']
 
