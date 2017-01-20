@@ -480,7 +480,7 @@ def insert_new_choice(places_ids_list):
         places_ids_list_of_tuples = [(choice_id, place_id) for place_id in places_ids_list]
 
         # insert the choices-places records of the new choice to db
-        choice_places_query = 'INSERT INTO choices_places (`choice_id`, `place_id`) VALUES (choice_id, %s)'
+        choice_places_query = 'INSERT INTO choices_places (`choice_id`, `place_id`) VALUES (%s, %s)'
         cur.executemany(choice_places_query, places_ids_list_of_tuples)
 
         conn.commit()
