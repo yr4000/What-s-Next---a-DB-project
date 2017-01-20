@@ -109,6 +109,15 @@ $(document).ready(function () {
         currentSearch.push(currentPlace);
         // Asking what's next
         $(".next-nav").show();
+
+        $("#current-accept").hide();
+        $("#current-remove").show();
+    });
+
+    $("#current-remove").on("click",function(e) {
+        currentSearch.splice(currentSearch.map(function(a) { return a.id; }).indexOf(currentPlace.id), 1);
+        $("#current-remove").hide();
+        $("#current-accept").show();
     });
 
     $("#end-here").on("click", function(e) {

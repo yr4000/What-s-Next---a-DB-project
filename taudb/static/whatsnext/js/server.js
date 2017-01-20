@@ -106,7 +106,16 @@ function getPlaceDetails(place_id, index) {
     "",
     function(response) {
         currentPlace = response.place;
-
+        // If current place is in currentSearch then show the option to remove it.
+        if (!currentSearch.map(function(a) { return a.id; }).indexOf(currentPlace.id)) {
+            $("#current-accept").hide();
+            $("#current-remove").show();
+        }
+        else {
+            // Make sure the option to add it is visible.
+            $("#current-remove").hide();
+            $("#current-accept").show();
+        }
         showResultTab("place-div");
 
         $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[currentPlace.category] +
