@@ -501,6 +501,16 @@ input, select {
     text-decoration: underline;
 }
 
+#end-next {
+    text-align: center;
+    font-weight: bold;
+    font-size: larger;
+    background: rgba(0,0,0,0.15);
+}
+
+#end-next:hover {
+    text-decoration: underline;
+}
 .disabled {
     pointer-events: none;
     opacity: 0.4;

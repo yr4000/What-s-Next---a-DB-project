@@ -125,7 +125,11 @@ $(document).ready(function () {
     });
 
     $("#end-here").on("click", function(e) {
-        updatePopularSearches();
+        endSearch();
+    });
+
+    $("#end-next").on("click", function(e) {
+        endSearch();
     });
 });
 
@@ -294,4 +298,10 @@ function modifyCurrentSearchForServer(){
     }
     currentSearch = tempArr;
     return modifiedSearchArr;
+}
+
+function endSearch() {
+    // TODO AlonM
+    showPastResults();
+    updatePopularSearches();
 }
