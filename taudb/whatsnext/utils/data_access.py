@@ -167,7 +167,6 @@ def get_place_reviews(place):
             'WHERE                       '\
             '   reviews.place_id = %s    '
 
-    # cur.execute(query, (place.place_id,)) TODO: this does not use the Place class anymore, need to fix this
     cur.execute(query, (place['id'],))
 
     records = cur.fetchall()
@@ -376,10 +375,9 @@ def get_popular_choices():
             '                                     max_raw_popularity - min_raw_popularity '\
             '                                       ) ) + 1 ), 2) AS popularity           '\
             '        FROM   choices,                                                      '\
-            '               (SELECT Max(popularity) AS max_raw_popularity                 '\
-            '                FROM   choices) AS max_popularity,                           '\
-            '               (SELECT Min(popularity) AS min_raw_popularity                 '\
-            '                FROM   choices) AS min_popularity                            '\
+            '               (SELECT Max(popularity) AS max_raw_popularity,                '\
+            '                       Min(popularity) AS min_raw_popularity                 '\
+            '                FROM   choices) AS max_min_popularity                        '\
             '        ORDER  BY popularity DESC                                            '\
             '        LIMIT  5) AS top_choices                                             '\
             '       INNER JOIN choices_places                                             '\
@@ -508,7 +506,7 @@ def update_choice(choice_id):
     cur.close()
 
 
-# TODO: Yair finish
+
 def crawl_by_location_highest_rating(top, right, bottom, left):
     ADD_HALF_KM_TO_LAT = str(0.5*10000/111.0)
     ADD_HALF_KM_TO_LONG = str(0.5*10000/69.0)
