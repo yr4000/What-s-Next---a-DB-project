@@ -6,8 +6,6 @@ from geo_utils import RESOLUTION,LONDON_LATITUDE_DB_CONST
 
 DEFAULT_RESULTS_AMOUNT = 10
 
-from django.http import JsonResponse, Http404
-
 
 def get_place_by_place_id(place_id):
     if not place_id:
@@ -444,7 +442,7 @@ def lookup_choice_by_places_set(places_ids_list):
             '    lookup_results.choice_id                                              '\
             'FROM                                                                      '\
             '    (SELECT                                                               '\
-            '        IF(%s = GROUP_CONCAT(place_id ORDER BY place_id SEPARATOR %s),    '\
+            '        IF(%s = GROUP_CONCAT(place_id ORDER BY place_id SEPARATOR \' \'), '\
             '            choice_id,                                                    '\
             '            - 1) AS choice_id                                             '\
             '    FROM                                                                  '\
@@ -453,7 +451,7 @@ def lookup_choice_by_places_set(places_ids_list):
             'WHERE                                                                     '\
             '    lookup_results.choice_id >= 0;                                        '
 
-    cur.execute(query, (places_ids_str, ' '))
+    cur.execute(query, (places_ids_str, ))
 
     if cur.rowcount > 0:
         record = cur.fetchone()  # expecting a single record because of the "group by choice_id" in the query
