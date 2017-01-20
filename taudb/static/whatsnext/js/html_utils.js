@@ -216,7 +216,7 @@ function addSearchLocationRow(place, step) {
     var markerCell = placeRow.insertCell(i++);
     markerCell.className = "marker-cell";
     markerCell.rowSpan = 2;
-    markerCell.innerHTML = '<img src="' + iconFolderPath + enumMarkerColors[capitalizeFirstLetter(place.category)] +
+    markerCell.innerHTML = '<img src="' + iconFolderPath + enumMarkerColors[place.category] +
         String.fromCharCode((step % 26) + 65) + '.png">';
     var titleCell = placeRow.insertCell(i++);
     titleCell.innerText = place.name;
