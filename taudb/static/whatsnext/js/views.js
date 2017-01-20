@@ -1,9 +1,15 @@
 function showSearchResults(tab, table, results) {
-    if (!Object.keys(results).length)
-        return; // If no results were returned do nothing.
-
     cleanPastResults(table);
     showTab(tab);
+
+    if (!Object.keys(results).length) {
+        // If no results were returned do nothing.
+        var tableDOM = document.getElementById(table);
+        var row = tableDOM.insertRow(-1);
+        var apologyCell = row.insertCell(0);
+        apologyCell.innerText = "We're sorry but there are no results available for this search. =\\";
+        apologyCell.className = "apology";
+    }
 
     var i = 0;
     for (var key in results) {
