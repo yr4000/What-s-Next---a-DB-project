@@ -89,6 +89,10 @@ $(document).ready(function () {
     });
     
     $("#next-page").on("click", function(e) {
+        // Happens in Yair's use case of user who changed the category and then immidiately after
+        // decided to click next.
+        if (requestPage == 0)
+            return;
         if (lastSearch == enumSearchTypes.Marker) {
             searchAroundMarker(lastMarkerSearched.latitude, lastMarkerSearched.longitude);
         }
