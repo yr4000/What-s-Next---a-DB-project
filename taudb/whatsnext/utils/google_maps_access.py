@@ -104,7 +104,7 @@ def get_current_rating_from_details_response(json_response):
     try:
         return json_response[KEY_RESULT][KEY_RATING]
     except KeyError:
-        # TODO: log here?
+        # TODO: log? not critical
         print 'Place has no rating in the following json: {json}'.format(json=json_response)
         return None
 

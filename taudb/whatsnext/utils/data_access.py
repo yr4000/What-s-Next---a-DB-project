@@ -78,7 +78,6 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
             'ORDER BY distance ASC                                                     '\
             'LIMIT %s, %s                                                              '
 
-    # TODO: this could easily become a more complicated query and be part of the required 6 (it's currently not!)
     cur.execute(query, (center_latitude, center_longitude, category, bottom, top, left, right,
                         page * DEFAULT_RESULTS_AMOUNT, DEFAULT_RESULTS_AMOUNT))
     rows = cur.fetchall()
@@ -195,7 +194,6 @@ def insert_new_reviews(reviews):
     for review in reviews:
         reviews_tuples_list.append((review.place_id, review.author, review.rating, review.text, review.date))
 
-    # TODO: should use an object to obtain the connection and cursor
     conn = init_db_connection()
     cur = conn.cursor(mdb.cursors.DictCursor)
 
@@ -203,7 +201,6 @@ def insert_new_reviews(reviews):
             'VALUES (%s, %s, %s, %s, %s)                                          '
 
     try:
-        # TODO: check what happens if review.date is None
         cur.executemany(query, reviews_tuples_list)
         conn.commit()
     except:
@@ -216,7 +213,6 @@ def update_place_rating(new_rating, place_id):
     if not new_rating or not place_id:
         raise ValueError('all arguments must be not None')
 
-    # TODO: should use an object to obtain the connection and cursor
     conn = init_db_connection()
     cur = conn.cursor(mdb.cursors.DictCursor)
 
@@ -227,7 +223,6 @@ def update_place_rating(new_rating, place_id):
             '    id = %s     '
 
     try:
-        # TODO: check what happens if review.date is None
         cur.execute(query, (new_rating, place_id))
         conn.commit()
     except:

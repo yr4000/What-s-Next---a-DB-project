@@ -17,8 +17,6 @@ KEY_LOCATION = 'location'
 KEY_LATITUDE = 'lat'
 KEY_LONGITUDE = 'lng'
 
-# TODO: moves this script to the google_maps_access module
-
 HOST = 'https://maps.googleapis.com'
 API = '/maps/api/place/search/json'
 
@@ -101,7 +99,6 @@ def run_specific_coordinates(latitude, longitude):
     print
 
 
-# TODO: once moved this script to google_maps_access - remove this method as it's duplicate
 def check_response_status(json_response):
     if 'status' not in json_response:
         raise Exception('got invalid response with no status')
@@ -110,7 +107,6 @@ def check_response_status(json_response):
         raise Exception('response status was bad: {status}'.format(status=status))
 
 
-# TODO: add a try-except clause for commit and rollback incase of failure
 def write_data_to_db(place, category):
     places_added = 0
     mappings_added = 0
@@ -177,7 +173,7 @@ def convert_to_places_list(json_response):
         try:
             rating = place[KEY_RATING]
         except KeyError:
-            rating = 0  # TODO: change default value to None
+            rating = 0
 
         try:
             vicinity = place[KEY_VICINITY]

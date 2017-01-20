@@ -2,7 +2,7 @@
 import datetime
 
 
-class Serializable(object):  # TODO: move this class elsewhere
+class Serializable(object):
     def to_json(self):
         return self.__dict__
 
