@@ -263,13 +263,15 @@ function getTopChoices() {
             cleanPastResults("choices-results");
             var resultsTable = document.getElementById("choices-results");
 
+            var set_keys = Object.keys(response).reverse();
+
             var i = 0;
-            for (var set_id in response) {
-                var choice_set = response[set_id];
+            for (var key in set_keys) {
+                var choice_set = response[set_keys[key]];
 
                 var setRow = resultsTable.insertRow(-1);
                 var setHeader = setRow.insertCell(0);
-                setHeader.innerHTML = "<br><b>Choice set " + set_id + " popularity " + choice_set.popularity + "</b>";
+                setHeader.innerHTML = "<br><b>Choice set " + set_keys[key] + " popularity " + choice_set.popularity + "</b>";
                 setHeader.colSpan = 3;
 
                 for (var place_id in choice_set.choice_places) {
