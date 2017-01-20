@@ -48,6 +48,7 @@ def search_by_name(request):
     return JsonResponse(places, status=200)
 
 
+# TODO: delete all usages of this API from js and python
 def find_suggestion_by_point(request):
     if request.is_ajax() is False:
         raise Http404

@@ -518,12 +518,12 @@ def update_choice(choice_id):
 
 
 def crawl_by_location_shortest_path(center_latitude, center_longitude, page):
+    # TODO: delete all usages of this API from js and python
     ADD_HALF_KM_TO_LAT = str(1*10000/111.0)
     ADD_HALF_KM_TO_LONG = str(1*10000/69.0)
 
     cur = init_db_cursor()
 
-    # TODO: This query... (describe like other queries)
     query = 'Select 	                                                                                            ' \
             '   hotels.id As hid, hotels.google_id As hgid, hotels.name As hn, hotels.rating As hr,                 ' \
             '   hotels.vicinity As hv, hotels.latitude As h_lat, hotels.longitude As h_lon,                         ' \
