@@ -58,6 +58,16 @@
     src:url(/static/whatsnext/fonts/IrishGrover.ttf);
 }
 
+@font-face {
+    font-family: "ribeye";
+    src:url(/static/whatsnext/fonts/Ribeye-Regular.ttf);
+}
+
+@font-face {
+    font-family: "originalsurfer";
+    src:url(/static/whatsnext/fonts/OriginalSurfer-Regular.ttf);
+}
+
 body {
 	font-family: raleway-medium, Georgia, sans-serif;
 }
@@ -102,13 +112,13 @@ input, select {
 	background-color: rgba(0,0,0, 0.5);
 	color: #ee6109;
 	font-size: 24pt;
-	font-family: raleway-bold;
+	font-family: raleway-light, cursive;
 }
 
 #overlayTitle {
 	color: #ee6109;
 	font-size: 24pt;
-	font-family: fingerpaint, Georgia, sans-serif;
+	font-family: ribeye, Georgia, cursive;
 }
 
 .overlay-content > a {
@@ -133,7 +143,7 @@ input, select {
 	color: #ffffff;
 	border: 3px solid #3f3f3f;
 	font-size: 14pt;
-	font-family: raleway-light, arial;
+	font-family: raleway-light, arial, sans-serif;
 }
 
 #closebtn {
@@ -155,7 +165,7 @@ input, select {
     color: #818181;
     border-bottom: solid 2px;
     margin-bottom: 10px;
-	font-family: raleway-light;
+	font-family: raleway-light, Georgia, sans-serif;
 }
 
 #start-Hotel:hover {
@@ -358,13 +368,13 @@ input, select {
 
 .place-address {
     border-bottom: dashed 1px black;
-	font-family: raleway-light;
+	font-family: raleway-light1, arial1, sans-serif;
 }
 
 .place-rating {
 	font-weight: bold;
     border-bottom: dashed 1px black;
-	font-family: raleway-regular;
+	font-family: raleway-regular, sarial, sans-serif;
 }
 
 #current-name {
@@ -409,13 +419,13 @@ input, select {
 .review {
 	font-size: 10pt;
 	padding: 4px 4px 4px 10px;
-	font-family: raleway-light;
+	font-family: raleway-light, cursive;
 }
 
 .review-meta {
 	font-size: 11pt;
 	padding: 4px 4px 4px 10px;
-	font-family: raleway-medium;
+	font-family: raleway-medium, arial, sans-serif;
 }
 
 #statistics {
