@@ -338,6 +338,14 @@ input, select {
 	width: 100%;
 }
 
+.search-nav {
+    background: rgba(0,0,0,0.15);
+}
+
+.search-nav:hover {
+    text-decoration: underline;
+}
+
 #prev-page {
     float: left;
     width: 50%;
@@ -479,6 +487,18 @@ input, select {
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
     display: none;
+}
+
+#close-next {
+    position: relative;
+    left: 96%;
+    top: 1%;
+    text-decoration: none;
+    color: black;
+    font-size: x-large;
+}
+#close-next:hover {
+    text-decoration: underline;
 }
 
 .disabled {
