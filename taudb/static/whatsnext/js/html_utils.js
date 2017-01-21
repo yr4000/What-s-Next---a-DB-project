@@ -138,6 +138,7 @@ function changeSearchCategory(newCategory) {
     $("#start-" + newCategory).addClass("started");
     
     $("#category-name")[0].innerText = searchCategory;
+    clearTable("results");
     getMostPopular();
 }
 
@@ -259,14 +260,6 @@ function clearTable(table_name) {
     while (table.hasChildNodes()) {
         table.removeChild(table.lastChild);
     }
-}
-
-function capitalizeFirstLetter(string)
-{
-    if (!string || 0 == string.length)
-        return '';
-
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
 function cleanPastResults(table) {
