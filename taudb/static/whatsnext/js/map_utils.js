@@ -101,6 +101,10 @@ function clearArray(arr) {
     while (arr.length != 0) {
         removeMarker(arr.pop());
     }
+    
+    // Clear directions rendering if available.
+    if (directionsDisplay)
+        directionsDisplay.setMap(null);
 }
 
 function showRouteOnMap(locationsArr) {
@@ -115,8 +119,8 @@ function showRouteOnMap(locationsArr) {
         return;
     }
 
-    var directionsService = new google.maps.DirectionsService();
-    var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
+    directionsService = new google.maps.DirectionsService();
+    directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
     directionsDisplay.setMap(map);
 
     // set the waypoints for the route only if there are any (at least 3 locations)
