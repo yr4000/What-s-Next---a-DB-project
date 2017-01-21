@@ -287,8 +287,8 @@ function getTopChoices() {
                     var place = choice_set.choice_places[place_id];
                     // TODO: Alon, We should not display a specific category here - it is no longer part of the json
                     addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                              place["name"], place["id"], false, enumMarkerColors[place.category], i);
-                    addLocationRow("choices-results", place, place.category, i);
+                              place["name"], place["id"], false, enumMarkerColors.topChoice, i);
+                    addLocationRow("choices-results", place, "topChoice", i);
                 }
                 i++;
             }

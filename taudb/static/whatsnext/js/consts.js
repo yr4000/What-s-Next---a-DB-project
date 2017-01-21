@@ -13,7 +13,8 @@ var enumMarkerColors = {
     hotel : "blue/blue_Marker",
     bar : "purple/purple_Marker",
     museum : "orange/orange_Marker",
-    current : "darkgreen/darkgreen_Marker"
+    current : "darkgreen/darkgreen_Marker",
+    topChoice : "brown/brown_Marker"
 };
 
 var enumSearchTypes = {
