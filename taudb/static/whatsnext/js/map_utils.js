@@ -103,35 +103,20 @@ function clearArray(arr) {
     }
 }
 
-/*after a marker is chosen all the markers except him
-  will be removed of the map using this function.
-  #TODO: it doesn't work right now because i coudn't figure how to work with indexes....
- */
-function removeAllMarkersExceptChosenOne(anakin) {
-    console.log("start chosen one")
-    for(i=0;i++;i<markersArray.length){
-        if(anakin.place_id == markersArray[i]){
-            continue;
-        }
-        console.log(markersArray[i].title);
-        removeMarker(markersArray[i]);
-    }
-    console.log("end chosen one")
-}
-
 function showRouteOnMap(locationsArr) {
      // TODO: Alon M, this is a temporary arr just for POC, so just pass an array of LatLng objects to the function
+    /*
     locationsArr = [new google.maps.LatLng(51.668403, -0.176567),
         new google.maps.LatLng(51.398291, -0.049449),
         new google.maps.LatLng(51.566181, 0.111744)];
-
+    */
     // function requires at least 2 locations (otherwise can't show a route on the map)
     if (locationsArr.length < 2) {
         return;
     }
 
     var directionsService = new google.maps.DirectionsService();
-    var directionsDisplay = new google.maps.DirectionsRenderer();
+    var directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
     directionsDisplay.setMap(map);
 
     // set the waypoints for the route only if there are any (at least 3 locations)

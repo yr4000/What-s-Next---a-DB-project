@@ -311,6 +311,21 @@ function endSearch() {
         $(".tab-option").removeClass("selected-tab");
         $("#my-results").addClass("selected-tab");
     }
+
+    var locationsArr = new Array();
+
+    clearArray(markersArray);
+
+    for (var place_key in currentSearch) {
+        var place = currentSearch[place_key];
+        var placeLatLng = new google.maps.LatLng(place.latitude, place.longitude);
+        addMarker(placeLatLng, place.name, place.id, (place_key == 0), enumMarkerColors[place.category], place_key);
+        locationsArr.push(placeLatLng);
+    }
+
+    if (locationsArr.length > 1)
+        showRouteOnMap(locationsArr);
+
     showPastResults();
     updatePopularSearches();
 }

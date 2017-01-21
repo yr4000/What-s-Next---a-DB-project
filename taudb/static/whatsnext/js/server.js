@@ -178,7 +178,6 @@ function getPlaceStatistics() {
     $.getJSON(url,
     "",
     function(response) {
-        console.log(response);
         clearTable("statistics");
         var statistics = document.getElementById("statistics");
         var cells = 0;
@@ -216,7 +215,6 @@ function getPlaceStatistics() {
 
 //    url(r'^updatePopularSearches', views.update_popular_search)
 function updatePopularSearches() {
-    console.log("started update popular search");
     var url = "/updatePopularSearches/";
 
     if(currentSearch.length == 0){
@@ -224,19 +222,15 @@ function updatePopularSearches() {
         return;
     }
 
-    placeIDsCurrentSearch = modifyCurrentSearchForServer()
+    var placeIDsCurrentSearch = modifyCurrentSearchForServer();
     var search = {
         places_id_list: placeIDsCurrentSearch
     };
-
-    console.log(placeIDsCurrentSearch);
-    console.log(currentSearch);
 
     $.post(url,
         JSON.stringify(search),
         function(response)
         {
-            console.log(response);
             console.log("updated successfuly :)");
 
             while (currentSearch.length!=0){
@@ -247,7 +241,6 @@ function updatePopularSearches() {
     .fail(function(jgXHR, textStatus, errorThrown) {
          console.log("Failed to update popular searches :(");
     });
-    console.log("finished updated popular search");
 }
 
 //    url(r'^ImFeelingLucky', views.im_feeling_lucky)
