@@ -1,9 +1,8 @@
-function showSearchResults(tab, table, results) {
+function showSearchResults(tab, table) {
     cleanPastResults(table);
     showTab(tab);
-    
 
-    if (!Object.keys(results).length) {
+    if (!Object.keys(searchResults[table]).length) {
         // If no results were returned do nothing.
         var tableDOM = document.getElementById(table);
         var row = tableDOM.insertRow(-1);
@@ -13,15 +12,15 @@ function showSearchResults(tab, table, results) {
     }
 
     var i = 0;
-    for (var key in results) {
-        var place = results[key];
+    var resultsKeys = Object.keys(searchResults[table]);
+    for (var j = 10 * resultsPage; j < Math.min(10 * (resultsPage + 1), Object.keys(searchResults[table]).length); j++)
+    {
+        var place = searchResults[table][resultsKeys[j]];
         addMarker(new google.maps.LatLng(place.latitude, place.longitude),
                   place["name"], place["id"], false, enumMarkerColors[place.category], i);
         addLocationRow(table, place, place.category, i);
         i++;
     }
-
-    requestPage++;
 
     resultsOrPlace = "results-div";
 }

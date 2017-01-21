@@ -60,11 +60,13 @@ function createMarker(LatLong, title, place_id, center, color, index) {
         if (lastSearch == enumSearchTypes.Marker) {
             map.panTo(LatLong); // Center around marker.
             requestPage = 0;
+            resultsPage = 0;
             searchAroundMarker(LatLong.lat(),LatLong.lng());
             markForSearch = false;
         } else if (lastSearch == enumSearchTypes.FeelingLucky) {
             map.panTo(LatLong);
             requestPage = 0;
+            resultsPage = 0;
             ImFeelingLucky(LatLong.lat(),LatLong.lng());
             markForSearch = false;
         }

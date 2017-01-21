@@ -14,7 +14,7 @@ $.ajaxSetup({
 });
 
 //    url(r'^place/get_around_marker/', views.search_places_by_point)
-function searchAroundMarker(latitude, longitude) {
+function searchAroundMarker(latitude, longitude)    {
     var url = "/place/get_around_marker/";
 
     var search_values = {
@@ -38,7 +38,11 @@ function searchAroundMarker(latitude, longitude) {
                 $("#search-results").addClass("selected-tab");
             }
 
-            showSearchResults("results-div", "results", response);
+            searchResults["results"] = response;
+
+            showSearchResults("results-div", "results");
+
+            requestPage++;
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -68,7 +72,11 @@ function searchByFullText(word) {
                 $("#search-results").addClass("selected-tab");
             }
 
-            showSearchResults("results-div", "results", response);
+            searchResults["results"] = response;
+
+            showSearchResults("results-div", "results");
+
+            requestPage++;
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {
@@ -266,7 +274,9 @@ function ImFeelingLucky(latitude, longitude) {
                 $("#lucky-search").addClass("selected-tab");
             }
 
-            showSearchResults("lucky-tab", "lucky-results", response);
+            searchResults["lucky-results"] = response;
+
+            showSearchResults("lucky-tab", "lucky-results");
         },
         'json')
     .fail(function(jgXHR, textStatus, errorThrown) {

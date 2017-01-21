@@ -1,10 +1,10 @@
 from db_utils import init_db_connection, init_db_cursor
-from whatsnext.models import Review, Place
+from ..models import Review, Place
 from exceptions import NotFoundInDb
 import MySQLdb as mdb
-from geo_utils import RESOLUTION,LONDON_LATITUDE_DB_CONST
+from geo_utils import RESOLUTION, LONDON_LATITUDE_DB_CONST
 
-DEFAULT_RESULTS_AMOUNT = 10
+DEFAULT_RESULTS_AMOUNT = 30
 
 
 def get_place_by_place_id(place_id):
@@ -199,7 +199,7 @@ def insert_new_reviews(reviews):
     try:
         cur.executemany(query, reviews_tuples_list)
         conn.commit()
-    except:
+    except mdb.Error:
         conn.rollback()
 
     cur.close()
@@ -498,7 +498,6 @@ def update_choice(choice_id):
         conn.rollback()
 
     cur.close()
-
 
 
 def crawl_by_location_highest_rating(top, right, bottom, left):

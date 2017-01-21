@@ -15,9 +15,6 @@ var lastMapClickLocation = null;
 // If the setting a Marker should "find places"
 var markForSearch = true;
 
-//If the use wants to search by string
-//var isSearchByText = false; // TODO Alon delete if found unnecessary
-
 // Search Category (Holds first default search value
 var searchCategory = null;
 
@@ -26,6 +23,9 @@ var searchDistance = DEFAULT_SEARCH_DISTANCE;
 
 // this will contain the place_id's of the current search
 var currentSearch = [];
+
+// shown Page of results.
+var resultsPage = 0;
 
 // Next page to ask in request.
 var requestPage = 0;
@@ -44,3 +44,9 @@ var lastWordSearched = null;
 
 // Did the user last see a single place or a list of results.
 var resultsOrPlace = null;
+
+// Search-results holder
+var searchResults = {
+    "results": null,
+    "lucky-results": null
+};

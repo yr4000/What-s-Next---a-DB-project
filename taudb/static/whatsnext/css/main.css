@@ -341,6 +341,7 @@ input, select {
 
 .search-nav {
     background: rgba(0,0,0,0.15);
+    width: 49.8%;
 }
 
 .search-nav:hover {
@@ -349,12 +350,10 @@ input, select {
 
 #prev-page {
     float: left;
-    width: 50%;
 }
 
 #next-page {
     float: right;
-    width: 50%;
     text-align: right;
 }
 

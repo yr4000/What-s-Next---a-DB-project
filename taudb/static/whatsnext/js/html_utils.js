@@ -75,6 +75,27 @@ $(document).ready(function () {
     });
 
     $("#prev-page").on("click", function(e) {
+        if (resultsPage == 0)
+        {
+            if (requestPage == 1) {
+                return;
+            }
+            else {
+                requestPage -= 2;
+                resultsPage = 2;
+                 if (lastSearch == enumSearchTypes.Marker) {
+                    searchAroundMarker(lastMarkerSearched.latitude, lastMarkerSearched.longitude);
+                }
+                else if (lastSearch == enumSearchTypes.FullText) {
+                    searchByFullText(lastWordSearched);
+                }
+            }
+        }
+        else {
+            resultsPage--;
+            showSearchResults("results-div", "results");
+        }
+        /*
         if (requestPage <= 1)
             return;
         else {
@@ -86,9 +107,31 @@ $(document).ready(function () {
         else if (lastSearch == enumSearchTypes.FullText) {
             searchByFullText(lastWordSearched);
         }
+        */
     });
     
     $("#next-page").on("click", function(e) {
+        if (requestPage == 0)
+            return;
+        else {
+            if ((resultsPage + 1) % PAGES_IN_REQUEST == 0) {
+                resultsPage = 0;
+                if (lastSearch == enumSearchTypes.Marker) {
+                    searchAroundMarker(lastMarkerSearched.latitude, lastMarkerSearched.longitude);
+                }
+                else if (lastSearch == enumSearchTypes.FullText) {
+                    searchByFullText(lastWordSearched);
+                }
+            }
+            else if ((resultsPage + 1)* MAXIMUM_RESULTS_IN_PAGE > Object.keys(searchResults["results"]).length) {
+                return;
+            } else {
+                resultsPage++;
+                showSearchResults("results-div", "results");
+            }
+        }
+
+        /*
         // Happens in Yair's use case of user who changed the category and then immidiately after
         // decided to click next.
         if (requestPage == 0)
@@ -99,6 +142,7 @@ $(document).ready(function () {
         else if (lastSearch == enumSearchTypes.FullText) {
             searchByFullText(lastWordSearched);
         }
+        */
     });
 
     $("#current-accept").on("click", function(e) {
