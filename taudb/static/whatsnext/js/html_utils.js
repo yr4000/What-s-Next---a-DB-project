@@ -306,7 +306,13 @@ function addToChoices() {
 }
 
 function endSearch() {
-    addToChoices();
+    if ($("#light-overlay").is(":visible"))
+        $("#light-overlay").hide();
+
+    // Prevents : If you click End here from the next-nav div you'll add the same place twice.
+    if (currentPlace.id != currentSearch[currentSearch.length-1].id)
+        addToChoices();
+
     if (!$("#my-results").hasClass("selected-tab")) {
         $(".tab-option").removeClass("selected-tab");
         $("#my-results").addClass("selected-tab");
