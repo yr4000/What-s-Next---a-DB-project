@@ -42,6 +42,9 @@ function showResultTab(resultsDiv) {
     if ((resultsDiv != undefined) && (resultsOrPlace != resultsDiv)) {
         resultsOrPlace = resultsDiv;
     }
+
+    if (resultsOrPlace == "results-div")
+        showSearchResults("results-div","results");
     showTab(resultsOrPlace);
 }
 
