@@ -99,11 +99,13 @@
     <!-- Pop-up div for choosing the category of your next destination search -->
     <div class="next-nav">
         <a href="javascript:void(0)" id="close-next" onclick="$('.next-nav').hide();">&times;</a>
-        <h1>Great choice! What's next?</h1><br>
+        <div id="next-question">Great choice! <span>What's next?</span></div><br>
+        <div id="next-categories">
         {% for cat in categories %}
-            <span class="next-category" onclick="nextCategory('{{ cat }}')">{{ cat }}</span>
+            <span id="next-{{ cat }}" class="next-category" onclick="nextCategory('{{ cat }}')">{{ cat }}</span>
         {% endfor %}
-        <div id="end-next">or End your Path here</div>
+        </div>
+        <div id="end-next">or Finish Here</div>
     </div>
     <!-- Includes of JS files -->
 	<script>var iconFolderPath = "{% static 'whatsnext/images/Markers/' %}";</script>
