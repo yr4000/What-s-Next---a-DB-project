@@ -1,6 +1,7 @@
 function showSearchResults(tab, table, results) {
     cleanPastResults(table);
     showTab(tab);
+    
 
     if (!Object.keys(results).length) {
         // If no results were returned do nothing.

@@ -32,6 +32,12 @@ function searchAroundMarker(latitude, longitude) {
         {
             lastSearch = enumSearchTypes.Marker;
             lastMarkerSearched = {latitude: latitude, longitude: longitude};
+
+            if (!$("#search-results").hasClass("selected-tab")) {
+                $(".tab-option").removeClass("selected-tab");
+                $("#search-results").addClass("selected-tab");
+            }
+
             showSearchResults("results-div", "results", response);
         },
         'json')
@@ -56,6 +62,12 @@ function searchByFullText(word) {
         {
             lastSearch = enumSearchTypes.FullText;
             lastWordSearched = word;
+
+            if (!$("#search-results").hasClass("selected-tab")) {
+                $(".tab-option").removeClass("selected-tab");
+                $("#search-results").addClass("selected-tab");
+            }
+
             showSearchResults("results-div", "results", response);
         },
         'json')
@@ -116,6 +128,12 @@ function getPlaceDetails(place_id, index) {
             $("#current-remove").hide();
             $("#current-accept").show();
         }
+
+        if (!$("#search-results").hasClass("selected-tab")) {
+            $(".tab-option").removeClass("selected-tab");
+            $("#search-results").addClass("selected-tab");
+        }
+
         showResultTab("place-div");
 
         $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[currentPlace.category] +
@@ -249,6 +267,12 @@ function ImFeelingLucky(latitude, longitude) {
             console.log(response);
             lastSearch = enumSearchTypes.FeelingLucky;
             lastMarkerSearched = {latitude: latitude, longitude: longitude};
+
+            if (!$("#lucky-search").hasClass("selected-tab")) {
+                $(".tab-option").removeClass("selected-tab");
+                $("#lucky-search").addClass("selected-tab");
+            }
+
             showSearchResults("lucky-tab", "lucky-results", response);
         },
         'json')
