@@ -87,22 +87,22 @@ input, select {
 	width: 100%;
 	position: absolute;
 }
-.overlay {
-    /* Height & width depends on how you want to reveal the overlay (see JS below) */
+
+#overlay {
     height: 100%;
     width: 100%;
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    position: fixed;
+    z-index: 1;
     left: 0;
     top: 0;
-    background-color: rgb(0,0,0); /* Black fallback color */
-    background-color: rgba(100,100,100, 0.9); /* Black w/opacity */
-    overflow-x: hidden; /* Disable horizontal scroll */
-    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+    background-color: rgb(0,0,0);
+    background-color: rgba(100,100,100, 0.9);
+    overflow-x: hidden;
+    transition: 0.5s;
 }
 
 /* Position the content inside the overlay */
-.overlay-content {
+#overlay-content {
     position: relative;
     top: 20%;
     width: 100%;
@@ -121,16 +121,17 @@ input, select {
 	font-family: ribeye, Georgia, cursive;
 }
 
-.overlay-content > a {
+#overlay-content > a {
 	color: white;
 	text-decoration: none;
 }
-.overlay-content > a:hover {
+
+#overlay-content > a:hover {
 	color: white;
 	text-decoration: underline;
 }
 
-.overlay-content > input {
+#overlay-content > input {
 	background-color: rgba(255,255,255, 0.2);
 	background-image: url(/static/whatsnext/images/icon_search_white.png);
     background-position: 12px 12px;
@@ -478,7 +479,21 @@ input, select {
 	font-size: 15px;
 }
 
-.next-nav {
+#light-overlay {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    background-color: rgb(0,0,0);
+    background-color: rgba(255,255,255, 0.5);
+    overflow-x: hidden;
+    transition: 0.5s;
+    display:none;
+}
+
+#next-nav {
     width: 700px;
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
@@ -487,7 +502,6 @@ input, select {
     background-color: rgb(255, 255, 255);
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 10px 10px 5px  rgba(0,0,0,0.3);
-    display: none;
 }
 
 #close-next {

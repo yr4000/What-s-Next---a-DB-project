@@ -106,7 +106,7 @@ $(document).ready(function () {
         addToChoices();
 
         // Asking what's next
-        $(".next-nav").show();
+        $("#light-overlay").show();
 
         $("#current-accept").hide();
         $("#current-remove").show();
@@ -142,7 +142,7 @@ function changeSearchCategory(newCategory) {
 }
 
 function closeNav() {
-    $("#myNav").hide();
+    $("#overlay").hide();
     $(".nav").show();
 }
 
@@ -184,7 +184,7 @@ function setFirstCategory(categorySpan) {
 }
 
 function nextCategory(category) {
-    $(".next-nav").hide();
+    $("#light-overlay").hide();
     changeSearchCategory(category);
     searchAroundMarker(currentPlace.latitude, currentPlace.longitude);
 }

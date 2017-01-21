@@ -13,9 +13,9 @@
     <!-- Div for Google Map -->
     <div id="map"></div>
     <!-- Div holding the landing screen overlay -->
-	<div id="myNav" class="overlay">
+	<div id="overlay">
         <a href="javascript:void(0)" id="closebtn" onclick="closeNav()">&times;</a>
-		<div class="overlay-content">
+		<div id="overlay-content">
 			<span id="overlayTitle">
 				What's Next?!
 			</span><br><br>
@@ -96,15 +96,17 @@
 
     </div>
     <!-- Pop-up div for choosing the category of your next destination search -->
-    <div class="next-nav">
-        <a href="javascript:void(0)" id="close-next" onclick="$('.next-nav').hide();">&times;</a>
-        <div id="next-question">Great choice! <span>What's next?</span></div><br>
-        <div id="next-categories">
-        {% for cat in categories %}
-            <span id="next-{{ cat }}" class="next-category" onclick="nextCategory('{{ cat }}')">{{ cat }}</span>
-        {% endfor %}
+    <div id="light-overlay">
+        <div id="next-nav">
+            <a href="javascript:void(0)" id="close-next" onclick="$('#light-overlay').hide();">&times;</a>
+            <div id="next-question">Great choice! <span>What's next?</span></div><br>
+            <div id="next-categories">
+            {% for cat in categories %}
+                <span id="next-{{ cat }}" class="next-category" onclick="nextCategory('{{ cat }}')">{{ cat }}</span>
+            {% endfor %}
+            </div>
+            <div id="end-next">or Finish Here</div>
         </div>
-        <div id="end-next">or Finish Here</div>
     </div>
     <!-- Includes of JS files -->
 	<script>var iconFolderPath = "{% static 'whatsnext/images/Markers/' %}";</script>
