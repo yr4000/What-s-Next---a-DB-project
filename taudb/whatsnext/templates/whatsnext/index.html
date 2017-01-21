@@ -50,8 +50,14 @@
             <span id="search-around" class="search-way" onclick="showMarkerInput()">Search Around Marker</span>
             <span id="search-name" class="search-way" onclick="showFullTextInput()">Search By Word</span>
 		</div>
-        <div id="input-around">Find places <input type="text" id="search-radius" placeholder="5000">m around the marker (Click on map)</div>
-        <div id="input-fulltext"><input type="text" id="place-name" placeholder="Search Location named..."></div>
+        <div id="input-around">
+            <span class="back-to-search"><<</span>
+            Find places <input type="text" id="search-radius" placeholder="5000">m
+            around the (Placed) Marker</div>
+        <div id="input-fulltext">
+            <span class="back-to-search"><<</span>
+            <input type="text" id="place-name" placeholder="Search Location named...">
+            </div>
         <!-- Div holding the initial explanation about using the app -->
         <div id="explanation-div" class="tab">
             <h2>Select a location on the map to search for places around it</h2>
