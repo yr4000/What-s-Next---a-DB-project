@@ -402,6 +402,7 @@ input, select {
 }
 
 #back-to-results {
+    border-top: solid 1px black;
     font-weight: bold;
 }
 
