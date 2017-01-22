@@ -130,7 +130,7 @@ function getPlaceDetails(place_id, index) {
             currentPlace.category = 'default'
         }
         // If current place is in currentSearch then show the option to remove it.
-        if (!currentSearch.map(function(a) { return a.id; }).indexOf(currentPlace.id)) {
+        if (isCurrentPlaceInMyChoices()) {
             $("#current-accept").hide();
             $("#current-remove").show();
         }

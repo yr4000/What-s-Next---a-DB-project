@@ -331,7 +331,7 @@ function addToChoices() {
         return;
     }
 
-    if (isCurrentPlaceInMyChoises()){
+    if (isCurrentPlaceInMyChoices()){
         if (!confirm("You have already chosen this place!\n Are you sure you want to choose it again?")){
             return false;
         }
@@ -341,19 +341,8 @@ function addToChoices() {
     return true;
 }
 
-function isCurrentPlaceInMyChoises(){
-    var bool = false;
-    var tempArr = [];
-    currentSearch.reverse();
-    while(currentSearch.length != 0){
-        var objectHolder = currentSearch.pop();
-        if(objectHolder["id"] == currentPlace["id"]){
-            bool = true;
-        }
-        tempArr.push(objectHolder);
-    }
-    currentSearch = tempArr;
-    return bool;
+function isCurrentPlaceInMyChoices(){
+    return !currentSearch.map(function(a) { return a.id; }).indexOf(currentPlace.id);
 }
 
 function endSearch() {
