@@ -386,6 +386,10 @@ input, select {
     font-size: 14pt;
 }
 
+.place-title:hover {
+    text-decoration: underline;
+}
+
 .place-address {
     border-bottom: dashed 1px black;
 	font-family: raleway-light1, arial1, sans-serif;
@@ -395,6 +399,14 @@ input, select {
 	font-weight: bold;
     border-bottom: dashed 1px black;
 	font-family: raleway-regular, sarial, sans-serif;
+}
+
+#back-to-results {
+    font-weight: bold;
+}
+
+#back-to-results:hover {
+    text-decoration: underline;
 }
 
 #current-name {
@@ -418,12 +430,20 @@ input, select {
 	text-align: center;
 }
 
+#current-accept:hover {
+    text-decoration: underline;
+}
+
 #current-remove {
     display: inline-block;
 	width: 50%;
 	background: green;
 	color: white;
 	text-align: center;
+}
+
+#current-remove:hover {
+    text-decoration: underline;
 }
 
 #end-here {
@@ -434,6 +454,10 @@ input, select {
 	text-align: center;
     left: 50%;
     position: absolute;
+}
+
+#end-here:hover {
+    text-decoration: underline;
 }
 
 #current-reviews {
