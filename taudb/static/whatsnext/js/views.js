@@ -29,6 +29,12 @@ function showPastResults() {
     showTab("past-search");
     // Clean Table.
     clearTable("past-results");
+
+    if (currentSearch.length == 0)
+        $("#end-choices").hide();
+    else
+        $("#end-choices").show();
+
     // Insert new values.
     for (var i = 0; i < currentSearch.length; i++) {
         var place = currentSearch[i];

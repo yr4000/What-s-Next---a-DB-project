@@ -470,6 +470,13 @@ input, select {
 	width: 100%;
 }
 
+#end-choices {
+    background: black;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
 #lucky-tab {
 	display: none;
 }

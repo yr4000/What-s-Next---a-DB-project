@@ -151,6 +151,10 @@ $(document).ready(function () {
     $("#end-next").on("click", function(e) {
         endSearch();
     });
+
+    $("#end-choices").on("click", function(e) {
+        endSearch();
+    })
 });
 
 function changeSearchCategory(newCategory) {
@@ -374,5 +378,8 @@ function endSearch() {
         showRouteOnMap(locationsArr);
 
     showPastResults();
+
+    $("#end-choices").hide();
+    
     updatePopularSearches();
 }
