@@ -321,7 +321,27 @@ function addToChoices() {
         return;
     }
 
+    if (isCurrentPlaceInMyChoises()){
+        console.log("You have already chosen this place! are you sure you want to choose it again?")
+        console.log(currentSearch)
+    }
+
     currentSearch.push(currentPlace);
+}
+
+function isCurrentPlaceInMyChoises(){
+    var bool = false;
+    var tempArr = [];
+    currentSearch.reverse();
+    while(currentSearch.length != 0){
+        var objectHolder = currentSearch.pop();
+        if(objectHolder["id"] == currentPlace["id"]){
+            bool = true;
+        }
+        tempArr.push(objectHolder);
+    }
+    currentSearch = tempArr;
+    return bool;
 }
 
 function endSearch() {
