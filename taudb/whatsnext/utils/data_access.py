@@ -439,7 +439,7 @@ def lookup_choice_by_places_set(places_ids_list):
             '            - 1) AS choice_id                                             '\
             '    FROM                                                                  '\
             '        choices_places                                                    '\
-            '    GROUP BY choice_id) AS lookup_results                                 '\
+            '    GROUP BY choices_places.choice_id) AS lookup_results                  '\
             'WHERE                                                                     '\
             '    lookup_results.choice_id >= 0;                                        '
 
