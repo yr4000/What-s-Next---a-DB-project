@@ -125,6 +125,8 @@ function showRouteOnMap(locationsArr) {
     directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
     directionsDisplay.setMap(map);
 
+    removeMarker(lastMapClickLocation);
+
     // set the waypoints for the route only if there are any (at least 3 locations)
     var waypoints = [];
     if (locationsArr.length >= 3) {
