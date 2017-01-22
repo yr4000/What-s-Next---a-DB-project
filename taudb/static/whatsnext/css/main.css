@@ -315,7 +315,6 @@ input, select {
 #input-fulltext {
     padding-top: 10px;
     display: none;
-    border: solid 1px grey;
 }
 
 .back-to-search {
@@ -329,6 +328,7 @@ input, select {
 	border: 0;
 	background-color: rgba(255,255,255, 0.9);
 	width: 93%;
+    border: solid 1px grey;
 }
 
 #explanation-div {
