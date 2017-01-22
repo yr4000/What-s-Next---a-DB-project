@@ -293,11 +293,12 @@ function getTopChoices() {
             cleanPastResults("choices-results");
             var resultsTable = document.getElementById("choices-results");
 
-            var set_keys = Object.keys(response).reverse();
+            // Cast object to array for sorting.
+            var setsArray = $.map(response, function(value, index) { return [value]; }).sort(function(a,b) {return parseFloat(b.popularity)-parseFloat(a.popularity);});
 
             var i = 0;
-            for (var key in set_keys) {
-                var choice_set = response[set_keys[key]];
+            for (var key in setsArray) {
+                var choice_set = setsArray[key];
 
                 var setRow = resultsTable.insertRow(-1);
                 var setHeader = setRow.insertCell(0);
