@@ -401,6 +401,11 @@ input, select {
 	font-family: raleway-regular, sarial, sans-serif;
 }
 
+.place-shadow {
+    box-shadow: inset 0px 5px 3px 0px rgba(0,0,0,0.15);
+    height: 10px;
+}
+
 #back-to-results {
     border-top: solid 1px black;
     font-weight: bold;

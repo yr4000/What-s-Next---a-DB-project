@@ -301,7 +301,7 @@ function getTopChoices() {
 
                 var setRow = resultsTable.insertRow(-1);
                 var setHeader = setRow.insertCell(0);
-                setHeader.innerHTML = "<br><b>Choice set " + set_keys[key] + " popularity " + choice_set.popularity + "</b>";
+                setHeader.innerHTML = "<b>#" + (parseInt(key) + 1) + " | Popularity " + choice_set.popularity + "</b>";
                 setHeader.colSpan = 3;
 
                 for (var place_id in choice_set.choice_places) {
@@ -310,6 +310,11 @@ function getTopChoices() {
                               place["name"], place["id"], false, enumMarkerColors.default, i);
                     addLocationRow("choices-results", place, "default", i);
                 }
+                var shadowRow = resultsTable.insertRow(-1);
+                var shadowCell = shadowRow.insertCell(0);
+                shadowCell.colSpan = 3;
+                shadowCell.className = "place-shadow";
+
                 i++;
             }
             showTab("top-choices-tab");
