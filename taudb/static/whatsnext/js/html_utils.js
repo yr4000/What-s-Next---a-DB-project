@@ -250,7 +250,7 @@ function addLocationRow(tableName, location, type, index) {
     };
 }
 
-function addSearchLocationRow(place, step) {
+function addChoiceRow(place, step) {
     var resultsTable = document.getElementById("past-results");
 
     var placeRow = resultsTable.insertRow(-1);
@@ -266,6 +266,12 @@ function addSearchLocationRow(place, step) {
     var deleteCell = placeRow.insertCell(i++);
     deleteCell.innerHTML = "&times;";
     deleteCell.onclick = function(e) {
+        if (currentSearch[step].id == currentPlace.id) {
+            // Switch place "Add"/"Remove" option if necessary.
+            $("#current-remove").hide();
+            $("#current-accept").show();
+        }
+
         currentSearch.splice(step, 1);
         showPastResults();
         e.stopPropagation();
@@ -380,6 +386,6 @@ function endSearch() {
     showPastResults();
 
     $("#end-choices").hide();
-    
+
     updatePopularSearches();
 }

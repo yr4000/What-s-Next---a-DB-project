@@ -38,7 +38,7 @@ function showPastResults() {
     // Insert new values.
     for (var i = 0; i < currentSearch.length; i++) {
         var place = currentSearch[i];
-        addSearchLocationRow(place, i);
+        addChoiceRow(place, i);
     }
 }
 
