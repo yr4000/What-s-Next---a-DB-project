@@ -126,6 +126,9 @@ function getPlaceDetails(place_id, index) {
     "",
     function(response) {
         currentPlace = response.place;
+        if (currentPlace.category == undefined) {
+            currentPlace.category = 'default'
+        }
         // If current place is in currentSearch then show the option to remove it.
         if (!currentSearch.map(function(a) { return a.id; }).indexOf(currentPlace.id)) {
             $("#current-accept").hide();
@@ -314,8 +317,8 @@ function getTopChoices() {
                     var place = choice_set.choice_places[place_id];
                     // TODO: Alon, We should not display a specific category here - it is no longer part of the json
                     addMarker(new google.maps.LatLng(place.latitude, place.longitude),
-                              place["name"], place["id"], false, enumMarkerColors.topChoice, i);
-                    addLocationRow("choices-results", place, "topChoice", i);
+                              place["name"], place["id"], false, enumMarkerColors.default, i);
+                    addLocationRow("choices-results", place, "default", i);
                 }
                 i++;
             }

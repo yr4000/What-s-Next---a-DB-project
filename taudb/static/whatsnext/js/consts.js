@@ -14,7 +14,7 @@ var enumMarkerColors = {
     bar : "purple/purple_Marker",
     museum : "orange/orange_Marker",
     current : "darkgreen/darkgreen_Marker",
-    topChoice : "brown/brown_Marker"
+    default : "brown/brown_Marker"
 };
 
 var enumSearchTypes = {
