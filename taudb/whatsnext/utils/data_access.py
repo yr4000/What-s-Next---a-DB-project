@@ -20,14 +20,9 @@ def get_place_by_place_id(place_id):
             '   places.rating,                                              '\
             '   places.vicinity,                                            '\
             '   places.latitude,                                            '\
-            '   places.longitude,                                           '\
-            '   categories.name AS category                                 '\
+            '   places.longitude                                            '\
             'FROM                                                           '\
             '   places                                                      '\
-            '       INNER JOIN                                              '\
-            '   places_categories ON places.id = places_categories.place_id '\
-            '       INNER JOIN                                              '\
-            '   categories ON places_categories.category_id = categories.id '\
             'WHERE                                                          '\
             '   places.id = %s                                              '
 
@@ -35,7 +30,7 @@ def get_place_by_place_id(place_id):
 
     record = cur.fetchone()  # expecting single place since id is a pk
     if record:
-        place = query_results_to_dict(record)
+        place = query_results_to_dict(record,add_category=False)
     else:
         raise NotFoundInDb('db does not include a record with id: {id}'.format(id=id))
 
@@ -89,7 +84,7 @@ def search_places_near_location(center_latitude, center_longitude, top, right, b
     return places
 
 
-def query_results_to_dict(result):
+def query_results_to_dict(result, add_category=True):
     place = dict()
     place["id"] = result["id"]
     place["google_id"] = result["google_id"]
@@ -98,7 +93,10 @@ def query_results_to_dict(result):
     place["latitude"] = (result["latitude"] / RESOLUTION) + LONDON_LATITUDE_DB_CONST
     place["rating"] = result["rating"]
     place["vicinity"] = result["vicinity"]
-    place["category"] = result["category"]
+    if add_category:
+        place["category"] = result["category"]
+    else:
+        place["category"] = "topChoice"
     return place
 
 
