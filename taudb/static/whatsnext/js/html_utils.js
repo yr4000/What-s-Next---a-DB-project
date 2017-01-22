@@ -129,13 +129,13 @@ $(document).ready(function () {
 
     $("#current-accept").on("click", function(e) {
         // Remembering choice.
-        addToChoices();
-
-        // Asking what's next
+        if(addToChoices()){
+            // Asking what's next
         $("#light-overlay").show();
 
         $("#current-accept").hide();
         $("#current-remove").show();
+        }
     });
 
     $("#current-remove").on("click",function(e) {
@@ -322,11 +322,13 @@ function addToChoices() {
     }
 
     if (isCurrentPlaceInMyChoises()){
-        console.log("You have already chosen this place! are you sure you want to choose it again?")
-        console.log(currentSearch)
+        if (!confirm("You have already chosen this place!\n Are you sure you want to choose it again?")){
+            return false;
+        }
     }
 
     currentSearch.push(currentPlace);
+    return true;
 }
 
 function isCurrentPlaceInMyChoises(){
