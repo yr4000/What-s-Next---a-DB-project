@@ -421,6 +421,7 @@ input, select {
 
 #current-id {
 	font-size: xx-small;
+    display: none;
 }
 
 #current-accept {
