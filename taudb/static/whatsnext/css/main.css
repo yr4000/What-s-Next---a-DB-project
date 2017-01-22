@@ -315,6 +315,7 @@ input, select {
 #input-fulltext {
     padding-top: 10px;
     display: none;
+    border: solid 1px grey;
 }
 
 .back-to-search {
