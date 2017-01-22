@@ -325,7 +325,6 @@ function modifyCurrentSearchForServer(){
 
 function addToChoices() {
     if (currentSearch.length == MAXIMUM_DESTINATIONS_LIST_LENGTH) {
-        // TODO: can this be a proper div rather than an alert? I'd rather not.
         alert("You cannot choose more than " + MAXIMUM_DESTINATIONS_LIST_LENGTH + " destinations");
         showTab("past-search");
         return;

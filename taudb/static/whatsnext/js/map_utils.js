@@ -34,7 +34,6 @@ function initMap() {
 
     // init bounds of the desired area
     var allowedBounds = new google.maps.LatLngBounds(
-        // TODO: get the most accurate boundaries
         new google.maps.LatLng(51.2813, -0.6174), // bottom left boundary
         new google.maps.LatLng(51.7556, 0.3331) // top right boundary
     );
@@ -94,7 +93,6 @@ function addMarker(LatLong, title, place_id, center, color, index) {
     markersArray.push(createMarker(LatLong, title, place_id, center, color, index));
 }
 
-//TODO: got this error message once: Uncaught TypeError: marker.setMap is not a function
 function removeMarker(marker) {
     marker.setMap(null);
 }
@@ -110,12 +108,6 @@ function clearArray(arr) {
 }
 
 function showRouteOnMap(locationsArr) {
-     // TODO: Alon M, this is a temporary arr just for POC, so just pass an array of LatLng objects to the function
-    /*
-    locationsArr = [new google.maps.LatLng(51.668403, -0.176567),
-        new google.maps.LatLng(51.398291, -0.049449),
-        new google.maps.LatLng(51.566181, 0.111744)];
-    */
     // function requires at least 2 locations (otherwise can't show a route on the map)
     if (locationsArr.length < 2) {
         return;
@@ -143,7 +135,7 @@ function showRouteOnMap(locationsArr) {
         origin: locationsArr[0],
         destination: locationsArr[locationsArr.length - 1],
         waypoints: waypoints,
-        travelMode: google.maps.DirectionsTravelMode.DRIVING // TODO: if we have time, ask user input for travel mode
+        travelMode: google.maps.DirectionsTravelMode.DRIVING
     };
 
     // send the request and handle the response - show the route on map
