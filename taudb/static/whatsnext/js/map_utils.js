@@ -83,7 +83,8 @@ function createMarker(LatLong, title, place_id, center, color, index) {
 
     m.addListener("click", function() {
         map.panTo(LatLong);
-        getPlaceDetails(place_id, index);
+        if (place_id != -1)
+            getPlaceDetails(place_id, index);
     });
 
     return m;
