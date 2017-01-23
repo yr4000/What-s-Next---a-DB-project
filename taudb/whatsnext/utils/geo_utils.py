@@ -1,14 +1,6 @@
 from __future__ import division  # is needed to be able to divide like a human being....
 import math
 
-'''
- for details:
- http://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
-returns the distance between 2 points in km
-
- works good comparing to this site:
- http://boulter.com/gps/distance/?from=51.531952%2C+0.003738&to=51.516887%2C+-0.267676&units=k
-'''
 RESOLUTION = 10000.0
 LATITUDE_DIST_DIV_ADJUSTMENT = 111.0  # distance must be in Km!
 LONGITUDE_DIST_DIV_ADJUSTMENT = 69.0
@@ -28,13 +20,6 @@ def gps_distance(p1, p2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
     distance = r * c  # this is the distance
     return distance
-'''
-according to:
- http://www.nhc.noaa.gov/gccalc.shtml
-for latitude: the second digit from the dot is 1.1 km for each count 1 (up or down)
-in longitude: the second digit from the dot is 0.69 km for each count 1 (up or down)
-'''
-
 
 # pre: latitude and longitude ARE NOT modified!
 # gets a latitude, longitude (floats) ans d distance, and returns the latitudes and longitudes
