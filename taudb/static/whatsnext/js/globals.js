@@ -50,3 +50,6 @@ var searchResults = {
     "results": null,
     "lucky-results": null
 };
+
+// Holds the last open tab, so that "<<Back to results" will return you there.
+var lastOpenedTab = "results-div";

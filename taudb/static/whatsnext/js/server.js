@@ -139,11 +139,6 @@ function getPlaceDetails(place_id, index) {
             $("#current-add").show();
         }
 
-        if (!$("#search-results").hasClass("selected-tab")) {
-            $(".tab-option").removeClass("selected-tab");
-            $("#search-results").addClass("selected-tab");
-        }
-
         showResultTab("place-div");
 
         $("#current-icon")[0].src = iconFolderPath + enumMarkerColors[currentPlace.category] +

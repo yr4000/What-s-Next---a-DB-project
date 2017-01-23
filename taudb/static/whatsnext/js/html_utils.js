@@ -146,6 +146,8 @@ $(document).ready(function () {
     });
 
     $("#cant-end").on("click", function(e) {
+        $(".tab-option").removeClass("selected-tab");
+        $("#my-results").addClass("selected-tab");
         showPastResults();
     });
 
@@ -179,8 +181,16 @@ function closeNav() {
 }
 
 function showTab(tabName) {
+    if ((lastOpenedTab != tabName) && (tabName != "place-div"))
+        lastOpenedTab = tabName;
     $(".tab").hide();
     $("#" + tabName).show();
+}
+
+function showLastOpenedTab() {
+    
+    $(".tab").hide();
+    $("#" + lastOpenedTab).show();
 }
 
 function searchBarShow() {
