@@ -131,12 +131,12 @@ function getPlaceDetails(place_id, index) {
         }
 
         if (isCurrentPlaceInMyChoices()) {
-            $("#current-accept").hide();
-            $("#current-remove").show();
+            $("#current-add").hide();
+            $("#current-added").show();
         }
         else {
-            $("#current-remove").hide();
-            $("#current-accept").show();
+            $("#current-added").hide();
+            $("#current-add").show();
         }
 
         if (!$("#search-results").hasClass("selected-tab")) {

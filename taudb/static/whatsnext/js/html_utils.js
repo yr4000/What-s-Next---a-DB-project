@@ -130,19 +130,23 @@ $(document).ready(function () {
     $("#current-accept").on("click", function(e) {
         if(addToChoices()){
             $("#whatsnext-overlay").show();
-            $("#current-accept").hide();
-            $("#current-remove").show();
+            $("#current-add").hide();
+            $("#current-added").show();
         }
-    });
-
-    $("#current-remove").on("click",function(e) {
-        currentSearch.splice(currentSearch.map(function(a) { return a.id; }).indexOf(currentPlace.id), 1);
-        $("#current-remove").hide();
-        $("#current-accept").show();
     });
 
     $("#end-here").on("click", function(e) {
         endSearch();
+    });
+
+    $("#current-remove").on("click",function(e) {
+        currentSearch.splice(currentSearch.map(function(a) { return a.id; }).indexOf(currentPlace.id), 1);
+        $("#current-added").hide();
+        $("#current-add").show();
+    });
+
+    $("#cant-end").on("click", function(e) {
+        showPastResults();
     });
 
     $("#end-next").on("click", function(e) {
@@ -265,8 +269,8 @@ function addChoiceRow(place, step) {
     deleteCell.onclick = function(e) {
         if (currentSearch[step].id == currentPlace.id) {
             // Switch place "Add"/"Remove" option if necessary.
-            $("#current-remove").hide();
-            $("#current-accept").show();
+            $("#current-added").hide();
+            $("#current-add").show();
         }
 
         currentSearch.splice(step, 1);
@@ -327,11 +331,8 @@ function addToChoices() {
         return;
     }
 
-    if (isCurrentPlaceInMyChoices()){
-        if (!confirm("You have already chosen this place!\n Are you sure you want to choose it again?")){
-            return false;
-        }
-    }
+    if (isCurrentPlaceInMyChoices())
+        return false;
 
     currentSearch.push(currentPlace);
     return true;

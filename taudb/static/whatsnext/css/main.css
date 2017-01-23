@@ -430,9 +430,14 @@ input, select {
     display: none;
 }
 
+#current-add {
+    table-layout: fixed;
+    width: 100%;
+}
+
 #current-accept {
 	display: inline-block;
-	width: 50%;
+	width: 49%;
 	background: green;
 	color: white;
 	text-align: center;
@@ -442,9 +447,26 @@ input, select {
     text-decoration: underline;
 }
 
+#end-here {
+	display: inline-block;
+	width: 49%;
+	background: black;
+	color: white;
+	text-align: center;
+}
+
+#end-here:hover {
+    text-decoration: underline;
+}
+
+#current-added {
+    table-layout: fixed;
+    width: 100%;
+}
+
 #current-remove {
     display: inline-block;
-	width: 50%;
+	width: 49%;
 	background: green;
 	color: white;
 	text-align: center;
@@ -454,17 +476,15 @@ input, select {
     text-decoration: underline;
 }
 
-#end-here {
-	display: inline-block;
-	width:50%;
+#cant-end {
+    display: inline-block;
+	width:49%;
 	background: black;
 	color: white;
 	text-align: center;
-    left: 50%;
-    position: absolute;
 }
 
-#end-here:hover {
+#cant-end:hover {
     text-decoration: underline;
 }
 
