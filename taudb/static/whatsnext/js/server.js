@@ -129,13 +129,12 @@ function getPlaceDetails(place_id, index) {
         if (currentPlace.category == undefined) {
             currentPlace.category = 'default'
         }
-        // If current place is in currentSearch then show the option to remove it.
+
         if (isCurrentPlaceInMyChoices()) {
             $("#current-accept").hide();
             $("#current-remove").show();
         }
         else {
-            // Make sure the option to add it is visible.
             $("#current-remove").hide();
             $("#current-accept").show();
         }
@@ -154,7 +153,7 @@ function getPlaceDetails(place_id, index) {
         $("#current-id").data("place-id", currentPlace.id);
         $("#current-address")[0].innerText = currentPlace.vicinity;
 
-        clearTable("current-reviews"); // Clear Old Reviews before inserting new ones.
+        clearTable("current-reviews");
 
         if (response.reviews.length == 0) {
             var apologyDiv = document.createElement("div");
@@ -286,7 +285,7 @@ function getTopChoices() {
         "",
         function(response) {
             if (!Object.keys(response).length)
-                return; // If no results were returned do nothing.
+                return;
 
             markForSearch = false;
 

@@ -128,13 +128,10 @@ $(document).ready(function () {
     });
 
     $("#current-accept").on("click", function(e) {
-        // Remembering choice.
         if(addToChoices()){
-            // Asking what's next
-        $("#light-overlay").show();
-
-        $("#current-accept").hide();
-        $("#current-remove").show();
+            $("#whatsnext-overlay").show();
+            $("#current-accept").hide();
+            $("#current-remove").show();
         }
     });
 
@@ -215,7 +212,7 @@ function setFirstCategory(categorySpan) {
 }
 
 function nextCategory(category) {
-    $("#light-overlay").hide();
+    $("#whatsnext-overlay").hide();
     changeSearchCategory(category);
     searchAroundMarker(currentPlace.latitude, currentPlace.longitude);
 }
@@ -345,8 +342,8 @@ function isCurrentPlaceInMyChoices(){
 }
 
 function endSearch() {
-    if ($("#light-overlay").is(":visible"))
-        $("#light-overlay").hide();
+    if ($("#whatsnext-overlay").is(":visible"))
+        $("#whatsnext-overlay").hide();
 
     // Prevents : If you click End here from the next-nav div you'll add the same place twice.
     if ((currentSearch.length > 0) && (currentPlace.id != currentSearch[currentSearch.length-1].id))

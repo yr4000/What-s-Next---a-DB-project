@@ -3,7 +3,6 @@ function showSearchResults(tab, table) {
     showTab(tab);
 
     if (!Object.keys(searchResults[table]).length) {
-        // If no results were returned do nothing.
         var tableDOM = document.getElementById(table);
         var row = tableDOM.insertRow(-1);
         var apologyCell = row.insertCell(0);
@@ -27,15 +26,13 @@ function showSearchResults(tab, table) {
 
 function showPastResults() {
     showTab("past-search");
-    // Clean Table.
     clearTable("past-results");
 
     if (currentSearch.length == 0)
         $("#end-choices").hide();
     else
         $("#end-choices").show();
-
-    // Insert new values.
+    
     for (var i = 0; i < currentSearch.length; i++) {
         var place = currentSearch[i];
         addChoiceRow(place, i);
