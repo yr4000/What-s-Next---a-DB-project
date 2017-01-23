@@ -93,11 +93,9 @@ def get_place_details(request, place_id):
     for review in reviews:
         reviews_dicts.append(review.to_json())
 
-    # TODO: This does not use the Place class anymore, need to fix this
     return JsonResponse({'place': place, 'reviews': reviews_dicts}, status=200)
 
 
-# TODO: should be called whenever a search is ended
 def update_popular_search(request):
     if request.is_ajax() is False:
         raise Http404
@@ -157,7 +155,6 @@ def calc_top_places_for_category(request):
     return JsonResponse(top_places, status=200)
 
 
-# TODO: Yair finish
 def im_feeling_lucky(request):
     if request.is_ajax() is False:
         raise Http404
