@@ -135,8 +135,6 @@ def search_places_by_name(search_word, search_category, page):
 
     rows = cur.fetchall()
 
-    print "fullTextSearch returning " + str(len(rows)) + " results"
-
     places = dict()
     for result in rows:
         place = query_results_to_dict(result)

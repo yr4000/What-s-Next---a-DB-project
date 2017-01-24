@@ -9,7 +9,7 @@ from django.http import JsonResponse, Http404
 # Internal packages import
 from utils.db_utils import *
 from utils.geo_utils import *
-from utils.google_maps_access import fetch_reviews_from_google
+from utils.google_maps_access import fetch_reviews_rating_from_google
 from utils.api_responses import MISSING_QUERY_PARAMS, INVALID_QUERY_PARAMS
 from utils.exceptions import NotFoundInDb
 from utils.data_access import get_place_by_place_id, get_place_reviews, get_categories_statistics, \
@@ -38,9 +38,6 @@ def search_by_name(request):
     search_word = request_json["word"]
     search_category = request_json["category"].lower()
     page = request_json["page"]
-
-    print "Searching for a " + search_category + " with " + search_word + \
-          " in it's name [Page " + str(page) + "]"
 
     places = search_places_by_name(search_word, search_category, page)
 
@@ -85,8 +82,16 @@ def get_place_details(request, place_id):
     # fetch reviews for place from db
     reviews = get_place_reviews(place=place)
     if not reviews:
-        # fetch reviews for place from Google Places API, and store in db
-        reviews = fetch_reviews_from_google(place=place)
+        try:
+            # fetch reviews for place from Google Places API, and store in db
+            reviews, new_rating = fetch_reviews_rating_from_google(place=place)
+        except:
+            # invalid response from google - there are no reviews for this place
+            reviews, new_rating = [], None
+
+        # shows updated rating in case it was returned from Google
+        if new_rating:
+            place['rating'] = new_rating
 
     # convert reviews to dictionaries so they can be serialized
     reviews_dicts = list()

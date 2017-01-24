@@ -18,7 +18,7 @@ KEY_TEXT = 'text'
 KEY_TIME = 'time'
 
 
-def fetch_reviews_from_google(place):
+def fetch_reviews_rating_from_google(place):
     url = '{host}{api}?key={api_key}&placeid={google_id}&language=en'.format(
         host=HOST,
         api_key=settings.GOOGLE_API_KEY,
@@ -34,18 +34,20 @@ def fetch_reviews_from_google(place):
     if new_reviews:
         try:
             thread.start_new_thread(insert_new_reviews, (new_reviews,))
-        except Exception as e:
-            print 'thread init failed for inserting reviews. {}'.format(e.message)
+        except:
+            # thread init failed for inserting reviews
+            pass
 
     new_rating = get_current_rating_from_details_response(json_response)
     # update the place rating in db to the current value in google, asynchronously to shorten response time
     if new_rating:
         try:
             thread.start_new_thread(update_place_rating, (new_rating, place['id']))
-        except Exception as e:
-            print 'thread init failed for update place rating. {}'.format(e.message)
+        except:
+            # thread init failed for update place rating
+            pass
 
-    return new_reviews
+    return new_reviews, new_rating
 
 
 def check_response_status(json_response):
@@ -100,7 +102,7 @@ def get_current_rating_from_details_response(json_response):
     try:
         return json_response[KEY_RESULT][KEY_RATING]
     except KeyError:
-        print 'Place has no rating in the following json: {json}'.format(json=json_response)
+        # the place has no rating in the json
         return None
 
 
